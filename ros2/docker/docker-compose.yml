@@ -1,0 +1,21 @@
+version: '3'
+services:
+  ros2-container:
+    build:
+      context: .
+    image: elaina/ros2-container
+    container_name: ros2-container
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - ${XAUTHORITY}:/root/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./..:/home/Elaina/Ros2
+    network_mode: host
+    pid: "host" # 添加 pid 命名空间共享
+    ipc: "host" # 添加 ipc 命名空间共享    
+    privileged: true
+    stdin_open: true
+    tty: true
+    user: "Elaina"
+    working_dir: "/home/Elaina" # 指定默认工作目录
