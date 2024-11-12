@@ -1,0 +1,21 @@
+{
+    "name": "fastlivo",
+    "dockerComposeFile": "./docker-compose.yml",
+    "service": "rastlivo_container",
+    "workspaceFolder": "/home/Elaina/slam/fast_livo",
+    "shutdownAction": "stopCompose",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "twxs.cmake",
+                "josetr.cmake-language-support-vscode",
+                "ms-vscode.cmake-tools",
+                "cschlosser.doxdocgen"
+            ]
+        },
+        "jetbrains": {
+            "extensions": []
+        }
+    }
+}
