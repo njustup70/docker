@@ -48,11 +48,13 @@ sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 ```
 ## 使用教程(以ros2为例)
+### 如果没有.devcontainer目录按键盘上的ctrl+h启动隐藏目录
 ### 用docker-compose启动
 1. 先进入docker目录
 ```bash
 :docker$ cd ros2/.devcontainer
 ```
+### 
 2. docker-compose启动docker文件
 ```bash
 :ros2/.devcontainer$ docker-compose up -d #-d的参数表示在后台运行
