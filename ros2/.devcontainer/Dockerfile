@@ -29,8 +29,8 @@ RUN sudo -u $USERNAME mkdir ./packages  && cd ./packages && git clone https://gi
 # 删除 sudo 权限
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
-    && ./build.sh humble ; echo 'source ~/ros2/packages/ws_livox/install/setup.bash' >> /home/${USERNAME}/.bashrc \
-    && echo 'source ~/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc
+    && ./build.sh humble ; echo 'source ~/docker/ros2/packages/ws_livox/install/setup.bash' >> /home/${USERNAME}/.bashrc \
+    && echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc
 RUN apt-get update \
     && apt-get install -y ros-humble-realsense2-camera 
 
