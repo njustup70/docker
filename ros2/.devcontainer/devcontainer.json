@@ -11,7 +11,9 @@
                 "twxs.cmake",
                 "josetr.cmake-language-support-vscode",
                 "ms-vscode.cmake-tools",
-                "cschlosser.doxdocgen"
+                "cschlosser.doxdocgen",
+                "ms-python.python",
+                "ms-python.debugpy"
             ]
         },
         "jetbrains": {

@@ -1,0 +1,9 @@
+#它的launch文件传进去是不需要命名空间的
+align_depth.enable: true
+gyro_fps: 200
+accel_fps: 100
+unite_imu_method: 1 #linear_interpolation
+enable_accel: true
+enable_gyro: true
+enable_sync: true 
+    
