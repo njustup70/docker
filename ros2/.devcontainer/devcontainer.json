@@ -1,8 +1,8 @@
 {
-    "name": "fastlivo",
+    "name": "ros2driver",
     "dockerComposeFile": "./docker-compose.yml",
-    "service": "rastlivo_container",
-    "workspaceFolder": "/home/Elaina/slam/fast_livo",
+    "service": "ros2driver-container",
+    "workspaceFolder": "/home/Elaina/docker/ros2",
     "shutdownAction": "stopCompose",
     "customizations": {
         "vscode": {

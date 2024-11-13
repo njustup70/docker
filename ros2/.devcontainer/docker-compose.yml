@@ -14,7 +14,7 @@ services:
     volumes:
       - ${XAUTHORITY}:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ./..:/home/Elaina/ros2
+      - ./../..:/home/Elaina/docker
       - /dev:/dev 
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
@@ -23,4 +23,4 @@ services:
     stdin_open: true
     tty: true
     user: "Elaina"
-    working_dir: "/home/Elaina/ros2" # 指定默认工作目录
+    working_dir: "/home/Elaina/docker/ros2" # 指定默认工作目录
