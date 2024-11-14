@@ -1,3 +1,11 @@
+<!--
+ * @Author: Nagisa 2964793117@qq.com
+ * @Date: 2024-11-14 22:46:41
+ * @LastEditors: Nagisa 2964793117@qq.com
+ * @LastEditTime: 2024-11-14 23:01:12
+ * @FilePath: \docker\ros2\README.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <div align="center">
 <h1>ros2子模块<h1>
 </div>
@@ -10,15 +18,22 @@
 - 包括ros_bridge(发送ros2话题到ros1目前为x86支持)
 - packages是驱动库(**勿动**)，更改源码仅更改ros2_ws中
 ## 使用教程(已经进入docker)
-- 1.source环境
+- 1.构建项目(构建目录不一样)
+```bash
+ros2/packages/ws_livox$ ./src/livox_ros_drivers/build.sh humble 
+```
+```bash
+ros2_ws$ colcon build
+```
+- 2.source环境
 ```bash
 ros2_ws$ source install/setup.bash
 ```
-- 2.雷达驱动
+- 3.雷达驱动
 ```bash
 ros2 launch my_mid360 mid360_bringup.launch.py 
 ```
-- 3.intel深度相机驱动
+- 4.intel深度相机驱动
 ```bash
 ros2 launch my_realsense realsense_bringup.launch.py 
 ```

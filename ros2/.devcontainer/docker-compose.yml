@@ -23,5 +23,5 @@ services:
     stdin_open: true
     tty: true
     user: "Elaina"
-    runtime: "nvidia"
+    # runtime: "nvidia"
     working_dir: "/home/Elaina/docker/ros2" # 指定默认工作目录

@@ -11,7 +11,7 @@
 - ros2驱动环境包括驱动mid360,深度相机与ros1_bridge在启动后需要自己打开驱动(目前还是x64)
 - yolo环境为yolov8
 ## 模块介绍
-| 模块 | 说明|
+| 模块 | 说明|包含$不要直接复制
 | --- |---|
 |[`ros2`](./ros2/README.md) |ros2的驱动包|
 |[`yolo`](./yolo) |yolov8环境|
@@ -47,8 +47,19 @@ sudo nvidia-ctk runtime configure --runtime=docker
 ```bash
 sudo systemctl restart docker
 ```
-## 使用教程(以ros2为例)
+## 使用教程(以ros2为例)[(:xxxxx$代表执行指令的目录)]
 ### 如果没有.devcontainer目录按键盘上的ctrl+h启动隐藏目录
+### 获得项目
+1. git拉取
+```bash
+git clone https://github.com/njustup70/docker.git
+```
+2. 初始化git的子模块(在git的同级目录下)
+```bash
+git submodule init && git submodule update
+
+```
+
 ### 用docker-compose启动
 1. 先进入docker目录
 ```bash
