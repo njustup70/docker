@@ -13,8 +13,8 @@
 ## 模块介绍
 | 模块 | 说明|
 | --- |---|
-|[`ros2`](./ros2) |ros2的驱动包|
-|[`yolo`](./yolo/) |yolov8环境|
+|[`ros2`](./ros2/README.md) |ros2的驱动包|
+|[`yolo`](./yolo) |yolov8环境|
 ## 依赖
 - docker 
 - docker-compose
