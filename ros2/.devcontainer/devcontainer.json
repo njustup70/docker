@@ -4,6 +4,14 @@
     "service": "ros2driver-container",
     "workspaceFolder": "/home/Elaina/docker/ros2",
     "shutdownAction": "stopCompose",
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        }
+        // "ghcr.io/devcontainers/features/common-utils:2": {
+        //     "installGDB": "true"
+        // }
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -13,7 +21,8 @@
                 "ms-vscode.cmake-tools",
                 "cschlosser.doxdocgen",
                 "ms-python.python",
-                "ms-python.debugpy"
+                "ms-python.debugpy",
+                "ms-python.vscode-pylance"
             ]
         },
         "jetbrains": {

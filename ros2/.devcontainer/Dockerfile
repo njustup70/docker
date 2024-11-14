@@ -1,5 +1,5 @@
-FROM osrf/ros:humble-desktop-full
-
+#FROM osrf/ros:humble-desktop-full
+FROM osrf/ros:humble-desktop-full-jammy
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
@@ -15,7 +15,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     # 允许用户使用 sudo
     && usermod -aG sudo $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc \
     # 使新用户的 `.bashrc` 文件生效
     && chown $USERNAME:$USERNAME /home/$USERNAME/.bashrc
 
@@ -30,9 +29,10 @@ RUN sudo -u $USERNAME mkdir ./packages  && cd ./packages && git clone https://gi
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
     && ./build.sh humble ; echo 'source ~/docker/ros2/packages/ws_livox/install/setup.bash' >> /home/${USERNAME}/.bashrc \
-    && echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc
+    && echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
+    && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc 
 RUN apt-get update \
-    && apt-get install -y ros-humble-realsense2-camera 
+   && apt-get install -y ros-humble-realsense2-camera 
 
 
 USER $USERNAME
