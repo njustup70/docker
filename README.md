@@ -11,7 +11,7 @@
 - ros2驱动环境包括驱动mid360,深度相机与ros1_bridge在启动后需要自己打开驱动(目前还是x64)
 - yolo环境为yolov8
 ## 模块介绍
-| 模块 | 说明|包含$不要直接复制
+| 模块 | 说明|
 | --- |---|
 |[`ros2`](./ros2/README.md) |ros2的驱动包|
 |[`yolo`](./yolo) |yolov8环境|
@@ -102,3 +102,4 @@ docker-compose down
 ![](.github/images/binbash.png)
 ### 2.clion在容器中打开路径出错
 - 原因: devcontainer.json中的workspaceFolder没写成和docker-compose.yaml中的working_dir同样路径
+### 3.本仓库只包含源码，需要自己colon或者其他安装驱动，详细内容看各个子模块
