@@ -39,13 +39,13 @@ def generate_launch_description():
     pose_theta = LaunchConfiguration('pose_theta', default='0.0')
 
     # 声明启动参数
-    # declare_x_position_cmd = DeclareLaunchArgument(
-    #     'x_pose', default_value='0.0',
-    #     description='Specify namespace of the robot')
+    declare_x_position_cmd = DeclareLaunchArgument(
+    'x_pose', default_value='0.0',
+    description='Specify namespace of the robot')
 
-    # declare_y_position_cmd = DeclareLaunchArgument(
-    #     'y_pose', default_value='0.0',
-    #     description='Specify namespace of the robot')
+    declare_y_position_cmd = DeclareLaunchArgument(
+    'y_pose', default_value='0.0',
+    description='Specify namespace of the robot')
 
     # 定义一个节点，用于在Gazebo中生成实体
     start_gazebo_ros_spawner_cmd = Node(
@@ -65,8 +65,8 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # 声明启动选项
-    # ld.add_action(declare_x_position_cmd)
-    # ld.add_action(declare_y_position_cmd)
+    ld.add_action(declare_x_position_cmd)
+    ld.add_action(declare_y_position_cmd)
 
     # 添加任何条件动作
     ld.add_action(robot_state_publisher_cmd)
