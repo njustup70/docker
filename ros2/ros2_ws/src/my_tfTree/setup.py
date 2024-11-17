@@ -20,6 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'broadcaster_node = my_tfTree.broadcaster_node:main',
+            'listener_node = my_tfTree.listener_node:main',
         ],
     },
 )
