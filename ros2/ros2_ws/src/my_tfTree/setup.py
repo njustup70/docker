@@ -15,13 +15,15 @@ setup(
     zip_safe=True,
     maintainer='yc-dlan',
     maintainer_email='1940275781@qq.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='build tf tree',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'broadcaster_node = my_tfTree.broadcaster_node:main',
             'listener_node = my_tfTree.listener_node:main',
         ],
+        'ros2_launch': [
+        ]
     },
 )
