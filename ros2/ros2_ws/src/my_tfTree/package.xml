@@ -20,7 +20,10 @@
   <depend>geometry_msgs</depend>
   <depend>rviz2</depend>
   <depend>robot_state_publisher</depend>
-  
+  <depend>sensor_msgs</depend>
+  <depend>camera_info_manager</depend>
+  <depend>depth_image_to_pointcloud2</depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>

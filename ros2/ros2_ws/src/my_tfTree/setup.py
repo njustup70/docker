@@ -22,6 +22,8 @@ setup(
         'console_scripts': [
             'broadcaster_node = my_tfTree.broadcaster_node:main',
             'listener_node = my_tfTree.listener_node:main',
+            'radar_node = my_tfTree.radar_node:main',
+            'depth_camera_node = my_tfTree.depth_camera_node:main',
         ],
         'ros2_launch': [
         ]
