@@ -14,4 +14,8 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
+)
 ament_package()

@@ -1,3 +1,6 @@
 [submodule "ros2/packages/livox_ros_driver2"]
 	path = ros2/packages/ws_livox/src/livox_ros_driver2
 	url = https://github.com/Livox-SDK/livox_ros_driver2.git
+[submodule "ros2/ros2_ws/src/my_tfTree/urdf"]
+	path = ros2/ros2_ws/src/my_tfTree/urdf
+	url = https://github.com/Elaina-rascal/myurdf_fix.git
