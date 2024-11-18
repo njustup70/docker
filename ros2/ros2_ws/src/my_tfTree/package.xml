@@ -25,6 +25,8 @@
   <depend>depth_image_to_pointcloud2</depend>
   <depend>gazebo_ros</depend>
 
+  <exec_depend>myurdf_fix</exec_depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>
