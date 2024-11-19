@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 import glob
-package_name = 'my_tf_Tree'
+package_name = 'my_tf_tree'
 
 setup(
     name=package_name,

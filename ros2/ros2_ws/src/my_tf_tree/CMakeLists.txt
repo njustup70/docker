@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(my_tf_Tree)
+project(my_tf_tree)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
