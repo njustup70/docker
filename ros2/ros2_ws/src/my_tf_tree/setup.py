@@ -9,7 +9,7 @@ setup(
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
+            ['docker/ros2/ros2_ws/src/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob.glob('launch/*.launch.py')),  # 修正launch文件的路径
         ('share/' + package_name + '/urdf', glob.glob('urdf/*')),  # 修正urdf文件的路径
