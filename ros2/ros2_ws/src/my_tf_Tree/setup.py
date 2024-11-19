@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 import glob
-package_name = 'my_tfTree'
+package_name = 'my_tf_Tree'
 
 setup(
     name=package_name,
@@ -27,7 +27,5 @@ setup(
             'radar_node = my_tfTree.radar_node:main',
             'depth_camera_node = my_tfTree.depth_camera_node:main',
         ],
-        'ros2_launch': [
-        ]
     },
 )

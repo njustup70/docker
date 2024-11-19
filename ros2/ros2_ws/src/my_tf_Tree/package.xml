@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>my_tfTree</name>
+  <name>my_tf_Tree</name>
   <version>0.0.1</version>
   <description>build tf tree</description>
   <maintainer email="1940275781@qq.com">yc-dlan</maintainer>
@@ -19,8 +19,6 @@
   <depend>camera_info_manager</depend>
   <depend>depth_image_to_pointcloud2</depend>
   <depend>gazebo_ros</depend>
-
-  <exec_depend>myurdf_fix</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
