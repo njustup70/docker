@@ -20,7 +20,7 @@ install(PROGRAMS
   launch/depth_camera_node.launch.py
   launch/radar_node.launch.py
   launch/robot.launch.py
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION share/${PROJECT_NAME}
 )
 
 install(
