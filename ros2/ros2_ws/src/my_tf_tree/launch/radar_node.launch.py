@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import RadarData  # 假设的消息类型
+from sensor_msgs.msg import RadarData
 
 class RadarNode(Node):
     def __init__(self):
