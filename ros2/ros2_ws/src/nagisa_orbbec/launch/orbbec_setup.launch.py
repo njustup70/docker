@@ -236,14 +236,16 @@ def generate_launch_description():
 
     # 将 OrbbecSDK_ROS2 中的 sdk_launch.py 引入
     launch_arguments = {
-        'config_file': yaml_path
+        'color_format':'YUYV',
+        'depth_format': 'Y16',
+        'depth_fps':'30'
     }
 
     # 打印传递的参数
     log_launch_arguments = LogInfo(msg=['Launch arguments: ', str(launch_arguments)])
 
     include_sdk_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(orbbec_pkg_package_prefix, 'launch', 'gemini_intra_process_demo_launch.py')),
+        PythonLaunchDescriptionSource(os.path.join(orbbec_pkg_package_prefix, 'launch', 'gemini2.launch.py')),
         launch_arguments=launch_arguments.items()
     )
 
