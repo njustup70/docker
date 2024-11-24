@@ -15,8 +15,6 @@ find_package(sensor_msgs REQUIRED)
 find_package(urdf REQUIRED)
 
 install(PROGRAMS
-  launch/broadcaster_node.launch.py
-  launch/listener_node.launch.py
   launch/depth_camera_node.launch.py
   launch/radar_node.launch.py
   launch/robot.launch.py
