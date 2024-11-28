@@ -19,10 +19,12 @@ services:
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
     ipc: "host" # 添加 ipc 命名空间共享    
-    #command: /bin/bash -c "ros2 run ros1_bridge dynamic_bridge --bridge-all-topics"
+
+    command: bash -c "source ~/docker/rosbridge/ros-humble-ros1-bridge/install/setup.bash && ros2 run ros1_bridge dynamic_bridge --bridge-all-topics"
     privileged: true
     stdin_open: true
     tty: true
     user: "Elaina"
     # runtime: "nvidia"
+    #command: [ "/bin/bash", "-l", "-c", "/home/Elaina/docker/rosbridge/start.bash" ]
     working_dir: "/home/Elaina/docker/rosbridge" # 指定默认工作目录

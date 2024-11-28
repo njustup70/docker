@@ -27,8 +27,6 @@ WORKDIR /home/$USERNAME
 
 RUN  echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc\ 
     && echo 'source ~/docker/rosbridge/ros-humble-ros1-bridge/install/setup.bash' >> /home/$USERNAME/.bashrc
-
-
 USER $USERNAME
 CMD ["/bin/bash"]
 
