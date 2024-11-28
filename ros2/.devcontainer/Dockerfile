@@ -32,7 +32,7 @@ RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${US
     && echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
     && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc 
 RUN apt-get update \
-   && apt-get install -y ros-humble-realsense2-camera 
+    && apt-get install -y ros-humble-realsense2-camera 
 
 
 USER $USERNAME
