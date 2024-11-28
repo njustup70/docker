@@ -15,6 +15,7 @@
 | --- |---|
 |[`ros2`](./ros2/README.md) |ros2的驱动包|
 |[`yolo`](./yolo) |yolov8环境|
+|[`rosbridge`](./rosbridge/)|ros桥接包|
 ## 依赖
 - docker 
 - docker-compose
