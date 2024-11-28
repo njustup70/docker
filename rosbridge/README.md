@@ -19,3 +19,4 @@ PATH TO rosbridge$./run.bash
 ### 1.需要在开启roscore的情况下才可以开启桥接
 ### 2.默认的桥接是桥接所有话题之后可能更改
 ### 3.如果启动桥接节点但是没有成功桥接可能是docker权限的问题,docker中的挂载的文件夹的用户组与用户不是1000 
+### 4.使用docker-compose.yaml 中的command的镜像建立的使用运行一个任务
