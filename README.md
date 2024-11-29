@@ -100,5 +100,8 @@ docker-compose down
 ![](.github/images/binbash.png)
 ### 7.2 clion在容器中打开路径出错
 **原因: devcontainer.json中的workspaceFolder没写成和docker-compose.yaml中的working_dir同样路径**
-### 7.3 说明
+### 7.3容器里面用户使用root可能会造成问题
+#### 宿主机用不了docker里面创建的文件
+#### ros2 node list 无法发现root 启动的节点，可能还有其他问题
+### 7.4 说明
 **本仓库只包含源码，需要自己colon或者其他安装驱动，详细内容看各个子模块**
