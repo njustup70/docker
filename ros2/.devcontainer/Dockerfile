@@ -1,5 +1,6 @@
 #FROM osrf/ros:humble-desktop-full
-FROM osrf/ros:humble-desktop-full-jammy
+#FROM osrf/ros:humble-desktop-full-jammy
+FROM ghcr.io/sloretz/ros:humble-desktop-full
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
