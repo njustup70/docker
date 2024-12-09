@@ -18,13 +18,25 @@
 - 包括ros_bridge(发送ros2话题到ros1目前为x86支持)
 - packages是驱动库(**勿动**)，更改源码仅更改ros2_ws中
 ## 使用教程(已经进入docker)
-- 1.构建项目(构建目录不一样)
+- ~~1.构建项目(构建目录不一样)~~ 已经废弃
 ```bash
 ros2/packages/ws_livox$ ./src/livox_ros_drivers/build.sh humble 
 ~/packages/orbbec_ws$ cd ~/packages/orbbec_ws && colcon build && source install/setup.bash
 ```
 ```bash
 ros2_ws$ cd docker/ros2/ros2_ws && colcon build
+```
+- 1.安装udev orbbec与realsense需要
+``` bash
+cd OrbbecSDK/misc/scripts  #Orbbec脚本在packages底下
+sudo chmod +x ./install_udev_rules.sh
+sudo ./install_udev_rules.sh
+sudo udevadm control --reload && sudo udevadm trigger
+```
+``` bash
+cd librealsense
+sudo chmod +x ./scripts/setup_udev_rules.sh 
+./scripts/setup_udev_rules.sh 
 ```
 - 2.source环境
 ```bash

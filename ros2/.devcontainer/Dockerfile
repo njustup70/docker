@@ -52,12 +52,12 @@ RUN mkdir -p ./orbbec_ws/src/ && cd ./orbbec_ws/src/ && \
 
 # 构建 orbbec_ws 工作区
 
-RUN bash -c "source /opt/ros/humble/setup.bash && \
+RUN . /opt/ros/humble/setup.sh && \
     export CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} && \ 
     cd orbbec_ws &&\
     # 构建整个 packages 工作区
     colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release &&\
-    echo "~/packages/orbbec_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc"
+    echo "source ~/packages/orbbec_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc
 
 
 #添加驱动udev规则并编译 
