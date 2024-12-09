@@ -55,7 +55,7 @@ sudo systemctl restart docker
 ```bash
 git clone https://github.com/njustup70/docker.git
 ```
-2. 初始化git的子模块(在git的同级目录下)
+~~2. 初始化git的子模块(在git的同级目录下)~~ 子模块已经移除，非必要不要用
 ```bash
 git submodule init && git submodule update
 

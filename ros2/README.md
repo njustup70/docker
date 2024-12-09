@@ -42,6 +42,10 @@ ros2 launch my_realsense realsense_bringup.launch.py
 ```bash
 ros2 launch nagisa_orbbec orbbec_setup.launch.py 
 ```
+- 6.sm200线性雷达提供点云数据，需要提前给ttyACM0权限
+```bash
+ros2 launch oradar_lidar ms200_scan_view.launch.py 
+```
 ## 修改参数说明(针对ros2_ws下的功能包)
 #### 均在功能包的config与launch目录中
 ### mid360包MID360_config.json:
@@ -54,7 +58,9 @@ ros2 launch nagisa_orbbec orbbec_setup.launch.py
 - 直接在该launch.py文件中添加参数设置,具体可以修改的参数详见 \
 [`orbbec启动参数可选项`](https://github.com/orbbec/OrbbecSDK_ROS2?tab=readme-ov-file#launch-parameters)
 
-
+### 注意事项
+#### livox发的pointcloud2不是标准点云,多了偏移与line
+![msg](../.github/images/pointcloudmsg.png)
 ### 源码链接
 |驱动包| 描述|
 |---|---|
@@ -63,6 +69,6 @@ ros2 launch nagisa_orbbec orbbec_setup.launch.py
 |[`ros-humble-realsense2-camera`](https://github.com/IntelRealSense/realsense-ros)|深度相机ros驱动|
 |[`realsense_sdk2`](https://github.com/IntelRealSense/librealsense)|深度相机底层驱动|
 |[`OrbbecSDK_ROS2`](https://github.com/orbbec/OrbbecSDK_ROS2)|Orbbec深度相机ROS2驱动(底层与ros2驱动放在一起)|
-
+|[`ms200`](packages/ms200_ros/README.md)|奥比中光线性雷达|
 
 [realsense_ros其他文档](https://dev.intelrealsense.com/docs/ros2-wrapper)
