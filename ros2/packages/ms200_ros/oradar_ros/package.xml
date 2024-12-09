@@ -1,41 +1,23 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>oradar_lidar</name>
-  <version>1.0.0</version>
-  <description>ROS driver for Oradar's newer generation of mechanical 2D LiDARs</description>
-  <maintainer email="jiasiting@oradar.com.cn">Oradar</maintainer>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="support@oradar.ccom.cn">linux</maintainer>
+  <license>MIT</license>
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>BSD</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <url type="website">www.orbbec.com.cn</url> 
-  <author email="jiasiting@oradar.com.cn">jiasiting</author>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
 
+  <exec_depend>ros2launch</exec_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rosconsole</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
-  <depend>std_msgs</depend>
-
-  <build_export_depend>rosconsole</build_export_depend>
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>sensor_msgs</build_export_depend>
-  <build_export_depend>message_runtime</build_export_depend>
-
-  <exec_depend>rosconsole</exec_depend>
-  <exec_depend>roscpp</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-
-
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

@@ -78,8 +78,8 @@ RUN sudo apt-get update \
     && sudo apt-get install -y ros-humble-realsense2-camera 
 #添加ms200驱动
 COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${USERNAME}/packages/lidar_ros_ws/src/oradar_ros 
-RUN . /opt/ros/humble/setup.sh && cd ./lidar_ros_ws && colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    && echo 'source ~/packages/lidar_ros_ws/install/setup.bash' >> /home/Elaina/.bashrc
+RUN . /opt/ros/humble/setup.sh && cd ./lidar_ros_ws && colcon build \
+    && echo 'source ~/packages/lidar_ros_ws/install/setup.bash' >> /home/$USERNAME/.bashrc
 
 # 删除 sudo 权限
 USER root
