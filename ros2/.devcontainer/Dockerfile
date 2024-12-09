@@ -1,5 +1,3 @@
-#FROM osrf/ros:humble-desktop-full
-#FROM osrf/ros:humble-desktop-full-jammy
 FROM ghcr.io/sloretz/ros:humble-desktop-full
 # 定义用户和用户组
 ARG USERNAME=Elaina
@@ -52,36 +50,14 @@ RUN mkdir -p ./orbbec_ws/src/ && cd ./orbbec_ws/src/ && \
     git config --global http.sslVerify false && git config --global http.postBuffer 524288000 && \
     git clone https://github.com/orbbec/OrbbecSDK_ROS2.git
 
-
-
-RUN sudo apt-get update && sudo apt-get install -y \
-    python3-ament-package \
-    python3-colcon-common-extensions \   
-    ros-humble-ament-cmake \             
-    ros-humble-ros-base \                 
-    build-essential \
-    git \
-        && sudo rm -rf /var/lib/apt/lists/*
-    
-# 构建整个 packages 工作区
-WORKDIR /home/$USERNAME/packages
-RUN bash -c "source /opt/ros/humble/setup.bash && \
-export CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} && \
-colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release"
-
-
 # 构建 orbbec_ws 工作区
-WORKDIR /home/$USERNAME/packages/orbbec_ws
-RUN bash -c "source /opt/ros/humble/setup.bash && \
-export CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} && \
-colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release"
-       
 
-WORKDIR /home/$USERNAME/packages/
 RUN bash -c "source /opt/ros/humble/setup.bash && \
-    export CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} && \
-    cd ./orbbec_ws && \
-    colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release"
+    export CMAKE_PREFIX_PATH=/opt/ros/humble:${CMAKE_PREFIX_PATH} && \ 
+    cd orbbec_ws &&\
+    # 构建整个 packages 工作区
+    colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release &&\
+    echo "~/packages/orbbec_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc"
 
 
 #添加驱动udev规则并编译 
