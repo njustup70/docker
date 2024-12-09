@@ -54,7 +54,9 @@ ros2 launch nagisa_orbbec orbbec_setup.launch.py
 - 直接在该launch.py文件中添加参数设置,具体可以修改的参数详见 \
 [`orbbec启动参数可选项`](https://github.com/orbbec/OrbbecSDK_ROS2?tab=readme-ov-file#launch-parameters)
 
-
+### 注意事项
+#### livox发的pointcloud2不是标准点云,多了偏移与line
+![msg](../.github/images/pointcloudmsg.png)
 ### 源码链接
 |驱动包| 描述|
 |---|---|
