@@ -1,3 +1,0 @@
-[submodule "ros2/ros2_ws/src/my_tfTree/urdf"]
-	path = ros2/ros2_ws/src/my_tfTree/urdf
-	url = https://github.com/Elaina-rascal/myurdf_fix.git
