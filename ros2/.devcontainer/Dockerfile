@@ -73,16 +73,20 @@ RUN bash -c "source /opt/ros/humble/setup.bash && \
 # #  && sudo bash install_udev_rules.sh \
 # # sudo udevadm control --reload-rules && sudo udevadm trigger \
 # && cd ./../../.. && colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
-
-
+#添加realsense驱动
+RUN sudo apt-get update \
+    && sudo apt-get install -y ros-humble-realsense2-camera 
+#添加ms200驱动
+COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${USERNAME}/packages/lidar_ros_ws/src/oradar_ros 
+RUN . /opt/ros/humble/setup.sh && cd ./lidar_ros_ws && colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    && echo 'source ~/packages/lidar_ros_ws/install/setup.bash' >> /home/Elaina/.bashrc
 
 # 删除 sudo 权限
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
     #&& echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
     && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc 
-RUN apt-get update \
-    && apt-get install -y ros-humble-realsense2-camera 
+
 
 
 USER $USERNAME
