@@ -29,7 +29,7 @@ def generate_launch_description():
         {'device_model': 'MS200'},
         {'frame_id': 'laser_frame'},
         {'scan_topic': 'MS200/scan'},
-        {'port_name': '/dev/ttyUSB0'},
+        {'port_name': '/dev/ttyACM0'},
         {'baudrate': 230400},
         {'angle_min': 0.0},
         {'angle_max': 360.0},
