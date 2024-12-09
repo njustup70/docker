@@ -2,7 +2,8 @@ version: '3'
 services:
   ros2driver-container:
     build:
-      context: .
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
     image: elaina/ros2driver-images
     container_name: ros2driver-container
     environment:
