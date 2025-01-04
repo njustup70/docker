@@ -1,0 +1,53 @@
+# ROS 2 格式的 YAML 文件
+common_params:
+  ros__parameters:
+    depth_registration: true
+    enable_point_cloud: true
+    enable_colored_point_cloud: true
+    device_preset: "High Accuracy"
+    laser_on_off_mode: 1 # 0: off, 1: on-off, 2: off-on
+    time_domain: "global" # global, device, system
+    enable_sync_host_time: true
+    frames_per_trigger: 2
+    enable_3d_reconstruction_mode: true
+
+color_params:
+  ros__parameters:
+    enable_color: true
+    color_width: 640
+    color_height: 480
+    color_fps: 90
+    color_format: "YUYV"
+    enable_color_auto_exposure: true
+    color_exposure: 50 # 5ms
+    color_gain: -1 # -1 default
+
+depth_params:
+  ros__parameters:
+    depth_width: 640
+    depth_height: 480
+    depth_fps: 30
+    depth_format: "Y11"
+
+ir_params:
+  ros__parameters:
+    enable_ir_auto_exposure: true
+    ir_exposure: 5000 # 5ms
+    ir_gain: 40
+
+left_ir_params:
+  ros__parameters:
+    enable_left_ir: true
+    left_ir_width: 640
+    left_ir_height: 480
+    left_ir_fps: 90
+    left_ir_format: "Y8"
+
+right_ir_params:
+  ros__parameters:
+    enable_right_ir: true
+    right_ir_width: 640
+    right_ir_height: 480
+    right_ir_fps: 90
+    right_ir_format: "Y8"
+
