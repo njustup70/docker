@@ -44,19 +44,19 @@ ros2_ws$ source install/setup.bash
 ```
 - 3.雷达驱动
 ```bash
-ros2 launch my_mid360 mid360_bringup.launch.py 
+ros2 launch my_driver mid360_bringup.launch.py 
 ```
 - 4.intel深度相机驱动
 ```bash
-ros2 launch my_realsense realsense_bringup.launch.py 
+ros2 launch my_driver realsense_bringup.launch.py 
 ```
 - 5.orbbec深度相机驱动
 ```bash
-ros2 launch nagisa_orbbec orbbec_setup.launch.py 
+ros2 launch my_driver orbbec_setup.launch.py 
 ```
 - 6.sm200线性雷达提供点云数据，需要提前给ttyACM0权限
 ```bash
-ros2 launch oradar_lidar ms200_scan_view.launch.py 
+ros2 launch my_driver ms200_scan_view.launch.py 
 ```
 ## 修改参数说明(针对ros2_ws下的功能包)
 #### 均在功能包的config与launch目录中
