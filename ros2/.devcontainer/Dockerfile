@@ -47,6 +47,7 @@ RUN . /opt/ros/humble/setup.sh && \
 #添加realsense驱动
 RUN sudo apt-get update \
     && sudo apt-get install -y ros-humble-realsense2-camera 
+    
 #添加ms200驱动
 COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${USERNAME}/packages/lidar_ros_ws/src/oradar_ros 
 RUN . /opt/ros/humble/setup.sh && cd ./lidar_ros_ws && colcon build \
