@@ -1,5 +1,6 @@
 #FROM osrf/ros:humble-desktop-full
-FROM osrf/ros:humble-desktop-full-jammy
+#FROM osrf/ros:humble-desktop-full-jammy
+FROM ghcr.io/sloretz/ros:humble-desktop-full
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
@@ -29,10 +30,10 @@ RUN sudo -u $USERNAME mkdir ./packages  && cd ./packages && git clone https://gi
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
     && ./build.sh humble ; echo 'source ~/docker/ros2/packages/ws_livox/install/setup.bash' >> /home/${USERNAME}/.bashrc \
-    && echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
+    #&& echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
     && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc 
 RUN apt-get update \
-   && apt-get install -y ros-humble-realsense2-camera 
+    && apt-get install -y ros-humble-realsense2-camera 
 
 
 USER $USERNAME
