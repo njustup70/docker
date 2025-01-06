@@ -15,10 +15,21 @@ find_package(sensor_msgs REQUIRED)
 find_package(urdf REQUIRED)
 
 install(PROGRAMS
-  launch/depth_camera_node.launch.py
-  launch/radar_node.launch.py
+  node/depth_camera_node.py
+  node/radar_node.py
   launch/robot.launch.py
+  launch/virtural_odom_node.launch.py
+  node/virtural_odom_node.py
   DESTINATION share/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  node/depth_camera_node.py
+  node/radar_node.py
+  launch/robot.launch.py
+  launch/virtural_odom_node.launch.py
+  node/virtural_odom_node.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
