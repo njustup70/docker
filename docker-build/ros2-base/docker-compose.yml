@@ -14,6 +14,7 @@ services:
     volumes:
       - ${XAUTHORITY}:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.config/fish:/home/Elaina/.config/fish
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
     ipc: "host" # 添加 ipc 命名空间共享    
