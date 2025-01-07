@@ -95,6 +95,16 @@ docker-compose down
 2. 选择新的开发容器
 3. 在容器中打开当前文件夹或者选择打开文件夹并选择.devcontainer父级目录<br>
 ![image](.github/images/3.png)
+### docker常见指令
+- 1.删除构建失败镜像
+``` bash
+docker image prune -f
+```
+- 2.删除未使用缓存
+```bash
+docker builder prune -f
+```
+
 ## 坑
 
 ### 1.找不到/bin/bash

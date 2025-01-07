@@ -13,3 +13,4 @@ docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 -t elainasuki/ros:ros2-humble-full --push .
 ```
+### [官方文档](https://docs.docker.com/build/building/multi-platform/)
