@@ -22,16 +22,19 @@ RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
     && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base\
     # && yes | clitheme apply-theme /temp/39neko.clithemedef.txt  \
     && apt-get update \ 
-    && apt-get install -y nautilus-extension-gnome-terminal dbus-x11 fish gettext  
+    && apt-get install -y nautilus-extension-gnome-terminal dbus-x11 gettext software-properties-common \
+    && add-apt-repository ppa:fish-shell/release-3 -y \
+    && apt-get update && sudo apt-get install -y fish fzf
 # 创建用户组和用户
 
 USER $USERNAME
 RUN curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
     && fish install_omf --noninteractive \
     && fish -c "omf install bass" \
-    && sudo rm install_omf
+    && sudo rm install_omf 
 #安装杂鱼终端
 USER root
+COPY packages/fish /home/${USERNAME}/.config/fish
 RUN sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
     && sudo -u ${USERNAME} pip3 install thefuck \
     && echo 'eval $(thefuck --alias)'>> /home/${USERNAME}/.bashrc \
