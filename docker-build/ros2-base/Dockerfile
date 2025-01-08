@@ -15,14 +15,17 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chown $USERNAME:$USERNAME /home/$USERNAME/.bashrc  
 #安装必要软件
 RUN apt-get update \
-    && apt-get install -y  net-tools nautilus bash-completion thefuck pip gdb lldb gedit clang clangd 
+    && apt-get install -y  net-tools nautilus bash-completion pip gdb lldb gedit clang wget nano software-properties-common \
+    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - \
+    && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" \
+    && apt-get install clangd
 COPY packages /temp
 #安装优化软件
 RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
-    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base\
+    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base thefuck\
     # && yes | clitheme apply-theme /temp/39neko.clithemedef.txt  \
     && apt-get update \ 
-    && apt-get install -y nautilus-extension-gnome-terminal dbus-x11 gettext software-properties-common \
+    && apt-get install -y nautilus-extension-gnome-terminal dbus-x11 gettext  \
     && add-apt-repository ppa:fish-shell/release-3 -y \
     && apt-get update && sudo apt-get install -y fish fzf
 # 创建用户组和用户
