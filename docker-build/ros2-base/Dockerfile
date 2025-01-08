@@ -13,32 +13,28 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     # 使新用户的 `.bashrc` 文件生效
     && chown $USERNAME:$USERNAME /home/$USERNAME/.bashrc  
-#安装必要软件
+#安装必要软件终端补全,包管理器,编辑器,文件管理器
 RUN apt-get update \
-    && apt-get install -y  net-tools nautilus bash-completion pip gdb lldb gedit clang wget nano software-properties-common \
+    && apt-get install -y  net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11
+#安装编译工具,调试工具拓展终端
+RUN apt-get update \
+    &&apt-get install -y gdb lldb clang \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - \
     && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" \
-    && apt-get install clangd
-COPY packages /temp
-#安装优化软件
-RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
-    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base thefuck\
-    # && yes | clitheme apply-theme /temp/39neko.clithemedef.txt  \
-    && apt-get update \ 
-    && apt-get install -y nautilus-extension-gnome-terminal dbus-x11 gettext  \
+    && apt-get install -y clangd \
+    #安装fish终端
     && add-apt-repository ppa:fish-shell/release-3 -y \
-    && apt-get update && sudo apt-get install -y fish fzf
-# 创建用户组和用户
-
-USER $USERNAME
-RUN curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
+    && apt-get update && sudo apt-get install -y fish fzf \
+    #安装fish插件
+    && curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
     && fish install_omf --noninteractive \
     && fish -c "omf install bass" \
     && sudo rm install_omf 
-#安装杂鱼终端
-USER root
+COPY packages /temp
 COPY packages/fish /home/${USERNAME}/.config/fish
-RUN sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
+RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
+    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base thefuck gettext  \ 
+    && sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
     && sudo -u ${USERNAME} pip3 install thefuck \
     && echo 'eval $(thefuck --alias)'>> /home/${USERNAME}/.bashrc \
     && echo 'eval $(thefuck --alias FUCK)'>> /home/${USERNAME}/.bashrc \
