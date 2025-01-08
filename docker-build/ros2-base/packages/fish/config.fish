@@ -5,4 +5,4 @@ bass source /opt/ros/humble/setup.bash
 bass source ~/.bashrc
 
  
-thefuck --alias | source
+# thefuck --alias | source

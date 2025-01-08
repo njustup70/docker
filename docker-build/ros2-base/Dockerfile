@@ -18,24 +18,26 @@ RUN apt-get update \
     && apt-get install -y  net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11
 #安装编译工具,调试工具拓展终端
 RUN apt-get update \
-    &&apt-get install -y gdb lldb clang \
+    &&apt-get install -y gdb lldb clang gdbserver \
     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - \
     && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" \
     && apt-get install -y clangd \
     #安装fish终端
     && add-apt-repository ppa:fish-shell/release-3 -y \
-    && apt-get update && sudo apt-get install -y fish fzf \
-    #安装fish插件
-    && curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
+    && apt-get update && sudo apt-get install -y fish fzf 
+#安装fish插件
+USER $USERNAME
+RUN curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
     && fish install_omf --noninteractive \
     && fish -c "omf install bass" \
     && sudo rm install_omf 
+USER root
 COPY packages /temp
 COPY packages/fish /home/${USERNAME}/.config/fish
 RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
     && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base thefuck gettext  \ 
     && sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
-    && sudo -u ${USERNAME} pip3 install thefuck \
-    && echo 'eval $(thefuck --alias)'>> /home/${USERNAME}/.bashrc \
-    && echo 'eval $(thefuck --alias FUCK)'>> /home/${USERNAME}/.bashrc \
+    # && sudo -u ${USERNAME} pip3 install thefuck \
+    # && echo 'eval $(thefuck --alias)'>> /home/${USERNAME}/.bashrc \
+    # && echo 'eval $(thefuck --alias FUCK)'>> /home/${USERNAME}/.bashrc \
     && rm -rf /temp
