@@ -47,11 +47,12 @@ RUN . /opt/ros/humble/setup.sh && \
 #添加realsense驱动
 RUN sudo apt-get update \
     && sudo apt-get install -y ros-humble-realsense2-camera 
-    
+
 #添加ms200驱动
-COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${USERNAME}/packages/lidar_ros_ws/src/oradar_ros 
-RUN . /opt/ros/humble/setup.sh && cd ./lidar_ros_ws && colcon build \
-    && echo 'source ~/packages/lidar_ros_ws/install/setup.bash' >> /home/$USERNAME/.bashrc
+COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${USERNAME}/packages/ros_ws/src/oradar_ros 
+COPY --chown=${USERNAME}:${USERNAME} ./packages/nagisa_imu /home/${USERNAME}/packages/ros_ws/src/nagisa_imu 
+RUN . /opt/ros/humble/setup.sh && pip3 install pyserial && cd ./ros_ws && colcon build \
+    && echo 'source ~/packages/ros_ws/install/setup.bash' >> /home/$USERNAME/.bashrc
 #添加bashrc配置
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
