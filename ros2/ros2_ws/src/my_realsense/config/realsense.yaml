@@ -1,9 +1,0 @@
-#它的launch文件传进去是不需要命名空间的
-align_depth.enable: true #对齐深度图到彩色图
-gyro_fps: 200 #陀螺仪频率
-accel_fps: 100 #加速度计频率
-unite_imu_method: 1 #linear_interpolation
-enable_accel: false #使能加速度计
-enable_gyro: false #使能陀螺仪
-enable_sync: false  #使能同步
-    
