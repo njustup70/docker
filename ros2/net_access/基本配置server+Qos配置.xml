@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dds>
-    <profiles>
+    <profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles" >
         <!-- 配置 Discovery Server -->
         <participant profile_name="discovery_server_profile" is_default_profile="true">
             <rtps>
                 <!-- 使用固定 GUID -->
-                <prefix>44.53.00.5f.45.4e.45.53.41.46.45.53.53.00.00.00</prefix>
+    
                 <builtin>
                     <!-- 启用 Discovery Server 模式 -->
                     <discovery_config>
-                        <discovery_protocol>SERVER</discovery_protocol>
-                        <server_id>0</server_id> <!-- 服务器 ID -->
-                        <simple_eds>
+                        
+                        <discoveryProtocol>SERVER</discoveryProtocol>
+                        <discoveryServersList>
+                            <RemoteServer prefix="44.53.00.5f.45.4e.45.53.41.46.45.53.53.00.00.00">
                             <!-- 配置服务器使用的监听地址 -->
                             <metatrafficUnicastLocatorList>
                                 <locator>
@@ -21,7 +22,7 @@
                                     </udpv4>
                                 </locator>
                             </metatrafficUnicastLocatorList>
-                        </simple_eds>
+                        </discoveryServersList>
                     </discovery_config>
                 </builtin>
                 <!-- 配置元流量多播地址 -->
