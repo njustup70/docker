@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dds>
+    <profiles>
+        <!-- 配置 Discovery Server -->
+        <participant profile_name="discovery_server_profile" is_default_profile="true">
+            <rtps>
+                <!-- 使用固定 GUID -->
+                <prefix>44.53.00.5f.45.4e.45.53.41.46.45.53.53.00.00.00</prefix>
+                <builtin>
+                    <!-- 启用 Discovery Server 模式 -->
+                    <discovery_config>
+                        <discovery_protocol>SERVER</discovery_protocol>
+                        <server_id>0</server_id> <!-- 服务器 ID -->
+                        <simple_eds>
+                            <!-- 配置服务器使用的监听地址 -->
+                            <metatrafficUnicastLocatorList>
+                                <locator>
+                                    <udpv4>
+                                        <address>192.168.3.119</address>
+                                        <port>11811</port>
+                                    </udpv4>
+                                </locator>
+                            </metatrafficUnicastLocatorList>
+                        </simple_eds>
+                    </discovery_config>
+                </builtin>
+                <!-- 配置元流量多播地址 -->
+                <port>
+                    <port_base>11811</port_base>
+                </port>
+            </rtps>
+        </participant>
+
+        <!-- 配置默认 QoS -->
+        <publisher profile_name="default_publisher_profile">
+            <qos>
+                <reliability>
+                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                </reliability>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </qos>
+        </publisher>
+        <subscriber profile_name="default_subscriber_profile">
+            <qos>
+                <reliability>
+                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                </reliability>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </qos>
+        </subscriber>
+    </profiles>
+</dds>
