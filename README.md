@@ -92,6 +92,7 @@ docker-compose down
 2. 选择新的开发容器
 3. 在容器中打开当前文件夹或者选择打开文件夹并选择.devcontainer父级目录<br>
 ![image](.github/images/3.png)
+
 ## 7.一些坑
 
 ### 7.1 找不到/bin/bash
