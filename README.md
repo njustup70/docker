@@ -11,8 +11,9 @@
 | 模块 | 说明|
 | --- |---|
 |[`ros2`](./ros2/README.md) |ros2的驱动包|
-|[`yolo`](./yolo) |yolov8环境|
+|[`yolo`](https://github.com/njustup70/vision_yolo) |yolov8环境|
 |[`rosbridge`](./rosbridge/)|ros桥接包|
+|['protocol'](./protocol_lib/)|通信库|
 ## 依赖
 - docker 
 - docker-compose
