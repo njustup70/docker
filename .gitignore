@@ -5,3 +5,8 @@ devel/
 log/
 install/
 Log/
+
+protocol_lib/build/
+
+protocol_lib/protocol_lib_up70.egg-info
+
