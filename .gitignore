@@ -5,7 +5,7 @@ devel/
 log/
 install/
 Log/
-
+*Zone.Identifier
 protocol_lib/build/
 
 protocol_lib/protocol_lib_up70.egg-info
