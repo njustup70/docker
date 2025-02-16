@@ -1,4 +1,4 @@
-FROM elainasuki/ros:ros2-humble-full-v2
+FROM elainasuki/ros:ros2-humble-full-v3
 # 定义用户和用户组
 ARG USERNAME=Elaina
 COPY ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 /home/${USERNAME}/packages/ros2_ws/src/ROS-TCP-Endpoint-ROS2v0.7.0
