@@ -12,7 +12,9 @@ services:
       - OMP_WAIT_POLICY=passive
       - TERM=xterm-256color
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${WSL_X11_SOCKET:-/tmp/.X11-unix}:/tmp/.X11-unix
+      - ./../../:/home/Elaina/docker
       # - ~/.config/fish:/home/Elaina/.config/fish
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
