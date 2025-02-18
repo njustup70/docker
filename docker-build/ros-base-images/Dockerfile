@@ -39,4 +39,5 @@ RUN mkdir packages && cd packages && git clone https://github.com/Livox-SDK/Livo
 RUN . /opt/ros/noetic/setup.sh \
     && cd packages && mkdir ws_livox && cd ws_livox && mkdir src && cd src \
     && git clone https://github.com/Livox-SDK/livox_ros_driver.git && cd .. && catkin_make \
-    && echo 'source /home/Elaina/ws_livox/devel/setup.bash' >> /home/Elaina/.bashrc
+    && echo 'source ~/packages/ws_livox/devel/setup.bash' >> /home/Elaina/.bashrc \
+    && git config --global core.filemode false
