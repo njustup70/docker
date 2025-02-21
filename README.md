@@ -8,12 +8,12 @@
 - yolo环境为yolov8
 - protocol_lib是用于上位机跟下位机通信（只有上位机收发）的Python通信库，数据帧结构随后会给出
 ## 2.模块介绍
-| 模块 | 说明|
-| --- |---|
-|[`ros2`](./ros2/README.md) |ros2的驱动包|
-|[`yolo`](https://github.com/njustup70/vision_yolo) |yolov8环境|
-|[`rosbridge`](./rosbridge/)|ros桥接包|
-|['protocol'](./protocol_lib/)|通信库|
+| 模块                                               | 说明         |
+| -------------------------------------------------- | ------------ |
+| [`ros2`](./ros2/README.md)                         | ros2的驱动包 |
+| [`yolo`](https://github.com/njustup70/vision_yolo) | yolov8环境   |
+| [`rosbridge`](./rosbridge/)                        | ros桥接包    |
+| ['protocol'](./protocol_lib/)                      | 通信库       |
 ## 依赖
 - docker 
 - docker-compose
@@ -105,5 +105,9 @@ docker-compose down
 ### 7.3容器里面用户使用root可能会造成问题
 #### 宿主机用不了docker里面创建的文件
 #### ros2 node list 无法发现root 启动的节点，可能还有其他问题
-### 7.4 说明
+### 7.4 容器里打开gui出现Authorization required, but no authorization protocol specified问题执行下面代码
+```bash
+sudo xhost +
+```
+### 7.5 说明
 **本仓库只包含源码，需要自己colon或者其他安装驱动，详细内容看各个子模块**
