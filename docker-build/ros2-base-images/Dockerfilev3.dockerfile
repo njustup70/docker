@@ -1,9 +1,8 @@
 FROM elainasuki/ros:ros2-humble-full-v2
 ARG USERNAME=Elaina
 #安装包
-RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping 
+RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld 
 # 使用 root 用户
-USER root
 
 # 安装雷达驱动
 RUN mkdir -p /home/$USERNAME/packages && cd /home/$USERNAME/packages && git clone https://github.com/Livox-SDK/Livox-SDK2.git \
@@ -18,18 +17,19 @@ RUN mkdir -p /home/$USERNAME/packages/ws_livox/src/ \
     && ./livox_ros_driver2/build.sh humble \
     && echo 'source ~/packages/ws_livox/install/setup.bash' >> /home/$USERNAME/.bashrc
 
-# 设置 ROS 发行版
-ARG ROS_DISTRO=humble
-
 # 安装 PCL 新版点云库
+# RUN apt-get update \
+#     && apt-get install -y ninja-build ccache lld 
+# RUN git clone --branch pcl-1.13.1 https://github.com/PointCloudLibrary/pcl.git \
+#     && cd pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja .. \
+#     && ninja -j6 && ninja install
 RUN apt-get update \
-    && apt-get install -y ninja-build ccache lld \
-    && wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 20
-
-RUN git clone --branch pcl-1.13.1 https://github.com/PointCloudLibrary/pcl.git \
-    && cd pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja .. \
-    && ninja -j6 && ninja install
-
+    # && apt-get install -y lldb clang \
+    && wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 
+RUN apt-get update && apt-get install -y clang-14 \
+    && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 \
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 \
+    && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100 
 # USER $USERNAME
 # WORKDIR /home/$USERNAME
 # #安装雷达驱动
