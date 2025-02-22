@@ -1,9 +1,7 @@
 version: '3'
 services:
   pcl-container:
-    build:
-      context: .
-    image: elainasuki/ros:humble-full-v2
+    image: elainasuki/ros:ros2-humble-full-v2
     container_name: ros2-humble-full
     environment:
       - DISPLAY=${DISPLAY}
@@ -14,6 +12,7 @@ services:
     volumes:
       - ${XAUTHORITY}:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./../..:/home/Elaina/docker
       # - ~/.config/fish:/home/Elaina/.config/fish
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
