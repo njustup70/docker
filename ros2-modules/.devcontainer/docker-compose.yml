@@ -25,4 +25,4 @@ services:
     tty: true
     user: "Elaina"
     # runtime: "nvidia"
-    working_dir: "/home/Elaina/docker/ros2" # 指定默认工作目录
+    working_dir: "/home/Elaina/docker/ros2-modules" # 指定默认工作目录
