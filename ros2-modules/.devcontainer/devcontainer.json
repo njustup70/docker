@@ -1,5 +1,5 @@
 {
-    "name": "ros2min",
+    "name": "ros2driver",
     "dockerComposeFile": "./docker-compose.yml",
     "service": "ros2driver-container",
     "workspaceFolder": "/home/Elaina/docker/ros2-modules/",
