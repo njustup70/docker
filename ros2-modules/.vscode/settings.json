@@ -1,0 +1,17 @@
+{
+  "python.autoComplete.extraPaths": [
+    "/opt/ros/humble/lib/python3.10/site-packages",
+    "/opt/ros/humble/local/lib/python3.10/dist-packages"
+  ],
+  "python.analysis.extraPaths": [
+    "/opt/ros/humble/lib/python3.10/site-packages",
+    "/opt/ros/humble/local/lib/python3.10/dist-packages"
+  ],
+  "ros.distro": "humble",
+  "cmake.ignoreCMakeListsMissing": true,
+  "clangd.path": "/usr/bin/clangd",
+  "clangd.fallbackFlags": [
+    "--std=c++17"
+  ],
+  // "cmake.sourceDirectory": "/home/tdt/ROS-TDT/T-DT-VisionROS-2024/src/lidar/kalman_filter"
+}

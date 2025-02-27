@@ -1,23 +1,9 @@
-FROM elainasuki/ros:ros2-humble-full-v2
+FROM elainasuki/ros:ros2-humble-full-v3
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 #安装必要软件
-
-#添加雷达驱动并设置雷达驱动环境变量 
-USER $USERNAME
-WORKDIR /home/$USERNAME
-RUN sudo -u $USERNAME mkdir ./packages  && cd ./packages && git clone https://github.com/Livox-SDK/Livox-SDK2.git \
-    && cd Livox-SDK2 && mkdir build && cd build && cmake .. && make -j8 && sudo make install  
-#引出雷达驱动so
-#安装雷达ros驱动
-WORKDIR /home/$USERNAME/packages/
-USER ${USERNAME}
-RUN mkdir -p ./ws_livox/src/ && cd ./ws_livox/src/ && \
-    git clone https://github.com/Livox-SDK/livox_ros_driver2.git && \
-    . /opt/ros/humble/setup.sh && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH && \
-    ./livox_ros_driver2/build.sh humble && echo 'source ~/packages/ws_livox/install/setup.bash' >> /home/Elaina/.bashrc
 ARG ROS_DISTRO=humble
 #添加orbbec深度相机驱动
 WORKDIR /home/$USERNAME/packages
