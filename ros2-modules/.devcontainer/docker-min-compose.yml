@@ -1,11 +1,8 @@
 version: '3'
 services:
-  ros2driver-container:
-    # build:
-    #   context: ..
-    #   dockerfile: .devcontainer/Dockerfile
-    image: elaina/ros2driver-images
-    container_name: ros2driver-container
+  ros2-min-service:
+    image: elainasuki/ros:ros2-humble-full-v3
+    container_name: ros2-min-container
     environment:
       - DISPLAY=${DISPLAY}
       - NVIDIA_VISIBLE_DEVICES=all
