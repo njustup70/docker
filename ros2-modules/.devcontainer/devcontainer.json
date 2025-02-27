@@ -1,23 +1,15 @@
 {
-    "name": "ros2driver",
-    "dockerComposeFile": "./docker-compose.yml",
-    "service": "ros2driver-container",
-    "workspaceFolder": "/home/Elaina/docker/ros2-modules/",
+    "name": "ros2driver-container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "ros2driver-service",
+    "workspaceFolder": "/home/Elaina/docker/ros2-modules",
     "shutdownAction": "stopCompose",
-    "features": {
-        // "ghcr.io/devcontainers/features/github-cli:1": {
-        //     "version": "latest"
-        // }
-        // "ghcr.io/devcontainers/features/common-utils:2": {
-        //     "installGDB": "true"
-        // }
-    },
     "customizations": {
         "vscode": {
             "extensions": [
-                "llvm-vs-code-extensions.vscode-clangd",
                 "twxs.cmake",
                 "josetr.cmake-language-support-vscode",
+                "llvm-vs-code-extensions.vscode-clangd",
                 "ms-vscode.cmake-tools",
                 "cschlosser.doxdocgen",
                 "augustocdias.tasks-shell-input",
