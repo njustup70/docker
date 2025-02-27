@@ -1,9 +1,9 @@
 version: '3'
 services:
-  ros2driver-container:
-    build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+  ros2driver-service:
+    # build:
+    #   context: ..
+    #   dockerfile: .devcontainer/Dockerfile
     image: elaina/ros2driver-images
     container_name: ros2driver-container
     environment:
@@ -13,7 +13,6 @@ services:
       - OMP_WAIT_POLICY=passive
       - TERM=xterm-256color
     volumes:
-      - $HOME/.Xauthority:/root/.Xauthority # 使用绝对路径
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./../..:/home/Elaina/docker
       - /dev:/dev
