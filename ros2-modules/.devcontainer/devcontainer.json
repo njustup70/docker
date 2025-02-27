@@ -2,7 +2,7 @@
     "name": "ros2min",
     "dockerComposeFile": "./docker-min-compose.yml",
     "service": "ros2-min-service",
-    "workspaceFolder": "/home/Elaina/docker/ros2-modules/ros2_ws",
+    "workspaceFolder": "/home/Elaina/docker/ros2-modules/ros_ws",
     "shutdownAction": "stopCompose",
     "features": {
         // "ghcr.io/devcontainers/features/github-cli:1": {
