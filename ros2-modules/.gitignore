@@ -1,4 +1,5 @@
 ! .vscode/**
+.vscode/start_program
 .idea/
 build/
 log/
