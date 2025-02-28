@@ -20,7 +20,8 @@ def getRecordPath(num=5):
     #创建新的文件夹
     file_name = time.strftime("%m-%d-%H-%M", time.localtime())
     file_path = record_root_path + '/' + file_name
-    print("record path is "+file_path)
+    # print("\033[1;31;40m您输入的帐号或密码错误！\033[0m")
+    print("\033[1;35mrecord path is {} \033[0m".format(file_path))
     return file_path
 # 获取启动时的话题列表
 def get_current_topics():
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         max_size=2
     file_path=getRecordPath(max_num)
     topics = get_current_topics()  # 获取当前已有的话题
-    print(topics)
+    print("\033[1;35mtopics are {}\033[0m".format(topics))
     start_bag_recording(topics,file_path)    # 开始记录
 
     while True:
