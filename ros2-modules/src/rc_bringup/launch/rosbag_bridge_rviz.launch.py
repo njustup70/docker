@@ -7,15 +7,13 @@ import os
 import sys
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
-from launch.actions import IncludeLaunchDescription
+from launch.actions import ExecuteProcess,IncludeLaunchDescription,DeclareLaunchArgument
 from launch.conditions import IfCondition
-from launch.actions import DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import ComposableNodeContainer, Node
+from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
 def generate_launch_description():
     local_path=os.path.join(get_package_share_directory('rc_bringup'))
     ld=LaunchDescription()
@@ -39,13 +37,30 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('use_rosbag_record')),
         cmd=["bash","-c","python3 {}".format(ros_bag_bash_path)],
         output='screen',
+        emulate_tty=True,
+    )
+    #TF树相关
+    xacro_file_path=get_package_share_directory('my_tf_tree')+ '/urdf/fishbot_base.urdf.xacro'
+    # 解析 Xacro 文件并生成 URDF
+    robot_description = Command([
+        FindExecutable(name='xacro'),  # 查找 xacro 可执行文件
+        ' ',  # 确保命令和路径之间有空格
+        xacro_file_path  # 传入 xacro 文件路径
+    ])
+
+    # 机器人状态发布节点
+    robot_state_publisher_node = ComposableNode(
+        package='robot_state_publisher',
+        plugin='robot_state_publisher::RobotStatePublisher',
+        name='robot_state_publisher',
+        parameters=[{'robot_description': robot_description}],
     )
     compose_container=ComposableNodeContainer(
         namespace='',
         name='start_container',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[foxglove_node],
+        composable_node_descriptions=[foxglove_node,robot_state_publisher_node],
         output='screen',
         emulate_tty=True,
     )
