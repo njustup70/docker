@@ -18,6 +18,7 @@ install(PROGRAMS
   launch/depth_camera_node.launch.py
   launch/radar_node.launch.py
   launch/robot.launch.py
+  launch/nagisa_tf.launch.py
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -25,4 +26,6 @@ install(
   DIRECTORY urdf
   DESTINATION share/${PROJECT_NAME}
 )
+
 ament_package()
+
