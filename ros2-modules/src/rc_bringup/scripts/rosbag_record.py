@@ -31,6 +31,9 @@ def get_current_topics():
 
 # 启动 ros2 bag 记录
 def start_bag_recording(topics,file_path):
+    if(topics==[]):
+        print("\033[1;35mno topics to record\033[0m")
+        return
     subprocess.run(['ros2', 'bag', 'record'] + topics+['-o',file_path])
 def stop_bag_recording(file_path,max_size=2):
     #当文件大于2G或者收到停止信号时停止记录
@@ -43,18 +46,36 @@ def stop_bag_recording(file_path,max_size=2):
         return True
     else:
         return False
+def get_topic_type(topic):
+    result = subprocess.run(['ros2', 'topic', 'info', topic], stdout=subprocess.PIPE)
+    info = result.stdout.decode('utf-8')
+    # 查找消息类型行，返回消息类型
+    for line in info.splitlines():
+        if line.startswith('Type:'):
+            return line.split(':')[1].strip()
+    return None
 if __name__ == "__main__":
     print("命令行参数:", sys.argv)
     if len(sys.argv)> 2:
         max_num=int(sys.argv[1])
         max_size=int(sys.argv[2])
+        if(len(sys.argv)>3):
+            use_tf=bool(sys.argv[3])
     else:
         max_num=5
         max_size=2
+        use_tf=False
     file_path=getRecordPath(max_num)
     topics = get_current_topics()  # 获取当前已有的话题
-    print("\033[1;35mtopics are {}\033[0m".format(topics))
-    start_bag_recording(topics,file_path)    # 开始记录
+    topic_filterd = []
+    for (topic) in topics:
+        topic_type = get_topic_type(topic)
+        if topic_type=='sensor_msgs/msg/PointCloud2' or topic_type=='sensor_msgs/msg/Imu':
+            topic_filterd.append(topic)
+        elif(use_tf and topic_type=='tf2_msgs/msg/TFMessage'):
+            topic_filterd.append(topic)
+    print("\033[1;35mtopics are {}\033[0m".format(topic_filterd))
+    start_bag_recording(topic_filterd,file_path)    # 开始记录
 
     while True:
         if stop_bag_recording(file_path,max_size):
