@@ -1,6 +1,6 @@
 version: '3'
 services:
-  ros2driver-container:
+  ros2driver-service:
     # build:
     #   context: ..
     #   dockerfile: .devcontainer/Dockerfile
