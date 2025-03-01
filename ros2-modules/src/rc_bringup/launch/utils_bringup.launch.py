@@ -17,7 +17,8 @@ from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
 def generate_launch_description():
     local_path=os.path.join(get_package_share_directory('rc_bringup'))
     ld=LaunchDescription()
-    ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='true', description='Record rosbag if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='false', description='Record rosbag if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
     # ld.add_action(DeclareLaunchArgument('ros', default_value='5', description='Max number of rosbag files'))
     foxglove_node=ComposableNode(
         package='foxglove_bridge',
@@ -50,6 +51,7 @@ def generate_launch_description():
 
     # 机器人状态发布节点
     robot_state_publisher_node = ComposableNode(
+        condition=IfCondition(LaunchConfiguration('use_tf_publish')),
         package='robot_state_publisher',
         plugin='robot_state_publisher::RobotStatePublisher',
         name='robot_state_publisher',
