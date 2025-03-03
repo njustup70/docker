@@ -20,7 +20,7 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
     get_package_share_directory('rc_bringup')
     #启动rosbag
-    rosbag_root_path='~/docker/ros2-modules/bag_play'
+    rosbag_root_path='/home/Elaina/docker/ros2-modules/bag_play'
     #查找root_path中的第一个文件夹中的db播放
     folders = [d for d in os.listdir(rosbag_root_path) if os.path.isdir(os.path.join(rosbag_root_path, d))]
     if folders:
@@ -30,10 +30,7 @@ def generate_launch_description():
         # 查找 .db3 文件
         db3_files = glob.glob(os.path.join(rosbag_path, "*.db3"))
         if db3_files:
-            # 播放第一个 .db3 文件
-            os.system(f"ros2 bag play {db3_files[0]}")
-        else:
-            print("没有找到 .db3 文件")
+            rosbag_path=db3_files[0]
     else:
         print("没有找到文件夹")
     ros_bag_exe=ExecuteProcess(
@@ -48,7 +45,7 @@ def generate_launch_description():
         ),
         
     )
-    ld.add_action(ros_bag_exe)
     ld.add_action(utils_launch)
+    ld.add_action(ros_bag_exe)
     return ld
      
