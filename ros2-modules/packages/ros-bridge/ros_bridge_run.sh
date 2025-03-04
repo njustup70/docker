@@ -22,7 +22,7 @@ check_port() {
     fi
 }
 
-check_port
+check_port || exit 1
 # 选择架构并配置环境
 source ~/.bashrc
 if [ `uname -m` == "x86_64" ]; then

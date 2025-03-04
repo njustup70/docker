@@ -19,6 +19,7 @@ def generate_launch_description():
     ld=LaunchDescription()
     ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='false', description='Record rosbag if use is True'))
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_ros1_bridge',default_value='true',description='Use ros1_bridge if use is True'))
     # ld.add_action(DeclareLaunchArgument('ros', default_value='5', description='Max number of rosbag files'))
     foxglove_node=ComposableNode(
         package='foxglove_bridge',
@@ -29,6 +30,7 @@ def generate_launch_description():
                     {'use_multi_threaded_executor': True}]
         )
     ros_bridge_exe=ExecuteProcess(
+        condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
         cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
         output='screen',
     )

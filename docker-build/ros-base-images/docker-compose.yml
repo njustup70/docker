@@ -1,9 +1,7 @@
 version: '3'
 services:
   ros-container:
-    build:
-      context: .
-    image: elainasuki/ros:noetic-full
+    image: elainasuki/ros:ros-noetic-full
     container_name: ros-noetic-full
     environment:
       - DISPLAY=${DISPLAY}
@@ -24,3 +22,4 @@ services:
     user: "Elaina"
     runtime: "nvidia"
     working_dir: "/home/Elaina" # 指定默认工作目录
+    entrypoint: [ "/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && roscore" ]
