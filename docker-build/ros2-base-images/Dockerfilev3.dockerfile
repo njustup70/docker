@@ -1,7 +1,8 @@
 FROM elainasuki/ros:ros2-humble-full-v2
 ARG USERNAME=Elaina
 #安装包
-RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld 
+RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld ros-humble-rqt-tf-tree \
+    && echo "umask 002" | sudo tee -a /etc/profile /etc/bash.bashrc
 # 使用 root 用户
 
 # 安装雷达驱动

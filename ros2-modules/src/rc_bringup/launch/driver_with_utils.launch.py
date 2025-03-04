@@ -1,0 +1,41 @@
+'''
+启动驱动节点和工具节点
+'''
+import os
+import sys
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import ExecuteProcess,IncludeLaunchDescription,DeclareLaunchArgument
+from launch.conditions import IfCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch_ros.descriptions import ComposableNode
+from launch_ros.actions import ComposableNodeContainer, Node
+from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
+
+def generate_launch_description():
+    ld=LaunchDescription()
+    ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='true', description='Record rosbag if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='true',description='Publish tf tree if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_mid360',default_value='true',description='Start mid360 node if use is True'))
+    get_package_share_directory('my_driver')
+    get_package_share_directory('rc_bringup')
+    #启动mid360
+    mid360_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','mid360_bringup.launch.py')
+        ),
+        
+        condition=IfCondition(LaunchConfiguration('use_mid360'))
+    )
+    #启动utils
+    utils_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('rc_bringup'),'launch','utils_bringup.launch.py')
+        ),
+        
+    )
+    ld.add_action(mid360_launch)
+    ld.add_action(utils_launch)
+    return ld
+     
