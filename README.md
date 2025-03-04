@@ -10,10 +10,14 @@
 ## 2.模块介绍
 | 模块                                               | 说明         |
 | -------------------------------------------------- | ------------ |
-| [`ros2`](./ros2/README.md)                         | ros2的驱动包 |
+| [`ros2`](./ros2-modules/README.md)                 | ros2的驱动包 |
 | [`yolo`](https://github.com/njustup70/vision_yolo) | yolov8环境   |
 | [`rosbridge`](./rosbridge/)                        | ros桥接包    |
 | ['protocol'](./protocol_lib/)                      | 通信库       |
+
+## 2025-3-4 docker 部分已经单独新建文档,[🔗链接](https://github.com/njustup70/vision_doc/blob/master/docker.md)
+
+> 注意你正在查看过时文档
 ## 依赖
 - docker 
 - docker-compose

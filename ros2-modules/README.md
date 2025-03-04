@@ -12,6 +12,12 @@
 
 ## 版本与发布记录
 ~~Elaina_v0.1~~
+
+| 功能包                                 | 介绍         |
+| -------------------------------------- | ------------ |
+| [my_driver](./src/my_driver/README.md) | ros2硬件驱动 |
+| [rc_bringup](src/rc_bringup/README.md) | 综合启动     |
+
 ## 模块介绍
 - 该模块启动后给其他docker提供原始的传感器数据
 - 本模块包括深度相机与mid360驱动(包括源码与自己修改的)
@@ -74,13 +80,13 @@ ros2 launch my_driver ms200_scan_view.launch.py
 #### livox发的pointcloud2不是标准点云,多了偏移与line
 ![msg](../.github/images/pointcloudmsg.png)
 ### 源码链接
-|驱动包| 描述|
-|---|---|
-|[`livox_ros_driver2`](https://github.com/Livox-SDK/livox_ros_driver2)|mid360封装的ros驱动|
-|[`Livox-SDK`](https://github.com/Livox-SDK/Livox-SDK2)|mid360底层驱动|
-|[`ros-humble-realsense2-camera`](https://github.com/IntelRealSense/realsense-ros)|深度相机ros驱动|
-|[`realsense_sdk2`](https://github.com/IntelRealSense/librealsense)|深度相机底层驱动|
-|[`OrbbecSDK_ROS2`](https://github.com/orbbec/OrbbecSDK_ROS2)|Orbbec深度相机ROS2驱动(底层与ros2驱动放在一起)|
-|[`ms200`](packages/ms200_ros/README.md)|奥比中光线性雷达|
+| 驱动包                                                                            | 描述                                           |
+| --------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [`livox_ros_driver2`](https://github.com/Livox-SDK/livox_ros_driver2)             | mid360封装的ros驱动                            |
+| [`Livox-SDK`](https://github.com/Livox-SDK/Livox-SDK2)                            | mid360底层驱动                                 |
+| [`ros-humble-realsense2-camera`](https://github.com/IntelRealSense/realsense-ros) | 深度相机ros驱动                                |
+| [`realsense_sdk2`](https://github.com/IntelRealSense/librealsense)                | 深度相机底层驱动                               |
+| [`OrbbecSDK_ROS2`](https://github.com/orbbec/OrbbecSDK_ROS2)                      | Orbbec深度相机ROS2驱动(底层与ros2驱动放在一起) |
+| [`ms200`](packages/ms200_ros/README.md)                                           | 奥比中光线性雷达                               |
 
 [realsense_ros其他文档](https://dev.intelrealsense.com/docs/ros2-wrapper)
