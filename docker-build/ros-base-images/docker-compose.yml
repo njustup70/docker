@@ -20,6 +20,6 @@ services:
     stdin_open: true
     tty: true
     user: "Elaina"
-    runtime: "nvidia"
+    # runtime: "nvidia"
     working_dir: "/home/Elaina" # 指定默认工作目录
     entrypoint: [ "/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && roscore" ]
