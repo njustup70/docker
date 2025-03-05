@@ -38,7 +38,7 @@ def generate_launch_description():
     #需要condition来判断是否启动rosbag
     ros_bag_exe=ExecuteProcess(
         condition=IfCondition(LaunchConfiguration('use_rosbag_record')),
-        cmd=["bash","-c","python3 {}".format(ros_bag_bash_path)],
+        cmd=["bash","-c","sleep 5 && python3 {}".format(ros_bag_bash_path)],
         output='screen',
         emulate_tty=True,
     )
