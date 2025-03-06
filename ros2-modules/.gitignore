@@ -7,3 +7,4 @@ install/
 !packages/ros-humble-ros1-bridge/**
 *.db3
 metadata.yaml
+.cache/
