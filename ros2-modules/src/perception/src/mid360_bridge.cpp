@@ -49,7 +49,8 @@ private:
     void callback(std::unique_ptr<pointcloud2> msg_in) {
         auto cloud = std::make_unique<pcl::PointCloud<livox_ros::Point>>();
         pcl::fromROSMsg(*msg_in, *cloud);
-        auto velodyne_cloud = Mid360PointToVelodyne(*cloud);
+        double base_time    = msg_in->header.stamp.nanosec + msg_in->header.stamp.sec * 1e9;
+        auto velodyne_cloud = Mid360PointToVelodyne(*cloud, base_time);
         auto msg_out        = std::make_unique<pointcloud2>();
         pcl::toROSMsg(*velodyne_cloud, *msg_out);
         msg_out->header.frame_id = msg_in->header.frame_id;
@@ -57,20 +58,28 @@ private:
         pub_->publish(std::move(msg_out));
     }
     std::unique_ptr<pcl::PointCloud<velodyne_ros::Point>>
-        Mid360PointToVelodyne(pcl::PointCloud<livox_ros::Point>& cloud) {
+        Mid360PointToVelodyne(pcl::PointCloud<livox_ros::Point>& cloud, double base_time) {
         auto velodyne_cloud      = std::make_unique<pcl::PointCloud<velodyne_ros::Point>>();
         velodyne_cloud->header   = cloud.header;
         velodyne_cloud->height   = cloud.height;
         velodyne_cloud->width    = cloud.width;
         velodyne_cloud->is_dense = cloud.is_dense;
         velodyne_cloud->points.resize(cloud.points.size());
+        // 先算出点云头的时间戳
+
+        // mid360的time是基于1970绝对时间戳,单位为ns，而velodyne的time是相对时间戳单位为s
+        // mide360的时间戳是double类型，而velodyne的时间戳是float类型
         for (size_t i = 0; i < cloud.points.size(); ++i) {
             velodyne_cloud->points[i].x         = cloud.points[i].x;
             velodyne_cloud->points[i].y         = cloud.points[i].y;
             velodyne_cloud->points[i].z         = cloud.points[i].z;
             velodyne_cloud->points[i].intensity = cloud.points[i].intensity;
-            velodyne_cloud->points[i].time      = static_cast<float>(cloud.points[i].timestamp);
+            double time                         = (cloud.points[i].timestamp - base_time) * 1e-9;
+            velodyne_cloud->points[i].time      = static_cast<float>(time);
             velodyne_cloud->points[i].ring      = static_cast<uint16_t>(cloud.points[i].line);
+            // fmt::print("time_base is {} \n", base_time);
+            // fmt::print("time is {} \n", cloud.points[i].timestamp);
+            // fmt::print("delta time is {} \n", time);
         }
         return velodyne_cloud;
     }
