@@ -34,6 +34,8 @@ public:
         RCLCPP_INFO(get_logger(), "Mid360Bridge has been started.");
         this->declare_parameter("sub_topic", "livox/lidar");
         this->declare_parameter("pub_topic", "livox/lidar/pointcloud2");
+        this->declare_parameter("pub_debug", false);
+        _debug = this->get_parameter("pub_debug").as_bool();
         pub_ =
             this->create_publisher<pointcloud2>(this->get_parameter("pub_topic").as_string(), 10);
         // sub_=this->create_subscription<p>(const std::string &topic_name, const rclcpp::QoS &qos,
@@ -44,10 +46,12 @@ public:
     }
 
 private:
+    bool _debug = false;
     std::shared_ptr<rclcpp::Subscription<pointcloud2>> sub_;
     std::shared_ptr<rclcpp::Publisher<pointcloud2>> pub_;
     void callback(std::unique_ptr<pointcloud2> msg_in) {
-        auto cloud = std::make_unique<pcl::PointCloud<livox_ros::Point>>();
+        auto start_time = std::chrono::steady_clock::now();
+        auto cloud      = std::make_unique<pcl::PointCloud<livox_ros::Point>>();
         pcl::fromROSMsg(*msg_in, *cloud);
         double base_time    = msg_in->header.stamp.nanosec + msg_in->header.stamp.sec * 1e9;
         auto velodyne_cloud = Mid360PointToVelodyne(*cloud, base_time);
@@ -56,6 +60,12 @@ private:
         msg_out->header.frame_id = msg_in->header.frame_id;
         msg_out->header.stamp    = msg_in->header.stamp;
         pub_->publish(std::move(msg_out));
+        auto end_time = std::chrono::steady_clock::now();
+        auto duration =
+            std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        if (_debug) {
+            fmt::print("duration is {} ms \n", duration.count());
+        }
     }
     std::unique_ptr<pcl::PointCloud<velodyne_ros::Point>>
         Mid360PointToVelodyne(pcl::PointCloud<livox_ros::Point>& cloud, double base_time) {
@@ -80,6 +90,11 @@ private:
             // fmt::print("time_base is {} \n", base_time);
             // fmt::print("time is {} \n", cloud.points[i].timestamp);
             // fmt::print("delta time is {} \n", time);
+        }
+        if (_debug) {
+            fmt::print("timebase is {} \n", base_time);
+            fmt::print("time raw is {} \n", cloud.points[0].timestamp);
+            fmt::print("time out is {} \n", velodyne_cloud->points[0].time);
         }
         return velodyne_cloud;
     }
