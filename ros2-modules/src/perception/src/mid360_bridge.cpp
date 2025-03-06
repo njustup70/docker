@@ -7,11 +7,10 @@
 using pointcloud2 = sensor_msgs::msg::PointCloud2;
 namespace velodyne_ros {
 struct EIGEN_ALIGN16 Point {
-    PCL_ADD_POINT4D;
+    float x, y, z;
     float intensity;
     float time;
     uint16_t ring;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 } // namespace velodyne_ros
 namespace livox_ros {
@@ -34,7 +33,7 @@ public:
         RCLCPP_INFO(get_logger(), "Mid360Bridge has been started.");
         this->declare_parameter("sub_topic", "livox/lidar");
         this->declare_parameter("pub_topic", "livox/lidar/pointcloud2");
-        this->declare_parameter("pub_debug", false);
+        this->declare_parameter("pub_debug", true);
         _debug = this->get_parameter("pub_debug").as_bool();
         pub_ =
             this->create_publisher<pointcloud2>(this->get_parameter("pub_topic").as_string(), 10);
@@ -94,7 +93,7 @@ private:
         if (_debug) {
             fmt::print("timebase is {} \n", base_time);
             fmt::print("time raw is {} \n", cloud.points[0].timestamp);
-            fmt::print("time out is {} \n", velodyne_cloud->points[0].time);
+            fmt::print("time out is {} \n", velodyne_cloud->points[500].time);
         }
         return velodyne_cloud;
     }
