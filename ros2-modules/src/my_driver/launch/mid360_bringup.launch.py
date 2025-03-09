@@ -53,6 +53,7 @@ def generate_launch_description():
         
         ld.add_action(DeclareLaunchArgument("sub_topic", default_value='livox/lidar'))
         ld.add_action(DeclareLaunchArgument("pub_topic", default_value='livox/lidar'+raw_topic_suffix))
+        ld.add_action(DeclareLaunchArgument("pub_debug",default_value='false'))
         livox_driver_node=ComposableNode(
             package='livox_ros_driver2',
             plugin='livox_ros::DriverNode',
@@ -64,7 +65,7 @@ def generate_launch_description():
             package='perception',
             plugin='Mid360Bridge',
             name='mid360_bridge',
-            parameters=[{'sub_topic':LaunchConfiguration('sub_topic')},{'pub_topic':LaunchConfiguration('pub_topic')}],
+            parameters=[{'sub_topic':LaunchConfiguration('sub_topic')},{'pub_topic':LaunchConfiguration('pub_topic')},{'pub_debug':LaunchConfiguration('pub_debug')}],
             extra_arguments=[{'use_intra_process_comms': True}]
         )
         container=ComposableNodeContainer(
