@@ -5,6 +5,7 @@
 import sys
 import subprocess
 import time
+import signal
 import os
 #默认记录在
 def getRecordPath(num=5):
@@ -34,7 +35,8 @@ def start_bag_recording(topics,file_path):
     if(topics==[]):
         print("\033[1;35mno topics to record\033[0m")
         return
-    subprocess.run(['ros2', 'bag', 'record'] + topics+['-o',file_path])
+    process=subprocess.Popen(['ros2', 'bag', 'record'] + topics+['-o',file_path])
+    return process
 def stop_bag_recording(file_path,max_size=2):
     #当文件大于2G或者收到停止信号时停止记录
     #查找文件路径下所有文件大小
@@ -75,9 +77,14 @@ if __name__ == "__main__":
         elif(use_tf and topic_type=='tf2_msgs/msg/TFMessage'):
             topic_filterd.append(topic)
     print("\033[1;35mtopics are {}\033[0m".format(topic_filterd))
-    start_bag_recording(topic_filterd,file_path)    # 开始记录
+    rosbag_process=start_bag_recording(topic_filterd,file_path)    # 开始记录
 
     while True:
         if stop_bag_recording(file_path,max_size):
+            for i in range(10):
+                print("\033[1;35mstop recording\033[0m")
             break
         time.sleep(5)
+    #结束记录
+    rosbag_process.send_signal(signal.SIGINT)  # 发送 Ctrl+C 信号优雅终止
+    rosbag_process.wait()  # 等待进程结束
