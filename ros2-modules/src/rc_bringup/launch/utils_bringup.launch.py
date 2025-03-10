@@ -27,7 +27,9 @@ def generate_launch_description():
         name='foxglove_bridge_node',
         parameters=[ {'send_buffer_limit': 1000000000}],
         extra_arguments=[{'use_intra_process_comms': True},
-                    {'use_multi_threaded_executor': True}]
+                    {'use_multi_threaded_executor': True},
+                    {'ros__arguments': ['--log-level', 'fatal']}
+        ]
         )
     ros_bridge_exe=ExecuteProcess(
         condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
