@@ -39,6 +39,10 @@ COPY  --chown=${USERNAME}:${USERNAME} ./packages/ms200_ros/oradar_ros /home/${US
 COPY --chown=${USERNAME}:${USERNAME} ./packages/nagisa_imu /home/${USERNAME}/packages/ros_ws/src/nagisa_imu 
 RUN . /opt/ros/humble/setup.sh && pip3 install pyserial && cd ./ros_ws && colcon build \
     && echo 'source ~/packages/ros_ws/install/setup.bash' >> /home/$USERNAME/.bashrc
+#添加轮趣imu驱动
+COPY --chown=${USERNAME}:${USERNAME} ./packages/wheel_imu /home/${USERNAME}/packages/ros_ws/src/wheel_imu
+RUN . /opt/ros/humble/setup.sh && cd ./ros_ws && colcon build --packages-select  serial \
+    && . ./install/setup.sh && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
 #添加bashrc配置
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
