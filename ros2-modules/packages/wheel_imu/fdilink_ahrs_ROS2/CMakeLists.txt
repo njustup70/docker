@@ -60,8 +60,8 @@ ament_target_dependencies(ahrs_driver_node rclcpp rclpy  std_msgs  sensor_msgs  
 add_executable(imu_tf_node src/imu_tf.cpp)
 ament_target_dependencies(imu_tf_node rclcpp rclpy std_msgs sensor_msgs serial tf2_ros tf2 tf2_geometry_msgs)
 
-add_executable(ahrc_driver_ed_node src/ahrs_driver_ed.cpp src/crc_table.cpp)
-ament_target_dependencies(ahrc_driver_ed_node rclcpp rclpy std_msgs sensor_msgs serial tf2_ros tf2 nav_msgs geometry_msgs)
+add_executable(ahrs_driver_ed_node src/ahrs_driver_ed.cpp src/crc_table.cpp)
+ament_target_dependencies(ahrs_driver_ed_node rclcpp rclpy std_msgs sensor_msgs serial tf2_ros tf2 nav_msgs geometry_msgs)
 # find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem)
 # include_directories(ahrs_driver_node ${Boost_INCLOUDE_DIRS})
 # link_directories(ahrs_driver_node ${Boost_LIBRARY_DIRS})
@@ -70,7 +70,7 @@ ament_target_dependencies(ahrc_driver_ed_node rclcpp rclpy std_msgs sensor_msgs 
 install(TARGETS
   ahrs_driver_node
   imu_tf_node
-  ahrc_driver_ed_node
+  ahrs_driver_ed_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
