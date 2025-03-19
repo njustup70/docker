@@ -15,6 +15,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./../..:/home/Elaina/docker
+      - /var/run/docker.sock:/var/run/docker.sock
       - /dev:/dev
     network_mode: host
     pid: "host" # 添加 pid 命名空间共享
