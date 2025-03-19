@@ -31,6 +31,10 @@ def generate_launch_description():
                     {'ros__arguments': ['--log-level', 'fatal']}
         ]
         )
+    ros_master_exe=ExecuteProcess(
+        condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
+        cmd=["bash","-c","cd ~/docker/docker-build/ros-base-images && sudo docker-compose up"]
+    )
     ros_bridge_exe=ExecuteProcess(
         condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
         cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
@@ -70,6 +74,7 @@ def generate_launch_description():
         output='screen',
         emulate_tty=True,
     )
+    ld.add_action(ros_master_exe)
     ld.add_action(ros_bridge_exe)
     ld.add_action(ros_bag_exe)
     ld.add_action(compose_container)
