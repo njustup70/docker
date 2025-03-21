@@ -9,15 +9,17 @@ from launch import LaunchDescription
 from launch.actions import ExecuteProcess,IncludeLaunchDescription,DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration,PythonExpression
 from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
-
+from launch.conditions import LaunchConfigurationEquals
 def generate_launch_description():
     ld=LaunchDescription()
     ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='false', description='Record rosbag if use is True'))
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
+    ld.add_action(DeclareLaunchArgument('rate',default_value='1',description='rate of rosbag play'))
+    ld.add_action(DeclareLaunchArgument('loop',default_value='false',description='loop of rosbag play'))
     get_package_share_directory('rc_bringup')
     #启动rosbag
     rosbag_root_path='/home/Elaina/docker/ros2-modules/bag_play'
@@ -34,8 +36,15 @@ def generate_launch_description():
     else:
         print("没有找到文件夹")
     ros_bag_exe=ExecuteProcess(
-        cmd=["bash","-c","ros2 bag play --loop {}".format(rosbag_path)],
-        output='screen'
+        # cmd=["bash","-c","ros2 bag play --loop {}".format(rosbag_path)],
+        cmd=["ros2","bag","play","--rate",LaunchConfiguration('rate'),rosbag_path],
+        output='screen',
+        condition=LaunchConfigurationEquals('loop', 'false')
+    )
+    ros_bag_loop_exe=ExecuteProcess(
+        cmd=["ros2","bag","play","--rate",LaunchConfiguration('rate'),"--loop",rosbag_path],
+        output='screen',
+        condition=IfCondition(LaunchConfiguration('loop'))
     )
 
     #启动utils
@@ -47,5 +56,6 @@ def generate_launch_description():
     )
     ld.add_action(utils_launch)
     ld.add_action(ros_bag_exe)
+    ld.add_action(ros_bag_loop_exe)
     return ld
      
