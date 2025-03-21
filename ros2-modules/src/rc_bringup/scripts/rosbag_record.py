@@ -7,6 +7,7 @@ import subprocess
 import time
 import signal
 import os
+import argparse
 #默认记录在
 def getRecordPath(num=5):
     record_root_path=os.path.abspath(sys.path[0] + '/../../../data/')
@@ -56,31 +57,32 @@ def get_topic_type(topic):
         if line.startswith('Type:'):
             return line.split(':')[1].strip()
     return None
-if __name__ == "__main__":
-    print("命令行参数:", sys.argv)
-    if len(sys.argv)> 2:
-        max_num=int(sys.argv[1])
-        max_size=int(sys.argv[2])
-        if(len(sys.argv)>3):
-            use_tf=bool(sys.argv[3])
-    else:
-        max_num=5
-        max_size=2
-        use_tf=False
-    file_path=getRecordPath(max_num)
-    topics = get_current_topics()  # 获取当前已有的话题
-    topic_filterd = []
+# if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser(description='ROS2话题录制脚本')
+    parser.add_argument('--max_num', type=int, default=5, 
+                        help='最大保存文件夹数量 (默认:5)')
+    parser.add_argument('--max_size', type=int, default=2,
+                        help='单个文件夹最大大小(GB) (默认:2)')
+    parser.add_argument('--use_tf', action='store_true',
+                        help='是否记录TF话题 (默认:False)')
+    args = parser.parse_args()
+
+    file_path = getRecordPath(args.max_num)
+    topics = get_current_topics()
+    
+    topic_filtered = []
     for (topic) in topics:
         topic_type = get_topic_type(topic)
         if topic_type=='sensor_msgs/msg/PointCloud2' or topic_type=='sensor_msgs/msg/Imu':
-            topic_filterd.append(topic)
-        elif(use_tf and topic_type=='tf2_msgs/msg/TFMessage'):
-            topic_filterd.append(topic)
-    print("\033[1;35mtopics are {}\033[0m".format(topic_filterd))
-    rosbag_process=start_bag_recording(topic_filterd,file_path)    # 开始记录
+            topic_filtered.append(topic)
+        elif(args.use_tf and topic_type=='tf2_msgs/msg/TFMessage'):
+            topic_filtered.append(topic)
+    print("\033[1;35mtopics are {}\033[0m".format(topic_filtered))
+    rosbag_process=start_bag_recording(topic_filtered,file_path)    # 开始记录
 
     while True:
-        if stop_bag_recording(file_path,max_size):
+        if stop_bag_recording(file_path,args.max_size):
             for i in range(10):
                 print("\033[1;35mstop recording\033[0m")
             break
@@ -88,3 +90,5 @@ if __name__ == "__main__":
     #结束记录
     rosbag_process.send_signal(signal.SIGINT)  # 发送 Ctrl+C 信号优雅终止
     rosbag_process.wait()  # 等待进程结束
+if __name__ == "__main__":
+    main()
