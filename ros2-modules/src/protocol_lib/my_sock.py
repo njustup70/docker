@@ -21,16 +21,18 @@ class AsyncTCPServer:
 
     async def _setup(self):
         """异步处理服务器初始化连接"""
-        while not self._start:
-            try:
-                # 服务器端
-                self._socket.bind((self._ip, self._port))
-                self._socket.listen(5)
-                self._conn, self._addr = await asyncio.get_running_loop().sock_accept(self._socket)
-                print("Connected by", self._addr)
-                self._start = True
-            except Exception as e:
-                print("socket error:", e)
+        self._socket.bind((self._ip, self._port))
+        self._socket.listen(5)
+        while True:
+            if not self._start:
+                try:
+                    # 服务器端
+                  
+                    self._conn, self._addr = await asyncio.get_running_loop().sock_accept(self._socket)
+                    print("Connected by", self._addr)
+                    self._start = True
+                except Exception as e:
+                    print("socket error:", e)
             await asyncio.sleep(0.5)
 
     def startListening(self,callback=None):
@@ -50,6 +52,12 @@ class AsyncTCPServer:
             if readable:
 
                 data = self._conn.recv(1024)
+                if(data==b''):
+                    print("Client disconnected")
+                    self._start=False
+                    self._conn.close()
+                    self._conn=None
+                    continue
                 self._raw_data = data
                 if self._callback:
                     self._callback(data)
@@ -76,13 +84,17 @@ class AsyncTCPClient:
 
     async def _setup(self):
         """异步处理客户端连接"""
-        while not self._start:
-            try:
-                await asyncio.get_running_loop().sock_connect(self._socket, (self._ip, self._port))
-                print(f"客户端成功连接到 {self._ip}:{self._port}")
-                self._start = True
-            except Exception as e:
-                print("socket error:", e)
+        while True:
+            if not self._start:
+                try:
+                    #先清空socket
+                    self._socket.close()
+                    self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    await asyncio.get_running_loop().sock_connect(self._socket, (self._ip, self._port))
+                    print(f"客户端成功连接到 {self._ip}:{self._port}")
+                    self._start = True
+                except Exception as e:
+                    print("socket error:", e)
             await asyncio.sleep(0.5)
 
     def write(self, input_data: bytes) -> None:
@@ -105,6 +117,10 @@ class AsyncTCPClient:
             readable, _, _ = select.select([self._socket], [], [], 0.1)
             if readable:
                 data = self._socket.recv(1024)
+                if data == b'':  # 如果服务器断开连接
+                    print("Connection closed by server.")
+                    self._start = False
+                    continue
                 self._raw_data = data
                 if self._callback:
                     self._callback(data)
