@@ -10,7 +10,6 @@ services:
       - OMP_WAIT_POLICY=passive
       - TERM=xterm-256color
     volumes:
-      - ${XAUTHORITY}:/root/.Xauthority
       - /tmp/.X11-unix:/tmp/.X11-unix
       # - ~/.config/fish:/home/Elaina/.config/fish
     network_mode: host
