@@ -19,5 +19,14 @@ def generate_launch_description():
         ,'config_file':yaml_path
                           }.items()
     )
+    image_publish_node=Node(
+        package='python_pkg',
+        executable='image_bridge',
+        name='image_bridge_node',
+        output='screen',
+        emulate_tty=True,
+
+    )
     launchDescription.add_action(realsense_bringup)
+    launchDescription.add_action(image_publish_node)
     return launchDescription

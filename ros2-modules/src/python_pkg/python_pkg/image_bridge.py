@@ -11,7 +11,7 @@ class ImageBridgeNode(Node):
     def __init__(self):
         super().__init__('image_bridge_node')
         print("ImageBridgeNode initialized")
-        self.declare_parameter('image_topic', '/camera/image_raw')
+        self.declare_parameter('image_topic', '/camera/color/image_raw')
         self.declare_parameter('socket_address', 'tcp://localhost:5555')
         self.declare_parameter('socket_receive_address', 'tcp://localhost:5556')
 
@@ -62,7 +62,7 @@ class ImageBridgeNode(Node):
             self._shared_memory = shm.SharedMemory(create=True, size=img_size)
             self._shm_name = self._shared_memory.name
             self._shm_size = img_size
-
+            print(f"创建共享内存: {self._shm_name}, 大小: {img_size} bytes")
             # 直接映射数据到共享内存（零拷贝）
             np_array = np.ndarray(img_shape, dtype=np.uint8, buffer=self._shared_memory.buf)
             np_array[:] = cv_image  # 直接引用，不拷贝
