@@ -6,7 +6,7 @@ import zmq
 import numpy as np
 import multiprocessing.shared_memory as shm
 import threading
-
+import os
 class ImageBridgeNode(Node):
     def __init__(self):
         super().__init__('image_bridge_node')
@@ -46,6 +46,7 @@ class ImageBridgeNode(Node):
             self._shared_memory.close()
             self._shared_memory.unlink()
         super().destroy_node()
+        print("ImageBridgeNode destroyed")
 
     def ros_image_callback(self, msg: Image):
         """ 处理 ROS2 传入的图像，并写入共享内存 """
@@ -54,11 +55,14 @@ class ImageBridgeNode(Node):
         img_size = cv_image.nbytes
 
     
-            # 仅当图像大小变化时重新分配共享内存
-        if self._shm_name is None or self._shm_size != img_size:
+        # 仅当图像大小变化时或者共享内存不可用时候
+        if self._shm_name is None or self._shm_size != img_size or not os.path.exists(f"/dev/shm/{self._shm_name}"):
             if self._shared_memory:
-                self._shared_memory.close()
-                self._shared_memory.unlink()
+                try:
+                    self._shared_memory.close()
+                    self._shared_memory.unlink()
+                except  Exception as e:
+                    print(f"关闭共享内存失败: {e}")
             self._shared_memory = shm.SharedMemory(create=True, size=img_size)
             self._shm_name = self._shared_memory.name
             self._shm_size = img_size
