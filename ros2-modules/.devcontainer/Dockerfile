@@ -48,7 +48,8 @@ RUN . /opt/ros/humble/setup.sh && cd ./ros_ws && colcon build --packages-select 
 USER root
 #增加docker 嵌套支持
 RUN apt-get install docker docker-compose -y
-
+USER $USERNAME
+RUN pip install pyzmq
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
     #&& echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
     && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc \ 
