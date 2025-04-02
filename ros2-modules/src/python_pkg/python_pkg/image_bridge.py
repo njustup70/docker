@@ -64,8 +64,8 @@ class ImageBridgeNode(Node):
             self._shm_size = img_size
             print(f"创建共享内存: {self._shm_name}, 大小: {img_size} bytes")
             # 直接映射数据到共享内存（零拷贝）
-            np_array = np.ndarray(img_shape, dtype=np.uint8, buffer=self._shared_memory.buf)
-            np_array[:] = cv_image  # 直接引用，不拷贝
+        np_array = np.ndarray(img_shape, dtype=np.uint8, buffer=self._shared_memory.buf)
+        np_array[:] = cv_image  # 直接引用，不拷贝
 
         # 发送共享内存信息
         self._socket.send_json({
