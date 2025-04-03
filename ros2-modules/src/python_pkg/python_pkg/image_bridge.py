@@ -6,6 +6,7 @@ import zmq
 import numpy as np
 import multiprocessing.shared_memory as shm
 import threading
+import time
 import os
 class ImageBridgeNode(Node):
     def __init__(self):
@@ -54,9 +55,10 @@ class ImageBridgeNode(Node):
         img_shape = cv_image.shape
         img_size = cv_image.nbytes
 
-    
+
         # 仅当图像大小变化时或者共享内存不可用时候
         if self._shm_name is None or self._shm_size != img_size or not os.path.exists(f"/dev/shm/{self._shm_name}"):
+        #因为shm库的bug,在接收端关闭时候会释放共享内存,这里需要检查是否存在
             if self._shared_memory:
                 try:
                     self._shared_memory.close()
@@ -68,6 +70,7 @@ class ImageBridgeNode(Node):
             self._shm_size = img_size
             print(f"创建共享内存: {self._shm_name}, 大小: {img_size} bytes")
             # 直接映射数据到共享内存（零拷贝）
+        timestamp = time.time()
         np_array = np.ndarray(img_shape, dtype=np.uint8, buffer=self._shared_memory.buf)
         np_array[:] = cv_image  # 直接引用，不拷贝
 
@@ -75,7 +78,8 @@ class ImageBridgeNode(Node):
         self._socket.send_json({
             "shm_key": self._shm_name,
             "shape": img_shape,
-            "dtype": str(cv_image.dtype)
+            "dtype": str(cv_image.dtype),
+            "timestamp": timestamp,
         })
 
     def socket_image_callback(self):
