@@ -1,6 +1,6 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
+from launch_ros.actions import Node 
+from launch.actions import IncludeLaunchDescription,TimerAction
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
@@ -27,6 +27,10 @@ def generate_launch_description():
         emulate_tty=True,
 
     )
+    delayed_image_publish_node = TimerAction(
+        period=1.0,  # 延迟 5 秒
+        actions=[image_publish_node]
+    )
     launchDescription.add_action(realsense_bringup)
-    launchDescription.add_action(image_publish_node)
+    launchDescription.add_action(delayed_image_publish_node)
     return launchDescription

@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge
 import zmq
 import numpy as np
@@ -17,12 +18,8 @@ class ImageBridgeNode(Node):
         self.declare_parameter('socket_receive_address', 'tcp://localhost:5556')
 
         self.bridge = CvBridge()
-
-        self.image_subscriber = self.create_subscription(
-            Image,
-            self.get_parameter('image_topic').value,
-            self.ros_image_callback,
-            10)
+        #检查消息类型
+        self.createSub(self.get_parameter('image_topic').value)
 
         # ZeroMQ 初始化
         ctx = zmq.Context()
@@ -41,7 +38,33 @@ class ImageBridgeNode(Node):
 
         # 启动共享内存监听线程
         threading.Thread(target=self.socket_image_callback, daemon=True).start()
-
+    def createSub(self,topic_name:str):
+        self.get_topic_names_and_types()
+        topic_types = self.get_topic_names_and_types()
+        topic_type=None
+        for topic in topic_types:
+            if topic[0] == topic_name:
+                topic_type=topic[1][0]
+                #粉色打印
+                print(f"\033[95m 桥接Topic: {topic_name}, Type: {topic_type}\033[0m")
+                break
+        if topic_type is None:
+            raise ValueError(f"Topic {topic_name} not found")
+        if topic_type == 'sensor_msgs/msg/Image':
+            self.image_subscriber = self.create_subscription(
+                Image,
+                topic_name,
+                self.ros_image_callback,
+                10)
+        elif topic_type == 'sensor_msgs/msg/CompressedImage':
+            self.image_subscriber = self.create_subscription(
+                CompressedImage,
+                topic_name,
+                lambda msg: [
+                    #解压缩图像
+                    self.ros_image_callback(self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')),
+                ],
+                10)
     def destroy_node(self):
         if self._shared_memory is not None:
             self._shared_memory.close()
