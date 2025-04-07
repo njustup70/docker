@@ -23,10 +23,10 @@ class ImageBridgeNode(Node):
 
         # ZeroMQ 初始化
         ctx = zmq.Context()
-        self._socket = ctx.socket(zmq.PUB)  # 发布者
+        self._socket = ctx.socket(zmq.PUSH)  # 发布者
         self._socket.bind(self.get_parameter('socket_address').value)
         
-        self._socket_receive = ctx.socket(zmq.REP)  # 响应者
+        self._socket_receive = ctx.socket(zmq.PULL)  # 响应者
         self._socket_receive.bind(self.get_parameter('socket_receive_address').value)
 
         self._image_publishers = {}
@@ -124,9 +124,6 @@ class ImageBridgeNode(Node):
             # 直接转换并发布（避免额外拷贝）
             image_msg = self.bridge.cv2_to_imgmsg(image, encoding='bgr8')
             self._image_publishers[topic].publish(image_msg)
-
-            # 响应 ZMQ 请求，避免阻塞
-            self._socket_receive.send_json({"status": "success"})
 
 def main(args=None):
     rclpy.init(args=args)
