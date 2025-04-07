@@ -37,7 +37,8 @@ def generate_launch_description():
     )
     ros_bridge_exe=ExecuteProcess(
         condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
-        cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
+        # cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
+        cmd=["bash","-c","python3 ~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.py"],
         output='screen',
     )
     ros_bag_bash_path=os.path.join(local_path,'scripts/rosbag_record.py')
@@ -71,6 +72,7 @@ def generate_launch_description():
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[foxglove_node,robot_state_publisher_node],
+        arguments=['--ros-args', '--log-level', 'fatal'],
         output='screen',
         emulate_tty=True,
     )
