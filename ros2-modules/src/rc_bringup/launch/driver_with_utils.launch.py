@@ -10,7 +10,7 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.descriptions import ComposableNode
-from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.actions import ComposableNodeContainer, Node 
 from launch.substitutions import Command, PathJoinSubstitution, FindExecutable
 
 def generate_launch_description():
@@ -19,6 +19,7 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='true',description='Publish tf tree if use is True'))
     ld.add_action(DeclareLaunchArgument('use_mid360',default_value='true',description='Start mid360 node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_extern_imu',default_value='true',description='Start extern imu node if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_realsense',default_value='true',description='Start realsense node if use is True'))
     get_package_share_directory('my_driver')
     get_package_share_directory('rc_bringup')
     #启动mid360
@@ -42,8 +43,17 @@ def generate_launch_description():
         ),
         
     )
+    #启动realsense
+    realsense_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','realsense_bringup.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('use_realsense'))
+    )
+    
     ld.add_action(mid360_launch)
     ld.add_action(extern_imu_launch)
+    ld.add_action(realsense_launch)
     ld.add_action(utils_launch)
     return ld
      

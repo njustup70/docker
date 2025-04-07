@@ -28,7 +28,7 @@ def generate_launch_description():
 
     )
     delayed_image_publish_node = TimerAction(
-        period=1.0,  # 延迟 5 秒
+        period=2.0,  # 延迟 5 秒
         actions=[image_publish_node]
     )
     launchDescription.add_action(realsense_bringup)
