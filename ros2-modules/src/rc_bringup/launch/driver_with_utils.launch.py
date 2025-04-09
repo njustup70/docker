@@ -28,7 +28,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('my_driver'),'launch','mid360_bringup.launch.py')
         ),
-        
+        launch_arguments={
+            'use_rviz': 'false',  #不启动rviz
+        }.items(),
         condition=IfCondition(LaunchConfiguration('use_mid360'))
     )
     #启动外接imu
