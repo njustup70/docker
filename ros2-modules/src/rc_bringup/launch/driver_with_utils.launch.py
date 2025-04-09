@@ -19,6 +19,7 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='true',description='Publish tf tree if use is True'))
     ld.add_action(DeclareLaunchArgument('use_mid360',default_value='true',description='Start mid360 node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_extern_imu',default_value='true',description='Start extern imu node if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_imu_transform',default_value='true',description='Start imu transform node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_realsense',default_value='true',description='Start realsense node if use is True'))
     get_package_share_directory('my_driver')
     get_package_share_directory('rc_bringup')
@@ -36,6 +37,13 @@ def generate_launch_description():
             os.path.join(get_package_share_directory('my_driver'),'launch','wheel_imu.launch.py')
         ),
         condition=IfCondition(LaunchConfiguration('use_extern_imu')))
+    #启动imu转换
+    imu_transform_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','imu_transform.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('use_imu_transform'))
+    )
     #启动utils
     utils_launch=IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -53,6 +61,7 @@ def generate_launch_description():
     
     ld.add_action(mid360_launch)
     ld.add_action(extern_imu_launch)
+    ld.add_action(imu_transform_launch)
     ld.add_action(realsense_launch)
     ld.add_action(utils_launch)
     return ld
