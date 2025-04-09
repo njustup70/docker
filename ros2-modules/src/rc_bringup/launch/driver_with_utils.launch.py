@@ -40,7 +40,7 @@ def generate_launch_description():
     #启动imu转换
     imu_transform_launch=IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('my_driver'),'launch','imu_transform.launch.py')
+            os.path.join(get_package_share_directory('perception'),'launch','imu_transform.launch.py')
         ),
         condition=IfCondition(LaunchConfiguration('use_imu_transform'))
     )
