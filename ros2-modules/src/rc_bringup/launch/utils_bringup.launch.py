@@ -20,6 +20,7 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='false', description='Record rosbag if use is True'))
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
     ld.add_action(DeclareLaunchArgument('use_ros1_bridge',default_value='true',description='Use ros1_bridge if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_fast_lio_tf',default_value='false',description='提供fast_lio的tf树'))
     # ld.add_action(DeclareLaunchArgument('ros', default_value='5', description='Max number of rosbag files'))
     foxglove_node=ComposableNode(
         package='foxglove_bridge',
@@ -66,12 +67,25 @@ def generate_launch_description():
         name='robot_state_publisher',
         parameters=[{'robot_description': robot_description}],
     )
+    # fast lio tf支持
+    fast_lio_tf_node=ComposableNode(
+        condition=IfCondition(LaunchConfiguration('use_fast_lio_tf')),
+        package='tf2_ros',
+        plugin='tf2_ros::StaticTransformBroadcasterNode',
+        name='tf_broadcaster',
+        parameters=[{
+        'child_frame_id': 'base_link',
+        'frame_id': 'body',
+        'translation': [0.0, 0.0, 0.0],
+        'rotation': [0.0, 0.0, 0.0]
+    }],
+    )
     compose_container=ComposableNodeContainer(
         namespace='',
         name='start_container',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[foxglove_node,robot_state_publisher_node],
+        composable_node_descriptions=[foxglove_node,robot_state_publisher_node,fast_lio_tf_node],
         arguments=['--ros-args', '--log-level', 'fatal'],
         output='screen',
         emulate_tty=True,
