@@ -12,6 +12,7 @@ ROS2 的 launch 集合包，用于统一启动驱动、播放包与辅助功能�
   - `foxglove_bridge`（Foxglove 可视化工具）
   - `robot_tf_publish`（发布静态 TF 树）
   - `rosbag`（记录当前话题数据）
+  - `rosbridge_websocket` (开启websocket桥接)[相关连接](https://roslibpy.readthedocs.io/en/latest/contributing.html)
 - 特殊说明：
   - rosbridge 需额外启动 `roscore`
   - rosbag 仅记录已有的点云、IMU、TF 话题,**后续添加的不会记录**

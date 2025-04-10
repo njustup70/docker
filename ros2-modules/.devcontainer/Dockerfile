@@ -47,7 +47,7 @@ RUN . /opt/ros/humble/setup.sh && cd ./ros_ws && colcon build --packages-select 
 #添加bashrc配置
 USER root
 #增加docker 嵌套支持与usb_cam支持
-RUN apt-get install docker docker-compose ros-humble-usb-cam -y
+RUN apt-get install docker docker-compose ros-humble-usb-cam ros-humble-rosbridge-suite -y
 USER $USERNAME
 RUN pip install pyzmq
 USER root
