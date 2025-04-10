@@ -1,6 +1,7 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.conditions import IfCondition
 from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.actions import Node
@@ -40,6 +41,7 @@ livox_ros2_params = [
 
 def generate_launch_description():
     ld=LaunchDescription()
+    ld.add_action(DeclareLaunchArgument("use_rviz", default_value='true'))
     if(pubvelodyne_pointcloud==False):
         livox_driver = Node(
             package='livox_ros_driver2',
@@ -84,7 +86,8 @@ def generate_launch_description():
             package='rviz2',
             executable='rviz2',
             output='screen',
-            arguments=['--display-config', rviz_config_path]
+            arguments=['--display-config', rviz_config_path],
+            condition=IfCondition(LaunchConfiguration('use_rviz')),
         )
     ld.add_action(livox_rviz)
     return ld

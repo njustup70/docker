@@ -20,6 +20,8 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_rosbag_record', default_value='false', description='Record rosbag if use is True'))
     ld.add_action(DeclareLaunchArgument('use_tf_publish',default_value='false',description='Publish tf tree if use is True'))
     ld.add_action(DeclareLaunchArgument('use_ros1_bridge',default_value='true',description='Use ros1_bridge if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_fast_lio_tf',default_value='false',description='提供fast_lio的tf树'))
+    ld.add_action(DeclareLaunchArgument('use_rosbridge',default_value='true',description='是否开启websocket桥接'))
     # ld.add_action(DeclareLaunchArgument('ros', default_value='5', description='Max number of rosbag files'))
     foxglove_node=ComposableNode(
         package='foxglove_bridge',
@@ -37,7 +39,8 @@ def generate_launch_description():
     )
     ros_bridge_exe=ExecuteProcess(
         condition=IfCondition(LaunchConfiguration('use_ros1_bridge')),
-        cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
+        # cmd=["bash","-c","~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.sh"],
+        cmd=["bash","-c","python3 ~/docker/ros2-modules/packages/ros-bridge/ros_bridge_run.py"],
         output='screen',
     )
     ros_bag_bash_path=os.path.join(local_path,'scripts/rosbag_record.py')
@@ -65,17 +68,43 @@ def generate_launch_description():
         name='robot_state_publisher',
         parameters=[{'robot_description': robot_description}],
     )
+    # fast lio tf支持
+    fast_lio_tf_node=ComposableNode(
+        condition=IfCondition(LaunchConfiguration('use_fast_lio_tf')),
+        package='tf2_ros',
+        plugin='tf2_ros::StaticTransformBroadcasterNode',
+        name='tf_broadcaster',
+        parameters=[{
+        'child_frame_id': 'base_link',
+        'frame_id': 'body',
+        'translation': [0.0, 0.0, 0.0],
+        'rotation': [0.0, 0.0, 0.0]
+    }],
+    )
     compose_container=ComposableNodeContainer(
         namespace='',
         name='start_container',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[foxglove_node,robot_state_publisher_node],
+        composable_node_descriptions=[foxglove_node,robot_state_publisher_node,fast_lio_tf_node],
+        arguments=['--ros-args', '--log-level', 'fatal'],
         output='screen',
         emulate_tty=True,
+    )
+    # websocket_bridge=IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(get_package_share_directory('rosbridge_server'),'launch','rosbridge_websocket_launch.xml')
+    #     ),
+    #     condition=IfCondition(LaunchConfiguration('use_rosbridge')),
+    # )
+    websocket_bridge=ExecuteProcess(
+        condition=IfCondition(LaunchConfiguration('use_rosbridge')),
+        cmd=["bash","-c","ros2 launch rosbridge_server rosbridge_websocket_launch.xml"],
+       
     )
     ld.add_action(ros_master_exe)
     ld.add_action(ros_bridge_exe)
     ld.add_action(ros_bag_exe)
     ld.add_action(compose_container)
+    ld.add_action(websocket_bridge)
     return ld
