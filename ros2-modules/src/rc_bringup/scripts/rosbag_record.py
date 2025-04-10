@@ -66,6 +66,7 @@ def main():
                         help='单个文件夹最大大小(GB) (默认:2)')
     parser.add_argument('--use_tf', action='store_true',
                         help='是否记录TF话题 (默认:False)')
+    parser.add_argument('--record_image', action='store_false',)
     args = parser.parse_args()
 
     file_path = getRecordPath(args.max_num)
@@ -77,6 +78,9 @@ def main():
         if topic_type=='sensor_msgs/msg/PointCloud2' or topic_type=='sensor_msgs/msg/Imu':
             topic_filtered.append(topic)
         elif(args.use_tf and topic_type=='tf2_msgs/msg/TFMessage'):
+            topic_filtered.append(topic)
+        #排除带有compressedDepth后缀的话题
+        elif(args.record_image and topic_type=='sensor_msgs/msg/CompressedImage' and 'compressedDepth' not in topic):
             topic_filtered.append(topic)
     print("\033[1;35mtopics are {}\033[0m".format(topic_filtered))
     rosbag_process=start_bag_recording(topic_filtered,file_path)    # 开始记录
