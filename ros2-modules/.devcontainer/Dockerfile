@@ -42,12 +42,11 @@ RUN . /opt/ros/humble/setup.sh && pip3 install pyserial && cd ./ros_ws && colcon
 #添加轮趣imu驱动
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu /home/${USERNAME}/packages/ros_ws/src/wheel_imu
 RUN . /opt/ros/humble/setup.sh && cd ./ros_ws && colcon build --packages-select  serial \
-    && . ./install/setup.sh && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    && apt-get install ros-humble-imu-tools -y 
+    && . ./install/setup.sh && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
 #添加bashrc配置
 USER root
 #增加docker 嵌套支持与usb_cam支持
-RUN apt-get install docker docker-compose ros-humble-usb-cam ros-humble-rosbridge-suite -y
+RUN apt-get update && apt-get install docker docker-compose ros-humble-usb-cam ros-humble-rosbridge-suite   ros-humble-imu-tools  -y
 USER $USERNAME
 RUN pip install pyzmq
 USER root
