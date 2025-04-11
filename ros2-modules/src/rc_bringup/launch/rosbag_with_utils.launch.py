@@ -62,7 +62,8 @@ def generate_launch_description():
         executable='image_bridge',
         name='image_bridge_node',
         parameters=[{'image_topic': LaunchConfiguration('image_topic')}],
-        output='screen'
+        output='screen',
+        emulate_tty=True,
     )
     ld.add_action(utils_launch)
     ld.add_action(ros_bag_exe)
