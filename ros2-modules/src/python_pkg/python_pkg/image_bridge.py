@@ -54,7 +54,10 @@ class ImageBridgeNode(Node):
             self.image_subscriber = self.create_subscription(
                 Image,
                 topic_name,
-                self.ros_image_callback,
+                # self.ros_image_callback,
+                lambda msg:[
+                    self.image_callback(self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')),
+                ],
                 10)
         elif topic_type == 'sensor_msgs/msg/CompressedImage':
             self.image_subscriber = self.create_subscription(
@@ -62,7 +65,7 @@ class ImageBridgeNode(Node):
                 topic_name,
                 lambda msg: [
                     #解压缩图像
-                    self.ros_image_callback(self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')),
+                    self.image_callback(self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')),
                 ],
                 10)
     def destroy_node(self):
@@ -72,11 +75,11 @@ class ImageBridgeNode(Node):
         super().destroy_node()
         print("ImageBridgeNode destroyed")
 
-    def ros_image_callback(self, msg: Image):
+    def image_callback(self, image: np.ndarray):
         """ 处理 ROS2 传入的图像，并写入共享内存 """
-        cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        img_shape = cv_image.shape
-        img_size = cv_image.nbytes
+        # cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        img_shape = image.shape
+        img_size = image.nbytes
 
 
         # 仅当图像大小变化时或者共享内存不可用时候
@@ -95,13 +98,13 @@ class ImageBridgeNode(Node):
             # 直接映射数据到共享内存（零拷贝）
         timestamp = time.time()
         np_array = np.ndarray(img_shape, dtype=np.uint8, buffer=self._shared_memory.buf)
-        np_array[:] = cv_image  # 直接引用，不拷贝
+        np_array[:] = image  # 直接引用，不拷贝
 
         # 发送共享内存信息
         self._socket.send_json({
             "shm_key": self._shm_name,
             "shape": img_shape,
-            "dtype": str(cv_image.dtype),
+            "dtype": str(image.dtype),
             "timestamp": timestamp,
         })
 
