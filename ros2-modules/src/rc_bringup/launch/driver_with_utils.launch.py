@@ -21,6 +21,7 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_extern_imu',default_value='true',description='Start extern imu node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_imu_transform',default_value='true',description='Start imu transform node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_realsense',default_value='true',description='Start realsense node if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_joy',default_value='true',description='是否启动手柄控制'))
     get_package_share_directory('my_driver')
     get_package_share_directory('rc_bringup')
     #启动mid360
@@ -60,11 +61,18 @@ def generate_launch_description():
         ),
         condition=IfCondition(LaunchConfiguration('use_realsense'))
     )
-    
+    #启动手柄
+    joy_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','joy.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('use_joy'))
+    )
     ld.add_action(mid360_launch)
     ld.add_action(extern_imu_launch)
     ld.add_action(imu_transform_launch)
     ld.add_action(realsense_launch)
     ld.add_action(utils_launch)
+    ld.add_action(joy_launch)
     return ld
      
