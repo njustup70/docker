@@ -8,3 +8,6 @@ install/
 *.db3
 metadata.yaml
 .cache/
+*.pyc
+*.cpy
+*.zip

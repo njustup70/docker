@@ -1,6 +1,10 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+import os
+import sys
+sys.path.append('/home/Elaina/docker/ros2-modules/src') 
+# print(sys.path)
 from protocol_lib.myserial import AsyncSerial_t
 class Communicate_t(Node):
     def __init__(self):

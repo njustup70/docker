@@ -1,2 +1,2 @@
 # protocol_lib/__init__.py
-from .protocol import Protocol, ProtocolAPI
+from .protocol import Protocol

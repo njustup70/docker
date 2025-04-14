@@ -48,7 +48,7 @@ USER root
 #增加docker 嵌套支持与usb_cam支持
 RUN apt-get update && apt-get install docker docker-compose ros-humble-usb-cam ros-humble-rosbridge-suite   ros-humble-imu-tools  -y
 USER $USERNAME
-RUN pip install pyzmq
+RUN pip install pyzmq crcmod
 USER root
 RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${USERNAME}/.bashrc \
     #&& echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
