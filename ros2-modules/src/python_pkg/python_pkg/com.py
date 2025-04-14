@@ -6,11 +6,12 @@ import sys
 sys.path.append('/home/Elaina/docker/ros2-modules/src') 
 # print(sys.path)
 from protocol_lib.myserial import AsyncSerial_t
+import struct
 class Communicate_t(Node):
     def __init__(self):
         super().__init__('communicate_t')
         self.declare_parameter('cmd_vel_topic', '/cmd_vel')
-        self.declare_parameter('serial_port', '/dev/ttyUSB0')
+        self.declare_parameter('serial_port', '/dev/ttyACM0')
         self.declare_parameter('serial_baudrate', 115200)
         self.sub=self.create_subscription(
             Twist,
@@ -29,10 +30,15 @@ class Communicate_t(Node):
         linear_x=msg.linear.x
         linear_y=msg.linear.y
         angular_z=msg.angular.z
-        # 发送数据到串口"浮点 空格 浮点 空格 浮点 p
-        data=f"{linear_x} {linear_y} {angular_z} p\n"
-        self.serial.write(data.encode())
-
+        data_header=b'0xFE'
+        # 浮点准化成大端4字节
+        linear_x=struct.pack('>f',linear_x)
+        linear_y=struct.pack('>f',linear_y)
+        angular_z=struct.pack('>f',angular_z)
+        # 拼接数据
+        data= data_header+linear_x+linear_y+angular_z
+        self.serial.write(data)
+        self.get_logger().info(f"Sending data to serial: {data.strip()}")
         # self.subscriptions= self.       
 def main(args=None):
     rclpy.init(args=args)
