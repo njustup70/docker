@@ -68,11 +68,19 @@ def generate_launch_description():
         ),
         condition=IfCondition(LaunchConfiguration('use_joy'))
     )
+    #启动下位机通信
+    communicate_node=Node(
+        package='python_pkg',
+        executable='communicate',
+        name='communicate',
+        output='screen',
+    )
     ld.add_action(mid360_launch)
     ld.add_action(extern_imu_launch)
     ld.add_action(imu_transform_launch)
     ld.add_action(realsense_launch)
     ld.add_action(utils_launch)
     ld.add_action(joy_launch)
+    ld.add_action(communicate_node)
     return ld
      

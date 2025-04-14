@@ -23,6 +23,7 @@ setup(
             'image_bridge= python_pkg.image_bridge:main',
             'imu_transform= python_pkg.imu_transform:main',
             'joy= python_pkg.joy:main',
+            'communicate= python_pkg.com:main',
         ],
     },
 )
