@@ -30,7 +30,9 @@ class Communicate_t(Node):
         linear_x=msg.linear.x
         linear_y=msg.linear.y
         angular_z=msg.angular.z
-        data_header=b'0xFE'
+        # data_header=b'0xFE'
+        # 头部数据16进制FE
+        data_header=b'\xFE'
         # 浮点准化成大端4字节
         linear_x=struct.pack('>f',linear_x)
         linear_y=struct.pack('>f',linear_y)
@@ -38,7 +40,7 @@ class Communicate_t(Node):
         # 拼接数据
         data= data_header+linear_x+linear_y+angular_z
         self.serial.write(data)
-        self.get_logger().info(f"Sending data to serial: {data.strip()}")
+        # self.get_logger().info(f"Sending data to serial: {data.strip()}")
         # self.subscriptions= self.       
 def main(args=None):
     rclpy.init(args=args)
