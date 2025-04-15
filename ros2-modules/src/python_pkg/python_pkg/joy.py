@@ -28,6 +28,11 @@ class JoyTeleopNode(Node):
         if b_button:
             self.emergency_stop = True
             self.get_logger().warn("Emergency Stop Activated!")
+            twist = Twist()
+            twist.linear.x = 0.0
+            twist.linear.y = 0.0
+            twist.angular.z = 0.0
+            self.pub_cmd_vel.publish(twist)
         else:
             self.emergency_stop = False
         twist = Twist()
