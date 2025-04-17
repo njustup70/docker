@@ -7,8 +7,5 @@ echo  'KERNEL=="ttyACM*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4",ATTR
 #CH340，直接设置别名为wheeltec_FDI_IMU_GNSS
 echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE:="0777", GROUP:="dialout", SYMLINK+="wheeltec_FDI_IMU_GNSS"' >/etc/udev/rules.d/wheeltec_fdcontroller_340.rules
 
-service udev reload
-sleep 2
-service udev restart
 
 
