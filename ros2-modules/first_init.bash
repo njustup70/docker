@@ -17,3 +17,14 @@ sudo ./install_udev_rules.sh
 cd "$SCRIPT_DIR/packages/wheel_imu/fdilink_ahrs_ROS2"
 echo "当前目录: $(pwd)"
 sudo ./wheeltec_udev.sh
+
+#安装ms_200规则
+# 设置设备别名并设置权限
+echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", MODE:="0777", GROUP:="dialout", SYMLINK+="ms_200"' > /etc/udev/rules.d/ms_200.rules
+echo 'KERNEL=="ttyACM*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", MODE:="0777", GROUP:="dialout", SYMLINK+="ms_200"' >> /etc/udev/rules.d/ms_200.rules
+
+service udev reload
+sleep 2
+service udev restart
+
+
