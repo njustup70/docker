@@ -75,6 +75,9 @@ def generate_launch_description():
         executable='communicate',
         name='communicate',
         output='screen',
+        parameters=[
+            {'serial_port': '/dev/serial_x64',}
+        ]
     )
     #启动ms200
     ms200_launch=IncludeLaunchDescription(
