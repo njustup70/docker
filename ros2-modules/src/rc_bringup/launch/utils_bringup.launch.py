@@ -81,12 +81,24 @@ def generate_launch_description():
         'rotation': [0.0, 0.0, 0.0]
     }],
     )
+    fast_lio_tf_node2=ComposableNode(
+        condition=IfCondition(LaunchConfiguration('use_fast_lio_tf')),
+        package='tf2_ros',
+        plugin='tf2_ros::StaticTransformBroadcasterNode',
+        name='tf_broadcaster',
+        parameters=[{
+        'child_frame_id': 'camera_init',
+        'frame_id': 'map',
+        'translation': [0.0, 0.0, 0.0],
+        'rotation': [0.0, 0.0, 0.0]
+    }],
+    )
     compose_container=ComposableNodeContainer(
         namespace='',
         name='start_container',
         package='rclcpp_components',
         executable='component_container',
-        composable_node_descriptions=[foxglove_node,robot_state_publisher_node,fast_lio_tf_node],
+        composable_node_descriptions=[foxglove_node,robot_state_publisher_node,fast_lio_tf_node,fast_lio_tf_node2],
         arguments=['--ros-args', '--log-level', 'fatal'],
         output='screen',
         emulate_tty=True,
