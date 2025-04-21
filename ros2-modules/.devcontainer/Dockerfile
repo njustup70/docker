@@ -54,6 +54,8 @@ RUN  echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /home/${US
     #&& echo 'source ~/docker/ros2/packages/ros-humble-ros1-bridge/install/setup.bash'>> /home/${USERNAME}/.bashrc \
     && echo 'source /opt/ros/humble/setup.bash' >> /home/$USERNAME/.bashrc \ 
     && echo 'source ~/docker/ros2-modules/install/setup.bash' >> /home/$USERNAME/.bashrc \  
-    && echo 'bass source ~/docker/ros2-modules/install/setup.bash' >> /home/$USERNAME/.config/fish/config.fish 
+    && echo 'bass source ~/docker/ros2-modules/install/setup.bash' >> /home/$USERNAME/.config/fish/config.fish \
+    && echo "export ROS_LOCALHOST_ONLY=1" >> /home/$USERNAME/.bashrc \
+    && echo "export ROS_LOCALHOST_ONLY=1" >> /home/$USERNAME/.config/fish/config.fish 
 CMD ["/bin/bash"]
 
