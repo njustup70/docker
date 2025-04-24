@@ -105,6 +105,9 @@ class ImuTransform(Node):
             transformed_msg.linear_acceleration.x = msg.linear_acceleration.x * self._gravity
             transformed_msg.linear_acceleration.y = msg.linear_acceleration.y * self._gravity
             transformed_msg.linear_acceleration.z = msg.linear_acceleration.z * self._gravity
+            transformed_msg.angular_velocity.x = msg.angular_velocity.x 
+            transformed_msg.angular_velocity.y = msg.angular_velocity.y
+            transformed_msg.angular_velocity.z = msg.angular_velocity.z
             self.imu_pub.publish(transformed_msg)
             return
         else:
