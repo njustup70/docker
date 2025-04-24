@@ -23,7 +23,7 @@ class ImuTransform(Node):
                 ('Calibration_file', 'config/imu_transform.yaml'),
                 ('pub_tf', True),
                 ('use_transform', True),
-                ('use_grivaty2m', False)
+                ('use_grivaty2m', True)
             ]
         )
         
@@ -47,7 +47,7 @@ class ImuTransform(Node):
         # 初始化变换矩阵
         self.imu_to_lidar = self.parse_calibration_file(calib_file)
         self._gravity = 9.81
-        
+        self.normal_avg=0
         # 初始化 TF 广播
         if self.get_parameter('pub_tf').value:
             self.static_broadcaster = StaticTransformBroadcaster(self)
@@ -106,6 +106,7 @@ class ImuTransform(Node):
             transformed_msg.linear_acceleration.y = msg.linear_acceleration.y * self._gravity
             transformed_msg.linear_acceleration.z = msg.linear_acceleration.z * self._gravity
             self.imu_pub.publish(transformed_msg)
+            return
         else:
             transformed_msg.linear_acceleration = msg.linear_acceleration
             
