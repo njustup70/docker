@@ -203,7 +203,7 @@ int main(int argc, char **argv)
   bool clockwise = false;
   uint8_t type = ORADAR_TYPE_SERIAL;
   int model = ORADAR_MS200;
-  double time_adjustment = 0.0; // 时间戳偏移量（单位：秒）
+  double time_adjustment = 10.0; // 时间戳偏移量（单位：秒）
 #ifdef ROS_FOUND
   ros::init(argc, argv, "oradar_ros");
 
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
   nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
   nh_private.param<std::string>("scan_topic", scan_topic, "scan");
   // 读取时间调整参数（新增）
-  nh_private.param<double>("time_adjustment", time_adjustment, 0.0); 
+  nh_private.param<double>("time_adjustment", time_adjustment, 10.0); 
   ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>(scan_topic, 10);
 
   #elif ROS2_FOUND
@@ -240,7 +240,7 @@ int main(int argc, char **argv)
   node->declare_parameter<std::string>("device_model", device_model);
   node->declare_parameter<std::string>("frame_id", frame_id);
   node->declare_parameter<std::string>("scan_topic", scan_topic);
-  node->declare_parameter<double>("time_adjustment", 0.0); // declare time adjustment parameter
+  node->declare_parameter<double>("time_adjustment", 10.0); // declare time adjustment parameter
 
   // get ros2 param
   node->get_parameter("port_name", port);
@@ -327,11 +327,11 @@ int main(int argc, char **argv)
       start_scan_time = ros::Time::now();
 
       // 应用时间调整（新增）
-      ros::Time adjusted_start = start_scan_time + ros::Duration(time_adjustment);
+      ros::Time adjusted_start = start_scan_time - ros::Duration(time_adjustment);
       #elif ROS2_FOUND
       start_scan_time = node->now();
       // 应用时间调整（新增）
-      rclcpp::Time adjusted_start = start_scan_time + rclcpp::Duration::from_seconds(time_adjustment);
+      rclcpp::Time adjusted_start = start_scan_time - rclcpp::Duration::from_seconds(time_adjustment);
 
       #endif
       ret = device.GrabFullScanBlocking(scan_data, 1000);
@@ -348,10 +348,10 @@ int main(int argc, char **argv)
       if (ret)
       {
         #ifdef ROS_FOUND
-        publish_msg(&scan_pub, &scan_data, start_scan_time, scan_duration, frame_id,
+        publish_msg(&scan_pub, &scan_data, adjusted_start, scan_duration, frame_id,
                     clockwise, angle_min, angle_max, min_range, max_range);
         #elif ROS2_FOUND
-        publish_msg(publisher, &scan_data, start_scan_time, scan_duration, frame_id,
+        publish_msg(publisher, &scan_data, adjusted_start, scan_duration, frame_id,
             clockwise, angle_min, angle_max, min_range, max_range);
         #endif
 
@@ -371,3 +371,5 @@ int main(int argc, char **argv)
   
   return 0;
 }
+
+
