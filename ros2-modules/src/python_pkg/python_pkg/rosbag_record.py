@@ -5,17 +5,18 @@ from rclpy.node import Node
 from rosbag2_py import SequentialWriter, StorageOptions, ConverterOptions, TopicMetadata
 from rclpy.serialization import serialize_message
 from rosidl_runtime_py.utilities import get_message
-
+import shutil
 class SmartBagRecorder(Node):
     def __init__(self):
         super().__init__('smart_bag_recorder')
 
         # Declare ROS parameters with default values
-        self.declare_parameter('max_size_bytes', 2 * 1024 * 1024 * 1024)  # 2GB
+        self.declare_parameter('max_size_gb', 2.0) # 2GB
         self.declare_parameter('max_folder_num', 5)
-        self.declare_parameter('record_images', True)
-
-        self.max_size_bytes = self.get_parameter('max_size_bytes').value
+        self.declare_parameter('record_images', False)
+        self.declare_parameter('record_imu', True)
+        self.declare_parameter('record_lidar', True)
+        self.max_size_bytes = int(self.get_parameter('max_size_gb').value * 1024 ** 3)
         self.max_folder_num = self.get_parameter('max_folder_num').value
         self.record_images = self.get_parameter('record_images').value
 
@@ -33,13 +34,26 @@ class SmartBagRecorder(Node):
         topic_names_and_types = self.get_topic_names_and_types()
         self.subscribers = []
 
+        keywords = ['imu', 'lidar', 'image', 'test']
+        needed_types=[]
+        if self.record_images:
+            # needed_types.append('sensor_msgs/msg/Image')
+            needed_types.append('sensor_msgs/msg/CompressedImage')
+        if self.get_parameter('record_imu').value:
+            needed_types.append('sensor_msgs/msg/Imu')
+        if self.get_parameter('record_lidar').value:
+            needed_types.append('sensor_msgs/msg/LidarScan')
+            needed_types.append('sensor_msgs/msg/PointCloud2')
         for topic_name, types in topic_names_and_types:
             msg_type_str = types[0]
+            topic_lower = topic_name.lower()
 
-            if not self.record_images and 'image' in topic_name.lower():
-                print(f'\033[91m⛔ Skipping image topic: {topic_name}\033[0m')
+            # 关键词过滤
+            # if not any(keyword in topic_lower for keyword in keywords):
+                # continue
+            if not any(msg_type_str in needed_type for needed_type in needed_types):
                 continue
-
+            # 订阅话题
             try:
                 msg_type = get_message(msg_type_str)
                 topic_info = TopicMetadata(
@@ -74,6 +88,10 @@ class SmartBagRecorder(Node):
         file_name = time.strftime("%m-%d-%H-%M", time.localtime())
         file_path = os.path.join(self.record_dir_root, file_name)
         # os.makedirs(file_path)
+        if os.path.exists(file_path):
+            print(f'\033[93m⚠️ Existing path detected, removing: {file_path}\033[0m')
+            shutil.rmtree(file_path)
+
         return file_path
 
     def create_callback(self, topic_name):
