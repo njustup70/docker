@@ -23,7 +23,7 @@ class ImuTransform(Node):
                 ('Calibration_file', 'config/imu_transform.yaml'),
                 ('pub_tf', True),
                 ('use_transform', True),
-                ('use_grivaty2m', False)
+                ('use_grivaty2m', True)
             ]
         )
         
@@ -33,7 +33,7 @@ class ImuTransform(Node):
         self.imu_frame = self.get_parameter('imu_frame').value
         self.lidar_frame = self.get_parameter('lidar_frame').value
         calib_file = self.get_parameter('Calibration_file').value
-        
+        self.use_grivaty2m = self.get_parameter('use_grivaty2m').value
         # 订阅和发布
         self.imu_sub = self.create_subscription(
             Imu, 
@@ -42,11 +42,12 @@ class ImuTransform(Node):
             10
         )
         self.imu_pub = self.create_publisher(Imu, self.imu_transformed_topic, 10)
-        
+        self.imu_cnt=0
+        self.imu_gravity_trans_trigger=False
         # 初始化变换矩阵
         self.imu_to_lidar = self.parse_calibration_file(calib_file)
         self._gravity = 9.81
-        
+        self.normal_avg=0
         # 初始化 TF 广播
         if self.get_parameter('pub_tf').value:
             self.static_broadcaster = StaticTransformBroadcaster(self)
@@ -87,10 +88,28 @@ class ImuTransform(Node):
         transformed_msg.header = msg.header
         
         # 处理重力单位转换
-        if self.get_parameter('use_grivaty2m').value:
+        if self.use_grivaty2m and self.imu_cnt < 10:
+            #计算合并加速度
+            normal_sum = np.sqrt(
+                msg.linear_acceleration.x**2 +
+                msg.linear_acceleration.y**2 +
+                msg.linear_acceleration.z**2
+            )
+            self.normal_avg += normal_sum/10
+            self.imu_cnt += 1
+            return
+        elif self.use_grivaty2m and self.imu_cnt == 10:
+            if self.normal_avg<5:
+                self.imu_gravity_trans_trigger=True
+        if self.imu_gravity_trans_trigger:
             transformed_msg.linear_acceleration.x = msg.linear_acceleration.x * self._gravity
             transformed_msg.linear_acceleration.y = msg.linear_acceleration.y * self._gravity
             transformed_msg.linear_acceleration.z = msg.linear_acceleration.z * self._gravity
+            transformed_msg.angular_velocity.x = msg.angular_velocity.x 
+            transformed_msg.angular_velocity.y = msg.angular_velocity.y
+            transformed_msg.angular_velocity.z = msg.angular_velocity.z
+            self.imu_pub.publish(transformed_msg)
+            return
         else:
             transformed_msg.linear_acceleration = msg.linear_acceleration
             

@@ -35,12 +35,15 @@ public:
         this->declare_parameter("pub_topic", "livox/lidar/pointcloud2");
         this->declare_parameter("pub_debug", true);
         _debug = this->get_parameter("pub_debug").as_bool();
+        rclcpp::QoS qos(1);
+        qos.best_effort();         // 不保证可靠性，但最快
+        qos.durability_volatile(); // 不保留历史数据
         pub_ =
-            this->create_publisher<pointcloud2>(this->get_parameter("pub_topic").as_string(), 10);
+            this->create_publisher<pointcloud2>(this->get_parameter("pub_topic").as_string(), qos);
         // sub_=this->create_subscription<p>(const std::string &topic_name, const rclcpp::QoS &qos,
         // CallbackT &&callback)
         sub_ = this->create_subscription<pointcloud2>(
-            this->get_parameter("sub_topic").as_string(), 10,
+            this->get_parameter("sub_topic").as_string(), qos,
             [this](std::unique_ptr<pointcloud2> msg_in) { callback(std::move(msg_in)); });
     }
 

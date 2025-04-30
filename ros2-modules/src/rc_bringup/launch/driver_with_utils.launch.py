@@ -21,6 +21,8 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('use_extern_imu',default_value='true',description='Start extern imu node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_imu_transform',default_value='true',description='Start imu transform node if use is True'))
     ld.add_action(DeclareLaunchArgument('use_realsense',default_value='true',description='Start realsense node if use is True'))
+    ld.add_action(DeclareLaunchArgument('use_joy',default_value='true',description='是否启动手柄控制'))
+    ld.add_action(DeclareLaunchArgument('use_ms_200',default_value='true',description='是否启动2d雷达'))
     get_package_share_directory('my_driver')
     get_package_share_directory('rc_bringup')
     #启动mid360
@@ -60,11 +62,37 @@ def generate_launch_description():
         ),
         condition=IfCondition(LaunchConfiguration('use_realsense'))
     )
-    
+    #启动手柄
+    joy_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','joy.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('use_joy'))
+    )
+    #启动下位机通信
+    communicate_node=Node(
+        package='python_pkg',
+        executable='communicate',
+        name='communicate',
+        output='screen',
+        parameters=[
+            {'serial_port': '/dev/serial_x64',}
+        ]
+    )
+    #启动ms200
+    ms200_launch=IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('my_driver'),'launch','ms200_scan.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('use_ms_200'))
+    )
     ld.add_action(mid360_launch)
     ld.add_action(extern_imu_launch)
     ld.add_action(imu_transform_launch)
     ld.add_action(realsense_launch)
     ld.add_action(utils_launch)
+    ld.add_action(joy_launch)
+    ld.add_action(communicate_node)
+    ld.add_action(ms200_launch)
     return ld
      

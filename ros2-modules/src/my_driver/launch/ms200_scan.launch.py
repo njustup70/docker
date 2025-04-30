@@ -29,14 +29,16 @@ def generate_launch_description():
         {'device_model': 'MS200'},
         {'frame_id': 'laser_frame'},
         {'scan_topic': 'MS200/scan'},
-        {'port_name': '/dev/ttyACM0'},
+        {'port_name': '/dev/ms200'},
         {'baudrate': 230400},
         {'angle_min': 0.0},
         {'angle_max': 360.0},
         {'range_min': 0.05},
         {'range_max': 20.0},
         {'clockwise': False},
-        {'motor_speed': 10}
+        {'motor_speed': 10},
+        # 新增加的时间戳调整参数（示例 值0.1秒）
+        {'time_adjustment': 1.0}  # <<< 新增参数行
       ]
   )
 

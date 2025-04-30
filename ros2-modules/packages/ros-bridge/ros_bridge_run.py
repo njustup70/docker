@@ -58,11 +58,12 @@ else:
 
 # source local_setup.bash 并运行 dynamic_bridge
 # 为了让环境变量生效，我们在同一个 bash shell 中运行 ros2
-bridge_process = subprocess.Popen(
-    f"bash -c 'source {setup_script} && ros2 run ros1_bridge dynamic_bridge --bridge-all-topics'",
-    shell=True,
-    executable="/bin/bash"
-)
+if check_port():
+    bridge_process = subprocess.Popen(
+        f"bash -c 'source {setup_script} && ros2 run ros1_bridge dynamic_bridge --bridge-all-topics'",
+        shell=True,
+        executable="/bin/bash"
+    )
 
 # 等待 Ctrl+C
 bridge_process.wait()

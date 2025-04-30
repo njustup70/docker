@@ -9,3 +9,5 @@ RUN . /opt/ros/humble/setup.sh && \
     && apt-get install -y ros-humble-foxglove-bridge \
     && echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc
+RUN echo "export ROS_LOCALHOST_ONLY=1" >> /home/$USERNAME/.bashrc \
+    && echo "export ROS_LOCALHOST_ONLY=1" >> /home/$USERNAME/.config/fish/config.fish 

@@ -24,6 +24,10 @@
 - 包括ros_bridge(发送ros2话题到ros1目前为x86支持)
 - packages是驱动库(**勿动**)，更改源码仅更改ros2_ws中
 ## 使用教程(已经进入docker)
+- 1.在第一次打开项目的时候先运行自定义udev规则(注意其中的sudo权限)
+```bash
+ros2-modules$ sudo ./udev_init.bash
+```
 - ~~1.构建项目(构建目录不一样)~~ 已经废弃
 ```bash
 ros2/packages/ws_livox$ ./src/livox_ros_drivers/build.sh humble 
