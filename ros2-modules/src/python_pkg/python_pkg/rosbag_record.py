@@ -16,10 +16,11 @@ class SmartBagRecorder(Node):
         self.declare_parameter('record_images', False)
         self.declare_parameter('record_imu', True)
         self.declare_parameter('record_lidar', True)
+        self.declare_parameter('record_nav',False)
         self.max_size_bytes = int(self.get_parameter('max_size_gb').value * 1024 ** 3)
         self.max_folder_num = self.get_parameter('max_folder_num').value
         self.record_images = self.get_parameter('record_images').value
-
+        self.record_nav=self.get_parameter('record_nav').value
         self.record_dir_root = os.path.abspath(os.path.join( os.path.expanduser('~'),"docker/ros2-modules/rosbag_record"))
         self.bag_path = self.prepare_record_path()
         print(f'\033[95m📁 Recording to: {self.bag_path}\033[0m')
@@ -33,47 +34,11 @@ class SmartBagRecorder(Node):
         # 获取当前活跃话题并订阅
         topic_names_and_types = self.get_topic_names_and_types()
         self.subscribers = []
-
-        keywords = ['imu', 'lidar', 'image', 'test']
-        needed_types=[]
-        if self.record_images:
-            # needed_types.append('sensor_msgs/msg/Image')
-            needed_types.append('sensor_msgs/msg/CompressedImage')
-        if self.get_parameter('record_imu').value:
-            needed_types.append('sensor_msgs/msg/Imu')
-        if self.get_parameter('record_lidar').value:
-            needed_types.append('sensor_msgs/msg/LidarScan')
-            needed_types.append('sensor_msgs/msg/PointCloud2')
-        for topic_name, types in topic_names_and_types:
-            msg_type_str = types[0]
-            topic_lower = topic_name.lower()
-
-            # 关键词过滤
-            # if not any(keyword in topic_lower for keyword in keywords):
-                # continue
-            if not any(msg_type_str in needed_type for needed_type in needed_types):
-                continue
-            # 订阅话题
-            try:
-                msg_type = get_message(msg_type_str)
-                topic_info = TopicMetadata(
-                    name=topic_name,
-                    type=msg_type_str,
-                    serialization_format='cdr')
-                self.writer.create_topic(topic_info)
-
-                sub = self.create_subscription(
-                    msg_type,
-                    topic_name,
-                    self.create_callback(topic_name),
-                    10)
-                self.subscribers.append(sub)
-                print(f'\033[95m✅ Recording topic: {topic_name} [{msg_type_str}]\033[0m')
-            except Exception as e:
-                print(f'\033[91m⛔ Failed to subscribe to {topic_name}: {e}\033[0m')
+        self.subscribed_topics = set()
+        self.init_static_subscriptions()
 
         # 创建大小检查定时器
-        self.timer = self.create_timer(5.0, self.check_size_limit)
+        self.timer = self.create_timer(3.0,self.timerCallback)
 
     def prepare_record_path(self):
         os.makedirs(self.record_dir_root, exist_ok=True)
@@ -101,7 +66,34 @@ class SmartBagRecorder(Node):
             except Exception as e:
                 print(f'\033[91m⚠️ Error writing message from {topic_name}: {e}\033[0m')
         return callback
+    def subscribe_topic(self, topic_name, msg_type_str):
+        if topic_name in self.subscribed_topics:
+            return
+        try:
+            msg_type = get_message(msg_type_str)
+            topic_info = TopicMetadata(name=topic_name, type=msg_type_str, serialization_format='cdr')
+            self.writer.create_topic(topic_info)
+            sub = self.create_subscription(msg_type, topic_name, self.create_callback(topic_name), 10)
+            self.subscribers.append(sub)
+            self.subscribed_topics.add(topic_name)
+            print(f'\033[95m✅ Recording topic: {topic_name} [{msg_type_str}]\033[0m')
+        except Exception as e:
+            print(f'\033[91m⛔ Failed to subscribe to {topic_name}: {e}\033[0m')
 
+    def init_static_subscriptions(self):
+        topic_names_and_types = self.get_topic_names_and_types()
+        needed_types = []
+        if self.record_images:
+            needed_types.append('sensor_msgs/msg/CompressedImage')
+        if self.get_parameter('record_imu').value:
+            needed_types.append('sensor_msgs/msg/Imu')
+        if self.get_parameter('record_lidar').value:
+            needed_types.append('sensor_msgs/msg/LidarScan')
+            needed_types.append('sensor_msgs/msg/PointCloud2')
+        for topic_name, types in topic_names_and_types:
+            msg_type_str = types[0]
+            if msg_type_str in needed_types:
+                self.subscribe_topic(topic_name, msg_type_str)
     def check_size_limit(self):
         total_size = 0
         for root, dirs, files in os.walk(self.bag_path):
@@ -111,6 +103,25 @@ class SmartBagRecorder(Node):
             print(f'\033[91m🚫 Reached size limit ({self.max_size_bytes} bytes). Shutting down...\033[0m')
             rclpy.shutdown()
 
+    def check_and_subscribe_nav_topics(self):
+        nav_types = [
+            'geometry_msgs/msg/Twist',
+            'geometry_msgs/msg/TwistStamped',
+            'geometry_msgs/msg/PoseStamped',
+            'tf2_msgs/msg/TFMessage',
+            'nav_msgs/msg/Path',
+            'nav_msgs/msg/OccupancyGrid'
+        ]
+        topic_names_and_types = self.get_topic_names_and_types()
+        for topic_name, types in topic_names_and_types:
+            msg_type_str = types[0]
+            if msg_type_str in nav_types:
+                self.subscribe_topic(topic_name, msg_type_str)
+    def timerCallback(self):
+        self.check_size_limit()
+        if self.record_nav:
+            self.check_and_subscribe_nav_topics()
+        
 def main(args=None):
     rclpy.init(args=args)
     node = SmartBagRecorder()
