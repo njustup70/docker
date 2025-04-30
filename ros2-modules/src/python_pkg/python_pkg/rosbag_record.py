@@ -1,6 +1,7 @@
 import os
 import time
 import rclpy
+import rclpy.executors
 from rclpy.node import Node
 from rosbag2_py import SequentialWriter, StorageOptions, ConverterOptions, TopicMetadata
 from rclpy.serialization import serialize_message
@@ -124,9 +125,12 @@ class SmartBagRecorder(Node):
         
 def main(args=None):
     rclpy.init(args=args)
-    node = SmartBagRecorder()
-    rclpy.spin(node)
-    node.destroy_node()
+    exe=rclpy.executors.MultiThreadedExecutor()
+    exe.add_node(SmartBagRecorder())
+    exe.spin()
+    # node = SmartBagRecorder()
+    # rclpy.spin(node)
+    # node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
