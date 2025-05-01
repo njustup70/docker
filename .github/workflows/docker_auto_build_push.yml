@@ -19,7 +19,7 @@ env:
   #仓库名
   REPO_NAME: elainasuki/rc2025
   # 是否构建arm64架构的镜像
-  BUILD_ARM64: false  # 你可以在这里设置是否构建 arm64
+  BUILD_ARM64: true  # 你可以在这里设置是否构建 arm64
 
 jobs:
   build-and-push:
