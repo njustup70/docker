@@ -17,7 +17,7 @@ env:
   # 可设置为 docker.io 或 ghcr.io
   REGISTRY: docker.io
   #仓库名
-  REPO_NAME: elainasuki/rc2025
+  REPO_NAME: elainasuki/ros
   # 是否构建arm64架构的镜像
   BUILD_ARM64: true  # 你可以在这里设置是否构建 arm64
 
