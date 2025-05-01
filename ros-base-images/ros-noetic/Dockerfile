@@ -24,9 +24,9 @@ RUN groupadd --gid $USER_GID ${GROUP_NAME} \
     && echo "%${GROUP_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     # 使新用户的 `.bashrc` 文件生效
     && chown $USERNAME:$GROUP_NAME /home/$USERNAME/.bashrc
-USER $USERNAME
-RUN  sudo add-apt-repository ppa:fish-shell/release-3 -y \
-    && sudo apt-get update && sudo apt-get install -y fish fzf 
+USER root
+RUN  add-apt-repository ppa:fish-shell/release-3 -y \
+    &&  apt-get update &&  apt-get install -y fish fzf 
 COPY packages/fish /home/${USERNAME}/.config/fish
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
