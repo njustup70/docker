@@ -24,25 +24,20 @@ RUN apt-get update \
 #安装编译工具,调试工具拓展终端
 RUN apt-get update \
     && apt-get install -y gdb gdbserver \    
-    # &&apt-get install -y gdb lldb clang gdbserver \
-    # && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - \
-    # && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" \
-    # && apt-get install -y clangd \
     #安装fish终端
     && add-apt-repository ppa:fish-shell/release-3 -y \
     && apt-get update && sudo apt-get install -y fish fzf 
 #安装fish插件
 USER $USERNAME
-RUN curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish -- --noninteractive --yes
+RUN curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /home/${USERNAME}/install.fish \
+    && fish /home/${USERNAME}/install.fish --noninteractive --yes && rm /home/${USERNAME}/install.fish 
+
 USER root
 COPY packages /temp
 COPY packages/fish /home/${USERNAME}/.config/fish
 RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
-    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base thefuck gettext  \ 
+    && apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb language-pack-zh-hans language-pack-zh-hans-base gettext  \ 
     && sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
-    # && sudo -u ${USERNAME} pip3 install thefuck \
-    # && echo 'eval $(thefuck --alias)'>> /home/${USERNAME}/.bashrc \
-    # && echo 'eval $(thefuck --alias FUCK)'>> /home/${USERNAME}/.bashrc \
     && rm -rf /temp
 
 RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld ros-humble-rqt-tf-tree \
@@ -62,12 +57,6 @@ RUN mkdir -p /home/$USERNAME/packages/ws_livox/src/ \
     && ./livox_ros_driver2/build.sh humble \
     && echo 'source ~/packages/ws_livox/install/setup.bash' >> /home/$USERNAME/.bashrc
 
-# 安装 PCL 新版点云库
-# RUN apt-get update \
-#     && apt-get install -y ninja-build ccache lld 
-# RUN git clone --branch pcl-1.13.1 https://github.com/PointCloudLibrary/pcl.git \
-#     && cd pcl && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja .. \
-#     && ninja -j6 && ninja install
 RUN apt-get update \
     # && apt-get install -y lldb clang \
     && wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 

@@ -26,11 +26,7 @@ RUN groupadd --gid $USER_GID ${GROUP_NAME} \
     && chown $USERNAME:$GROUP_NAME /home/$USERNAME/.bashrc
 USER $USERNAME
 RUN  sudo add-apt-repository ppa:fish-shell/release-3 -y \
-    && sudo apt-get update && sudo apt-get install -y fish fzf \
-    && curl -L https://get.oh-my.fish | sudo tee install_omf > /dev/null \
-    && fish install_omf --noninteractive \
-    && fish -c "omf install bass" \
-    && sudo rm install_omf 
+    && sudo apt-get update && sudo apt-get install -y fish fzf 
 COPY packages/fish /home/${USERNAME}/.config/fish
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
