@@ -30,8 +30,7 @@ RUN apt-get update \
 #安装fish插件
 USER $USERNAME
 RUN curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /home/${USERNAME}/install.fish \
-    && fish /home/${USERNAME}/install.fish --noninteractive --yes && rm /home/${USERNAME}/install.fish 
-
+    && fish /home/${USERNAME}/install.fish --noninteractive --yes && rm /home/${USERNAME}/install.fish && fish -c "omf install bass" 
 USER root
 COPY packages /temp
 COPY packages/fish /home/${USERNAME}/.config/fish
