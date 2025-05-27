@@ -33,7 +33,7 @@ RUN set -eux; \
     && chown $USERNAME:$GROUP_NAME /home/$USERNAME/.bashrc  
 #安装必要软件终端补全,包管理器,编辑器,文件管理器
 RUN apt-get update \
-    && apt-get install -y libc-bin net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11 vim
+    && apt-get install -y libc-bin net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11 vim curl
 #安装编译工具,调试工具拓展终端
 RUN apt-get update \
     && apt-get install -y gdb gdbserver \    
