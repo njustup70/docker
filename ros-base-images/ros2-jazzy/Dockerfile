@@ -7,15 +7,17 @@ ARG USER_GID=$USER_UID
 ARG GROUP_NAME=wheel
 # 创建用户和用户组
 RUN set -eux; \
-    # 删除已有 GID 的组
-    if getent group ${USER_GID} > /dev/null; then \
-        existing_group=$(getent group ${USER_GID} | cut -d: -f1); \
-        groupdel "${existing_group}"; \
+    # 如果存在 UID 为 1000 的用户，先删除这个用户
+    if getent passwd 1000 > /dev/null; then \
+    existing_user=$(getent passwd 1000 | cut -d: -f1); \
+    userdel -r "$existing_user" || true; \
     fi; \
-    # 删除已有 UID 的用户
-    if getent passwd ${USER_UID} > /dev/null; then \
-        existing_user=$(getent passwd ${USER_UID} | cut -d: -f1); \
-        userdel -r "${existing_user}" || true; \
+    # 如果存在 GID 为 1000 的组，且已经没有用户使用这个组，则删除
+    if getent group 1000 > /dev/null; then \
+    existing_group=$(getent group 1000 | cut -d: -f1); \
+    if ! getent passwd | awk -F: '{print $1":"$4}' | grep -q ":1000$"; then \
+    groupdel "$existing_group"; \
+    fi; \
     fi; \
     groupadd --gid $USER_GID ${GROUP_NAME} \
     && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
@@ -76,4 +78,3 @@ RUN apt-get update && apt-get install -y clang-14 \
     && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100 
 
 
-    
