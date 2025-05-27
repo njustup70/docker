@@ -7,15 +7,17 @@ ARG USER_GID=$USER_UID
 ARG GROUP_NAME=wheel
 # 创建用户和用户组
 RUN set -eux; \
-    # 删除已有 GID 的组
-    if getent group ${USER_GID} > /dev/null; then \
-        existing_group=$(getent group ${USER_GID} | cut -d: -f1); \
-        groupdel "${existing_group}"; \
+    # 如果存在 UID 为 1000 的用户，先删除这个用户
+    if getent passwd 1000 > /dev/null; then \
+    existing_user=$(getent passwd 1000 | cut -d: -f1); \
+    userdel -r "$existing_user" || true; \
     fi; \
-    # 删除已有 UID 的用户
-    if getent passwd ${USER_UID} > /dev/null; then \
-        existing_user=$(getent passwd ${USER_UID} | cut -d: -f1); \
-        userdel -r "${existing_user}" || true; \
+    # 如果存在 GID 为 1000 的组，且已经没有用户使用这个组，则删除
+    if getent group 1000 > /dev/null; then \
+    existing_group=$(getent group 1000 | cut -d: -f1); \
+    if ! getent passwd | awk -F: '{print $1":"$4}' | grep -q ":1000$"; then \
+    groupdel "$existing_group"; \
+    fi; \
     fi; \
     groupadd --gid $USER_GID ${GROUP_NAME} \
     && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
@@ -31,7 +33,7 @@ RUN set -eux; \
     && chown $USERNAME:$GROUP_NAME /home/$USERNAME/.bashrc  
 #安装必要软件终端补全,包管理器,编辑器,文件管理器
 RUN apt-get update \
-    && apt-get install -y libc-bin net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11 vim
+    && apt-get install -y libc-bin net-tools nautilus bash-completion pip gedit wget nano software-properties-common nautilus-extension-gnome-terminal dbus-x11 vim curl
 #安装编译工具,调试工具拓展终端
 RUN apt-get update \
     && apt-get install -y gdb gdbserver \    
@@ -50,18 +52,18 @@ RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
     && sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
     && rm -rf /temp
 
-RUN apt-get update && apt-get install -y ros-jazzy-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld ros-jazzy-rqt-tf-tree \
+RUN apt-get update && apt-get install -y ros-jazzy-foxglove-bridge  ros-jazzy-rmw-cyclonedds-cpp usbutils  iputils-ping  ninja-build ccache lld ros-jazzy-rqt-tf-tree \
     && echo "umask 002" | sudo tee -a /etc/profile /etc/bash.bashrc
 # 使用 root 用户
 
 # 安装雷达驱动
-RUN mkdir -p /home/$USERNAME/packages && cd /home/$USERNAME/packages && git clone https://github.com/Livox-SDK/Livox-SDK2.git \
+RUN mkdir -p /home/$USERNAME/packages && cd /home/$USERNAME/packages && git clone https://github.com/Elaina-rascal/Livox-SDK2.git \
     && cd Livox-SDK2 && mkdir build && cd build && cmake .. && make -j6 && make install
 
 # 安装雷达 ROS 驱动
 RUN mkdir -p /home/$USERNAME/packages/ws_livox/src/ \
     && cd /home/$USERNAME/packages/ws_livox/src/ \
-    && git clone https://github.com/Livox-SDK/livox_ros_driver2.git \
+    && git clone -b origin_fix  https://github.com/Elaina-rascal/livox_ros_driver2.git \
     && . /opt/ros/jazzy/setup.sh \
     && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH \
     && ./livox_ros_driver2/build.sh jazzy \
@@ -74,4 +76,5 @@ RUN apt-get update && apt-get install -y clang-14 \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 \
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 \
     && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100 
+
 
