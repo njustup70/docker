@@ -1,12 +1,25 @@
 #这是humble v3版本的基础镜像,主要增加了通用的包与终端添加了用户
-FROM ghcr.io/sloretz/ros:humble-desktop-full
+FROM ros:humble-perception
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG GROUP_NAME=wheel
 # 创建用户和用户组
-RUN groupadd --gid $USER_GID ${GROUP_NAME} \
+RUN set -eux; \
+    # 如果存在 UID 为 1000 的用户，先删除这个用户
+    if getent passwd 1000 > /dev/null; then \
+    existing_user=$(getent passwd 1000 | cut -d: -f1); \
+    userdel -r "$existing_user" || true; \
+    fi; \
+    # 如果存在 GID 为 1000 的组，且已经没有用户使用这个组，则删除
+    if getent group 1000 > /dev/null; then \
+    existing_group=$(getent group 1000 | cut -d: -f1); \
+    if ! getent passwd | awk -F: '{print $1":"$4}' | grep -q ":1000$"; then \
+    groupdel "$existing_group"; \
+    fi; \
+    fi; \    
+    groupadd --gid $USER_GID ${GROUP_NAME} \
     && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
     # 配置密码
     && echo "$USERNAME:password" | chpasswd \
