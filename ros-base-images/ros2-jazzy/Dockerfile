@@ -63,7 +63,7 @@ RUN mkdir -p /home/$USERNAME/packages && cd /home/$USERNAME/packages && git clon
 # 安装雷达 ROS 驱动
 RUN mkdir -p /home/$USERNAME/packages/ws_livox/src/ \
     && cd /home/$USERNAME/packages/ws_livox/src/ \
-    && git clone -b origin_fix  https://github.com/Livox-SDK/livox_ros_driver2.git \
+    && git clone -b origin_fix  https://github.com/Elaina-rascal/livox_ros_driver2.git \
     && . /opt/ros/jazzy/setup.sh \
     && export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH \
     && ./livox_ros_driver2/build.sh jazzy \
