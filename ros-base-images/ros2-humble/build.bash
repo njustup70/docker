@@ -4,7 +4,7 @@
 SCRIPT_DIR=$(dirname "$0")
 
 # 设置默认 tag
-TAG="ros2-humble-full-v3"
+TAG="ros2-humble-full"
 
 # 从外部传入的 IMAGE_REPO（格式：ghcr.io/user/repo 或 docker.io/user/repo）
 IMAGE_REPO=${IMAGE_REPO:-elainasuki/ros}

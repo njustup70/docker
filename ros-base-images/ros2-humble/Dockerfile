@@ -39,7 +39,7 @@ RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ \
     && sudo -u ${USERNAME} clitheme apply-theme /temp/39neko.clithemedef.txt --yes \
     && rm -rf /temp
 
-RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge  usbutils  iputils-ping  ninja-build ccache lld ros-humble-rqt-tf-tree \
+RUN apt-get update && apt-get install -y ros-humble-foxglove-bridge ros-humble-rmw-cyclonedds-cpp usbutils  iputils-ping  ninja-build ccache lld ros-humble-rqt-tf-tree \
     && echo "umask 002" | sudo tee -a /etc/profile /etc/bash.bashrc
 # 使用 root 用户
 
