@@ -24,4 +24,5 @@ services:
     tty: true
     user: "Elaina"
     # runtime: "nvidia"
+    entrypoint: [ "/bin/bash", "-c", "-i", "source /opt/ros/jazzy/setup.bash && ros2 run ros_tcp_endpoint default_server_endpoint" ]
     working_dir: "/home/Elaina" # 指定默认工作目录
