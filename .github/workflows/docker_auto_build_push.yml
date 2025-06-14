@@ -2,7 +2,7 @@ name: Docker镜像构建与推送
 
 on:
   push:
-    branches: [ "git","dev3"]  #推送到[]分支时触发
+    branches: [ "git","dev3","dev3.0"]  #推送到[]分支时触发
     paths:
       - '**/Dockerfile*'      # 捕获所有以 Dockerfile 开头的文件，包括 Dockerfile 和 .Dockerfile
       - '**/.dockerfile*'     # 捕获以 .dockerfile 开头的文件
