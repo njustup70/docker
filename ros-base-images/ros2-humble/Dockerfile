@@ -1,5 +1,7 @@
 #这是humble v3版本的基础镜像,主要增加了通用的包与终端添加了用户
-FROM ros:humble-perception
+# FROM ros:humble-perception
+FROM ghcr.io/sloretz/ros:humble-desktop-full
+
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
