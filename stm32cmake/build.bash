@@ -27,7 +27,7 @@ if [[ "$1" == "--github-action" ]]; then
     -t "$IMAGE" \
     -f "$SCRIPT_DIR/Dockerfile" \
     --cache-from "type=registry,ref=$IMAGE" \
-    --cache-to "type=registry,ref=$IMAGE,mode=inline" \  
+    --cache-to "type=registry,ref=$IMAGE,mode=inline" \
     "$SCRIPT_DIR" \
     --push
 else
