@@ -20,11 +20,12 @@ RUN apt-get update && apt-get install -y software-properties-common \
     && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null |  apt-key add - \
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' \
     && apt-get update && apt-get install -y cmake
-
+ARG PKG_PATH="/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/"
 # 设置编译器路径到环境变量
-ENV PATH="${PATH}:/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin"
+ENV PATH="${PATH}:${PKG_PATH}/bin"
+ENV ARM_GCC_PATH="${PKG_PATH}/bin"
 #把gdb python添加到环境变量
-ENV PYTHONPATH="${PYTHONPATH}:/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/share/gcc-14.2.1/python"
+ENV PYTHONPATH="${PYTHONPATH}:${PKG_PATH}/share/gcc-14.2.1/python"
 #把gdb-py3软链接为gdb
 RUN ln -sf /root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin/arm-none-eabi-gdb-py3 \
     /root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin/arm-none-eabi-gdb
