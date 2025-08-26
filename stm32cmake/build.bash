@@ -11,7 +11,8 @@ TAG="stm32cmake"
 IMAGE_REPO="elainasuki/other"
 # 组合完整镜像名
 IMAGE="$IMAGE_REPO:$TAG"
-
+# 设置缓存镜像名
+CACHE="$IMAGE_REPO:cache"
 # 获取工作流中的环境变量来决定是否支持 arm64
 PLATFORMS="linux/amd64"  # 默认只支持 amd64 架构
 
@@ -26,6 +27,7 @@ if [[ "$1" == "--github-action" ]]; then
     -t "$IMAGE" \
     -f "$SCRIPT_DIR/Dockerfile" \
     --cache-from "type=registry,ref=$IMAGE" \
+    --cache-to "type=registry,ref=$IMAGE,mode=inline" \  
     "$SCRIPT_DIR" \
     --push
 else
