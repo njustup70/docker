@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y software-properties-common \
     && apt-get update && apt-get install -y cmake
 
 # 设置编译器路径到环境变量
-ENV PATH="/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin:${PATH}"
+ENV PATH="${PATH}:/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin"
 #把gdb python添加到环境变量
-ENV PYTHONPATH="/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/share/gcc-14.2.1/python/libstdcxx:${PYTHONPATH}"
+ENV PYTHONPATH="${PYTHONPATH}:/root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/share/gcc-14.2.1/python"
 #把gdb-py3软链接为gdb
 RUN ln -sf /root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin/arm-none-eabi-gdb-py3 \
     /root/.local/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/14.2.1-1.1.1/.content/bin/arm-none-eabi-gdb
