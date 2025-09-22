@@ -1,3 +1,0 @@
-编译了serial之后，执行一下source install/setup.bash
-
-再编译fdlink_ahrs
