@@ -33,9 +33,9 @@ if [[ "$1" == "--github-action" ]]; then
     -f "$SCRIPT_DIR/Dockerfile" \
     --cache-from "type=registry,ref=$IMAGE" \
     --cache-to type=inline \
-    "$PARENT_DIR" \
+    "$SCRIPT_DIR" \
     --push
 else
     echo "本地构建 $IMAGE"
-    docker build -t "$IMAGE" -f "$SCRIPT_DIR/Dockerfile" "$PARENT_DIR"
+    docker build -t "$IMAGE" -f "$SCRIPT_DIR/Dockerfile" "$SCRIPT_DIR"
 fi

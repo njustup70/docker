@@ -1,0 +1,24 @@
+version: '3'
+services:
+  ros-container:
+    image: elainasuki/ros:ros-noetic-full
+    container_name: ros-noetic-full
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - OMP_WAIT_POLICY=passive
+      - TERM=xterm-256color
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # - ~/.config/fish:/home/Elaina/.config/fish
+    network_mode: host
+    pid: "host" # 添加 pid 命名空间共享
+    ipc: "host" # 添加 ipc 命名空间共享    
+    privileged: true
+    stdin_open: true
+    tty: true
+    user: "Elaina"
+    # runtime: "nvidia"
+    working_dir: "/home/Elaina" # 指定默认工作目录
+    entrypoint: [ "/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && roscore" ]
