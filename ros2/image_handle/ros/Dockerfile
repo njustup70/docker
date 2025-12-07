@@ -11,14 +11,6 @@ RUN apt-get update \
 
 USER ${USERNAME}
 
-# 安装fish插件（切换到普通用户）
-RUN curl -L https://github.com/oh-my-fish/oh-my-fish/raw/master/bin/install | sudo tee install_omf > /dev/null || true && \
-    fish install_omf --noninteractive || true && \
-    fish -c "omf install bass" || true && \
-    sudo rm install_omf || true
-
-# 复制fish配置
-COPY packages/fish /home/${USERNAME}/.config/fish
 
 #安装前置依赖
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
