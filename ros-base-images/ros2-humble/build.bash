@@ -25,6 +25,8 @@ if [[ "$1" == "--github-action" ]]; then
     --platform $PLATFORMS \
     -t "$IMAGE" \
     -f "$SCRIPT_DIR/Dockerfile" \
+    --cache-from "type=registry,ref=$IMAGE" \
+    --cache-to type=inline \
     "$SCRIPT_DIR" \
     --push
 else
