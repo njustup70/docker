@@ -94,7 +94,9 @@ RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ && \
     chown -R $USERNAME:$GROUP_NAME /home/$USERNAME/.config/fish && \
     # 清理临时文件
     rm -rf /temp
-RUN apt-get update && apt-get install -y \ 
+# 第六阶段：安装额外ROS包和其他功能包
+RUN apt-get update && apt-get install -y \
+    libfmt-dev  nlohmann-json3-dev sysstat \ 
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     ros-${ROS_DISTRO}-rqt-tf-tree \
