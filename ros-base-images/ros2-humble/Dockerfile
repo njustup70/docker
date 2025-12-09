@@ -1,4 +1,4 @@
-FROM ghcr.io/sloretz/ros:humble-desktop
+FROM ghcr.io/sloretz/ros:humble-desktop-full
 
 # 定义构建参数
 ARG ROS_DISTRO=humble
