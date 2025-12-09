@@ -39,14 +39,11 @@ RUN apt-get update && apt-get install -y \
     nautilus nautilus-extension-gnome-terminal \
     # 网络和编译工具
     iputils-ping ninja-build ccache lld \
-    # fish终端
-    fish fzf \
     # 语言支持
     language-pack-zh-hans language-pack-zh-hans-base gettext 
-RUN apt-get update && apt-get install -y \
-    # 添加fish PPA并安装更新
-    add-apt-repository ppa:fish-shell/release-3 -y && \
-    apt-get update && apt-get install -y --only-upgrade fish && \
+#安装fish
+RUN add-apt-repository ppa:fish-shell/release-3 -y && \
+    apt-get update && apt-get install -y fish fzf && \
     # 清理apt缓存减少镜像大小
     rm -rf /var/lib/apt/lists/* && \
     # 安装oh-my-fish
