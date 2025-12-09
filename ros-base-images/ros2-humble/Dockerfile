@@ -1,4 +1,4 @@
-FROM ghcr.io/sloretz/ros:humble-desktop-full
+FROM ghcr.io/sloretz/ros:humble-desktop
 
 # 定义构建参数
 ARG ROS_DISTRO=humble
@@ -42,7 +42,8 @@ RUN apt-get update && apt-get install -y \
     # fish终端
     fish fzf \
     # 语言支持
-    language-pack-zh-hans language-pack-zh-hans-base gettext \
+    language-pack-zh-hans language-pack-zh-hans-base gettext 
+RUN apt-get update && apt-get install -y \
     # 添加fish PPA并安装更新
     add-apt-repository ppa:fish-shell/release-3 -y && \
     apt-get update && apt-get install -y --only-upgrade fish && \
@@ -60,18 +61,24 @@ RUN apt-get update && apt-get install -y \
 # 第三阶段：安装雷达驱动和ROS驱动
 RUN mkdir -p /home/$USERNAME/packages && \
     cd /home/$USERNAME/packages && \
-    # 安装Livox SDK
-    git clone https://github.com/Livox-SDK/Livox-SDK2.git && \
-    cd Livox-SDK2 && mkdir build && cd build && \
-    cmake .. && make -j$(nproc) && make install && \
-    # 安装ROS驱动
-    mkdir -p /home/$USERNAME/packages/ws_livox/src/ && \
-    cd /home/$USERNAME/packages/ws_livox/src/ && \
-    git clone https://github.com/Livox-SDK/livox_ros_driver2.git && \
+    # Livox SDK - 只构建和安装库文件
+    git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
+    cd Livox-SDK2 && \
+    mkdir build && cd build && \
+    cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) LivoxSDK2 && \
+    make install && \
+    # 清理源码
+    cd /home/$USERNAME/packages && \
+    rm -rf Livox-SDK2/.git && \
+    # ROS驱动
+    mkdir -p ws_livox/src/ && \
+    cd ws_livox/src/ && \
+    git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
     . /opt/ros/$ROS_DISTRO/setup.sh && \
-    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH && \
-    ./livox_ros_driver2/build.sh $ROS_DISTRO && \
-    echo "source ~/packages/ws_livox/install/setup.bash" >> /home/$USERNAME/.bashrc
+    ./livox_ros_driver2/build.sh $ROS_DISTRO \
+    #删除src目录以节省空间 
+    && rm -rf /home/$USERNAME/packages/ws_livox/src
 
 # 第四阶段：安装LLVM工具链
 RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 && \
