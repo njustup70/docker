@@ -5,8 +5,6 @@ ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
-ENV DEBIAN_FRONTEND=noninteractive
-
 # 设置工作目录
 WORKDIR /home/$USERNAME/packages
 
@@ -41,9 +39,6 @@ RUN chmod +x /usr/local/bin/*
 # 7. 统一构建所有 ROS2 包
 USER $USERNAME
 WORKDIR /home/$USERNAME/packages
-# 设置 CMAKE_PREFIX_PATH
-ENV CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO}:${CMAKE_PREFIX_PATH}
-
 # 构建 ros_ws（先构建依赖包）
 # 修改构建指令，先构建依赖包 hipnuc_lib_package，再构建其他包
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
@@ -51,10 +46,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     # 先构建 hipnuc_lib_package（hipnuc_imu 的依赖）
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select hipnuc_lib_package \
     # 再构建目标包（移除不存在的包）
-    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    --packages-select serial hipnuc_imu \
-    && . install/setup.sh \
-    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to rslidar_sdk
+    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
 USER $USERNAME
 RUN pip install --user \
     pyserial \
