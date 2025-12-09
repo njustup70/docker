@@ -75,7 +75,8 @@ RUN mkdir -p /home/$USERNAME/packages && \
     . /opt/ros/$ROS_DISTRO/setup.sh && \
     ./livox_ros_driver2/build.sh $ROS_DISTRO \
     #删除src目录以节省空间 
-    && rm -rf /home/$USERNAME/packages/ws_livox/src
+    && rm -rf /home/$USERNAME/packages/ws_livox/src \
+    && echo "source /home/$USERNAME/packages/ws_livox/install/setup.bash" >> /home/$USERNAME/.bashrc
 
 # 第四阶段：安装LLVM工具链
 RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 && \
