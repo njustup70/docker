@@ -32,7 +32,7 @@ RUN set -eux; \
 # 将所有apt-get操作合并到单个RUN指令中
 RUN apt-get update && apt-get install -y \
     # 基础工具
-    libc-bin net-tools bash-completion \
+    libc-bin net-tools bash-completion pip \
     software-properties-common dbus-x11 \
     # 开发工具
     gdb gdbserver vim curl wget nano \
