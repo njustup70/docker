@@ -45,21 +45,16 @@ WORKDIR /home/$USERNAME/packages
 ENV CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO}:${CMAKE_PREFIX_PATH}
 
 # 构建 ros_ws（先构建依赖包）
+# 修改构建指令，先构建依赖包 hipnuc_lib_package，再构建其他包
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && cd ros_ws \
-    && colcon build \
-    --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    --packages-select \
-    oradar_ros \
-    nagisa_imu \
-    serial \
-    hipnuc_imu \
-    ROS-TCP-Endpoint \
+    # 先构建 hipnuc_lib_package（hipnuc_imu 的依赖）
+    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select hipnuc_lib_package \
+    # 再构建目标包（移除不存在的包）
+    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    --packages-select serial hipnuc_imu \
     && . install/setup.sh \
-    && colcon build \
-    --cmake-args -DCMAKE_BUILD_TYPE=Release \
-    --packages-up-to rslidar_sdk
-
+    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to rslidar_sdk
 USER $USERNAME
 RUN pip install --user \
     pyserial \
@@ -75,7 +70,6 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-rosbag2 \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
-    ros-${ROS_DISTRO}-rmw-zenoh-cpp \
     ros-${ROS_DISTRO}-orbbec-camera \
     # 其他工具
     docker \
