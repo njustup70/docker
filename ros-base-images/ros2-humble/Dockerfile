@@ -94,16 +94,12 @@ RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ && \
     chown -R $USERNAME:$GROUP_NAME /home/$USERNAME/.config/fish && \
     # 清理临时文件
     rm -rf /temp
-
-# 设置默认用户
-USER $USERNAME
-WORKDIR /home/$USERNAME
-
-# 设置环境变量
-ENV ROS_DISTRO=$ROS_DISTRO
 RUN apt-get update && apt-get install -y \ 
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     ros-${ROS_DISTRO}-rqt-tf-tree \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
+# 设置环境变量
+ENV ROS_DISTRO=$ROS_DISTRO
+
 CMD ["/bin/bash"]
