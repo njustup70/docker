@@ -63,11 +63,11 @@ RUN mkdir -p /home/$USERNAME/packages && \
     cd Livox-SDK2 && \
     mkdir build && cd build && \
     cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j$(nproc) LivoxSDK2 && \
+    make -j6 && \
     make install && \
     # 清理源码
     cd /home/$USERNAME/packages && \
-    rm -rf Livox-SDK2/.git && \
+    rm -rf Livox-SDK2/ && \
     # ROS驱动
     mkdir -p ws_livox/src/ && \
     cd ws_livox/src/ && \
