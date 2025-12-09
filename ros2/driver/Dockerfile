@@ -46,7 +46,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     # 先构建 hipnuc_lib_package（hipnuc_imu 的依赖）
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select hipnuc_lib_package \
     # 再构建目标包（移除不存在的包）
-    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
+    && sudo colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
 USER $USERNAME
 RUN pip install --user \
     pyserial \
