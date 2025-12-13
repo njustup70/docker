@@ -1,18 +1,18 @@
 name: Docker镜像构建与推送  
 
 on:
-  push:
-    branches: ["*"]  #推送到[]分支时触发
-    paths:
-      - '**/Dockerfile*'      # 捕获所有以 Dockerfile 开头的文件，包括 Dockerfile 和 .Dockerfile
-      - '**/.dockerfile*'     # 捕获以 .dockerfile 开头的文件
-      - '**/build.bash'       # 捕获所有目录下的 build.bash 文件
-  # pull_request:
-  #   branches: ["*"]  #pr到[]分支时触发
+  # push:
+  #   branches: ["*"]  #推送到[]分支时触发
   #   paths:
   #     - '**/Dockerfile*'      # 捕获所有以 Dockerfile 开头的文件，包括 Dockerfile 和 .Dockerfile
   #     - '**/.dockerfile*'     # 捕获以 .dockerfile 开头的文件
   #     - '**/build.bash'       # 捕获所有目录下的 build.bash 文件
+  pull_request:
+    branches: ["*"]  #pr到[]分支时触发
+    paths:
+      - '**/Dockerfile*'      # 捕获所有以 Dockerfile 开头的文件，包括 Dockerfile 和 .Dockerfile
+      - '**/.dockerfile*'     # 捕获以 .dockerfile 开头的文件
+      - '**/build.bash'       # 捕获所有目录下的 build.bash 文件
 env:
   # 可设置为 docker.io 或 ghcr.io
   REGISTRY: docker.io
