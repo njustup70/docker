@@ -82,5 +82,4 @@ ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
-
 CMD ["/bin/bash"]
