@@ -17,7 +17,11 @@ USER ${USERNAME}
 #     && cd liorf_localization && git checkout liorf_localization-ros2 \
 #     && . /opt/ros/humble/setup.sh \
 #     && colcon build --symlink-install
-RUN pip install filterpy
+RUN pip install filterpy \
+    pyserial \
+    pyzmq \
+    crcmod \
+    pyserial-asyncio 
 USER root
 #安装导航依赖
 RUN apt-get update && apt-get install -y ros-humble-nav2-bringup
