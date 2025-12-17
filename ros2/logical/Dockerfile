@@ -29,5 +29,4 @@ RUN echo "source /opt/ros/humble/setup.bash" >> /home/$USERNAME/.bashrc \
     && echo "source ~/logical/install/setup.bash" >> /home/$USERNAME/.bashrc \
     && echo "bass source ~/logical/install/setup.bash" >> /home/$USERNAME/.config/fish/config.fish 
 
-
 CMD ["/bin/bash"]
