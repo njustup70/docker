@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  up70_hik:
+    build: .
+    container_name: up70_hik
+    environment:
+      - DISPLAY=${DISPLAY}
+      - TERM=xterm-256color
+      - ROS_LOG_DIR=/home/Elaina/ros2_driver/.ros_log
+      - ROS_DISTRO=humble
+      - AUTO_BUILD_PACKAGES=hik_camera_ros2 my_driver spear_docking rc_bringup
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev:/dev
+
+      # 你的 ros2_driver 工作区（已融合 hik_camera_ros2 + spear_docking）
+      - /home/hjw/up70/src/ros2_driver:/home/Elaina/ros2_driver:rw
+
+      # 启动脚本（容器启动后自动 colcon build）
+      - ./entrypoint.bash:/entrypoint.bash:ro
+
+    network_mode: host
+    pid: "host"
+    ipc: "host"
+    privileged: true
+    stdin_open: true
+    tty: true
+    working_dir: /home/Elaina/ros2_driver
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    entrypoint: ["/bin/bash", "/entrypoint.bash"]
