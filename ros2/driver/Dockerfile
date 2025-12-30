@@ -14,14 +14,14 @@ RUN mkdir -p \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
 # --------------------------------------------------------
-# [修改] 1. 安装 MVS SDK (使用 git clone 从你的仓库拉取)
+# [修正] 安装 MVS SDK (使用正确的 hjw132 仓库)
 # --------------------------------------------------------
 USER root
 # 确保安装 git
 RUN apt-get update && apt-get install -y git
 
-# 从你刚才创建的独立仓库拉取 MVS SDK
-# 这一步替代了原来的 COPY ./MVS /opt/MVS
+# 从你自己的仓库拉取 MVS SDK
+# 注意：确保 github.com/hjw132/hik_mvs_sdk 是 Public 公开仓库！
 RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS \
     && rm -rf /opt/MVS/.git
 
@@ -29,7 +29,6 @@ RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS \
 # 2. 复制源码包
 # --------------------------------------------------------
 # [注意] 这些是你主仓库里的代码，依然使用 COPY
-# 请确保 hik_camera_ros2 和 spear_docking 已经在 driver/packages/ 目录下
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2
 COPY --chown=${USERNAME}:${USER_GID} ./packages/spear_docking ./ros_ws/src/spear_docking
 
@@ -114,12 +113,9 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
     && echo 'bass source ~/ros2_driver/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
 
 # 10. 设置最终环境变量 (合并 MVS SDK 配置)
-# 这一步对于程序运行时找到动态库至关重要
 ENV MVCAM_SDK_PATH=/opt/MVS
 ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
-# [关键] LD_LIBRARY_PATH 追加 MVS 库路径
 ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
-
 ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
