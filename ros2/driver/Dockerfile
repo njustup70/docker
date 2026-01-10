@@ -16,8 +16,7 @@ RUN mkdir -p \
 #2.确保安装git，拉取海康驱动sdk并放置特定目录下
 USER root
 RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS \
-    && rm -rf /opt/MVS/.git
+RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS 
 
 # 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
@@ -54,6 +53,13 @@ RUN apt-get update && apt-get install -y \
 USER root
 COPY ./packages/mcap /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
+
+# 10. 设置最终环境变量 (合并 MVS SDK 配置)
+ENV MVCAM_SDK_PATH=/opt/MVS
+ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
+ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
+ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
+ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 # 6. 统一构建所有 ROS2 包
 USER root
@@ -101,12 +107,5 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'bass source ~/ros2_driver/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
-
-# 10. 设置最终环境变量 (合并 MVS SDK 配置)
-ENV MVCAM_SDK_PATH=/opt/MVS
-ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
-ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
-ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
-ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 CMD ["/bin/bash"]
