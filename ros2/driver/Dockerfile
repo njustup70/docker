@@ -24,8 +24,7 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/nagisa_imu ./ros_ws/src/nagisa_i
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
-COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2
-COPY --chown=${USERNAME}:${USER_GID} ./packages/spear_docking ./ros_ws/src/spear_docking
+COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2gi
 
 # 4. RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
