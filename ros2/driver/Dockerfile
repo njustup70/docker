@@ -13,12 +13,20 @@ RUN mkdir -p \
     ros_ws/src \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
+#2.确保安装git，拉取海康驱动sdk并放置特定目录下
+USER root
+RUN apt-get update && apt-get install -y git
+RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS \
+    && rm -rf /opt/MVS/.git
+
 # 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
 COPY --chown=${USERNAME}:${USER_GID} ./packages/nagisa_imu ./ros_ws/src/nagisa_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
+COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2
+COPY --chown=${USERNAME}:${USER_GID} ./packages/spear_docking ./ros_ws/src/spear_docking
 
 # 4. RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
@@ -30,33 +38,45 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/rslidar_airy/CMakeLists.txt ./rs
 
 #  安装必要的工具
 RUN apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-gps-msgs libpcap-dev 
+    ros-${ROS_DISTRO}-gps-msgs \
+    libpcap-dev \
+    # [新增] 视觉与编译依赖
+    build-essential \
+    cmake \
+    pkg-config \
+    libopencv-dev \
+    libopencv-contrib-dev \
+    python3-opencv \
+    python3-numpy 
+
 
 # 5. MCAP 工具
 USER root
 COPY ./packages/mcap /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
-# 7. 统一构建所有 ROS2 包
+
+# 6. 统一构建所有 ROS2 包
 USER root
 WORKDIR /home/$USERNAME/packages
-# 构建 ros_ws（先构建依赖包）
-# 修改构建指令，先构建依赖包 hipnuc_lib_package，再构建其他包
+# 构建过程：先 setup -> build 依赖包 -> source install -> build 所有包
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && cd ros_ws \
     # 先构建 hipnuc_lib_package（hipnuc_imu 的依赖）
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select serial\
     && . /home/$USERNAME/packages/ros_ws/install/setup.sh \
-    # 再构建目标包（移除不存在的包）
+    # 再构建所有目标包 (包含新加的 hik_camera_ros2 等)
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
+
+# 7. Python 依赖
 USER $USERNAME
 RUN pip install \
     pyserial \
     pyzmq \
     crcmod \
     pyserial-asyncio 
+
+# 8. 安装运行时 apt 包
 USER root
-# 6. 安装 apt 包（放在源码后面，因为 apt 包较大且较少变化）
-# 使用 ROS_DISTRO 变量
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-backward-ros \
     ros-${ROS_DISTRO}-realsense2-camera \
@@ -64,6 +84,10 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-rosbag2 \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
     ros-${ROS_DISTRO}-orbbec-camera \
+    # [新增] 视觉 ROS 运行时依赖
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-image-transport \
+    ros-${ROS_DISTRO}-camera-info-manager \
     # 其他工具
     docker \
     docker-compose \
@@ -71,14 +95,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /home/$USERNAME/packages/ros_ws/src
-# 8. 设置环境配置
+
+# 9. 设置 Shell 环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'bass source ~/ros2_driver/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
 
-# 9. 设置最终环境变量
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+# 10. 设置最终环境变量 (合并 MVS SDK 配置)
+ENV MVCAM_SDK_PATH=/opt/MVS
+ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
+ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
