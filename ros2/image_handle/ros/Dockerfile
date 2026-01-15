@@ -33,6 +33,4 @@ RUN echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "export PATH=\$HOME/.local/bin:\$PATH" >> /home/$USERNAME/.bashrc \
     && echo "set -gx PATH \$HOME/.local/bin \$PATH" >> /home/$USERNAME/.config/fish/config.fish
 
-ENV PYTHONPATH=/home/Elaina/yolo
-ENV PYTHONPATH=~/yolo
-ENV PYTHONPATH=/home/Elaina/yolo/cv_lib
+ENV PYTHONPATH="/home/Elaina/yolo:/home/Elaina/yolo/cv_lib:$PYTHONPATH"

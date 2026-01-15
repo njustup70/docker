@@ -74,6 +74,7 @@ RUN apt-get update && apt-get install -y \
 # 8. 设置环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
+    && echo "source ~/ros2_driver/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'bass source ~/ros2_driver/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
 
