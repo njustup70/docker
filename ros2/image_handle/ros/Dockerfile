@@ -7,7 +7,7 @@ ARG USER_GID=$USER_UID
 
 ARG GROUP_NAME=wheel
 RUN apt-get update \
-    && apt-get install -y  sudo vim nautilus 
+    && apt-get install -y  sudo vim nautilus v4l-utils
 
 USER ${USERNAME}
 
