@@ -34,7 +34,7 @@ if(${ENABLE_DIFOP_PARSE})
   add_definitions("-DENABLE_DIFOP_PARSE")
 endif(${ENABLE_DIFOP_PARSE})
 
-option(ENABLE_STAMP_WITH_LOCAL "Enable stamp point cloud with local time" OFF)
+option(ENABLE_STAMP_WITH_LOCAL "Enable stamp point cloud with local time" ON)
 if(${ENABLE_STAMP_WITH_LOCAL})
   add_definitions("-DENABLE_STAMP_WITH_LOCAL")
 endif(${ENABLE_STAMP_WITH_LOCAL})
