@@ -9,7 +9,7 @@ echo "脚本目录: $SCRIPT_DIR"
 echo "父目录: $PARENT_DIR"
 
 # 设置默认 tag
-TAG="ros2_driver"
+TAG="driverLogic"
 
 # 从外部传入的 IMAGE_REPO（格式：ghcr.io/user/repo 或 docker.io/user/repo）
 IMAGE_REPO="elainasuki/rc2026"
