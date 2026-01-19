@@ -104,9 +104,9 @@ RUN apt-get update && apt-get install -y \
 # 9. 设置 Shell 环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
-    && echo "source ~/ros2_driver/install/setup.bash" >> /home/${USERNAME}/.bashrc \
+    && echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
-    && echo 'bass source ~/ros2_driver/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
+    && echo 'bass source ~/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
 
 # 9. 设置最终环境变量
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
