@@ -57,7 +57,6 @@ RUN chmod +x /usr/local/bin/*
 ENV MVCAM_SDK_PATH=/opt/MVS
 ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
 ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
-ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 # 6. 统一构建所有 ROS2 包
@@ -110,7 +109,7 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
 
 # 9. 设置最终环境变量
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-ENV PYTHONPATH=/home/$USERNAME/ros2_driver/packages:$PYTHONPATH
+ENV PYTHONPATH=/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 CMD ["/bin/bash"]
