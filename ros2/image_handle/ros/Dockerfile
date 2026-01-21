@@ -7,7 +7,8 @@ ARG USER_GID=$USER_UID
 
 ARG GROUP_NAME=wheel
 RUN apt-get update \
-    && apt-get install -y  sudo vim nautilus v4l-utils
+    && apt-get install -y  sudo vim nautilus v4l-utils git-lfs \
+    && git lfs install --system
 
 USER ${USERNAME}
 
@@ -15,18 +16,10 @@ USER ${USERNAME}
 #安装前置依赖
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# 安装yolo
-RUN pip install imutils ultralytics openvino
+# 安装yolo ROS通信库 实验跟踪库 点云处理库 线程栈追踪库
+RUN pip install imutils ultralytics openvino roslibpy pyzmq comet_ml open3d py-spy
 #安装其他依赖
 RUN pip install zmq "numpy<2.0"
-# 安装ROS通信库
-RUN pip install roslibpy pyzmq
-# 安装实验跟踪库
-RUN pip install comet_ml
-# 安装点云处理库
-RUN pip install open3d
-# 安装线程栈追踪库
-RUN pip install py-spy
 
 USER root
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc \
