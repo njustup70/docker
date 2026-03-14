@@ -27,7 +27,7 @@ RUN pip3 install --no-cache-dir --upgrade pip
 # 安装 MuJoCo 及可视化（2026年最新版已自带大部分依赖）
 RUN pip3 install --no-cache-dir mujoco mujoco-python-viewer
 
-RUN pip3 install --no-cache-dir do-mpc casadi numpy matplotlib
+RUN pip3 install --no-cache-dir do-mpc casadi numpy matplotlib foxglove-websocket
 RUN pip uninstall numpy -y && pip install "numpy<2"
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
