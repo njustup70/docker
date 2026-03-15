@@ -114,3 +114,8 @@ ENV PYTHONPATH=/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 CMD ["/bin/bash"]
+
+
+
+
+
