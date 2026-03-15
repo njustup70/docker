@@ -63,7 +63,7 @@ RUN mkdir -p /home/$USERNAME/packages && \
     cd Livox-SDK2 && \
     mkdir build && cd build && \
     cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release && \
-    make -j6 && \
+    make -j2 && \
     make install && \
     # 清理源码
     cd /home/$USERNAME/packages && \
