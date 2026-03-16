@@ -5,6 +5,7 @@ ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
+ARG TARGETARCH
 # 设置工作目录
 WORKDIR /home/$USERNAME/packages
 
@@ -14,9 +15,10 @@ RUN mkdir -p \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
 #2.确保安装git，拉取海康驱动sdk并放置特定目录下
-USER root
-RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS 
+RUN apt-get update && apt-get install -y git && \
+    if [ "$TARGETARCH" = "amd64" ]; then \
+    git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS; \
+    fi
 
 # 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
@@ -25,6 +27,10 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2gi
+
+RUN if [ "$TARGETARCH" != "amd64" ]; then \
+    rm -rf ./ros_ws/src/hik_camera_ros2gi; \
+    fi
 
 # 4. RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
@@ -114,8 +120,3 @@ ENV PYTHONPATH=/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 CMD ["/bin/bash"]
-
-
-
-
-
