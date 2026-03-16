@@ -75,7 +75,8 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select serial\
     && . /home/$USERNAME/packages/ros_ws/install/setup.sh \
     # 再构建所有目标包 (包含新加的 hik_camera_ros2 等)
-    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
+    && export MAKEFLAGS="-j1" \
+    && colcon build --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # 7. Python 依赖
 USER $USERNAME
