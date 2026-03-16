@@ -87,7 +87,7 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-rosbag2 \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
-    ros-${ROS_DISTRO}-orbbec-camera \
+    # ros-${ROS_DISTRO}-orbbec-camera \
     # [新增] 视觉 ROS 运行时依赖
     ros-${ROS_DISTRO}-cv-bridge \
     ros-${ROS_DISTRO}-image-transport \
