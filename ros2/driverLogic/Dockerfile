@@ -1,10 +1,11 @@
-FROM elainasuki/ros:ros2-humble-full-1209
+FROM elainasuki/ros:ros2-humble-full-0316
 
 # 定义用户和用户组
 ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
+ARG TARGETARCH
 # 设置工作目录
 WORKDIR /home/$USERNAME/packages
 
@@ -14,9 +15,10 @@ RUN mkdir -p \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
 #2.确保安装git，拉取海康驱动sdk并放置特定目录下
-USER root
-RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS 
+RUN apt-get update && apt-get install -y git && \
+    if [ "$TARGETARCH" = "amd64" ]; then \
+    git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS; \
+    fi
 
 # 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
@@ -25,6 +27,10 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2gi
+
+RUN if [ "$TARGETARCH" != "amd64" ]; then \
+    rm -rf ./ros_ws/src/hik_camera_ros2gi; \
+    fi
 
 # 4. RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
@@ -69,7 +75,9 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select serial\
     && . /home/$USERNAME/packages/ros_ws/install/setup.sh \
     # 再构建所有目标包 (包含新加的 hik_camera_ros2 等)
-    && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release 
+    && export MAKEFLAGS="-j1" \
+    && colcon build --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
 
 # 7. Python 依赖
 USER $USERNAME
@@ -87,7 +95,7 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-rosbag2 \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
-    ros-${ROS_DISTRO}-orbbec-camera \
+    # ros-${ROS_DISTRO}-orbbec-camera \
     # [新增] 视觉 ROS 运行时依赖
     ros-${ROS_DISTRO}-cv-bridge \
     ros-${ROS_DISTRO}-image-transport \
