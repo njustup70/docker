@@ -1,0 +1,510 @@
+# Copyright (c) 2025 swiftycode (gitee.com/swiftycode | github.com/swiftycode256)
+# --使用条款--
+# 【请仔细阅读该使用条款】
+# 根据以下条款，你可以使用、分发、和修改该文件，以及对文件内容进行二次创作：
+# - 所有副本必须保留上方的【作者版权说明】和【该使用须知】
+# - 如果对文件中的文字内容有任何修改（除细微问题修复外），必须在现有作者版权说明后添加相关作者/你的修改署名（如"Modified by <NAME> (Copyright (c) 2025 <NAME>)")
+# - 不得以任何商业或盈利通途传播该文件（非商业用途）
+# - 不得以侵犯他人及本作者合法权益、违反法律法规或相关平台规定、或严重违背价值观常识的方式传播和修改该文件
+# - 除原文件中包含的内容外，本作者不对任何他人额外修改或添加的内容部分承担任何责任
+# 
+# * 原作者有权追究任何违反以上使用须知的使用
+# --Terms of use--
+# #Please read this terms of use carefully#
+# You can use, distribute, and modify this file under the following terms and conditions:
+# - All copies must retain the above *author copyright notice* and *this terms of use*
+# - If you modify the message contents in this file (except small fixes), you must add your modification attribution or of the relevant authors (e.g. "Modified by <NAME> (Copyright (c) 2025 <NAME>)")
+# - You must not distribute this file under commercial or profit purposes (Non-commercial use only)
+# - You may not distribute and modify this file in a way that harms the rights of this author or others, violate laws and relevant platform rules, or severely violates common ethics and values
+# - Except the contents included in the original file, this author does not claim any responsibility for modifications or additions by others
+# 
+# * The original author deserves the right to take action on any violations of these terms
+
+# 使用方式（暂不支持Windows系统）：
+# - 根据仓库中README文档说明安装`clitheme`: 
+#   https://gitee.com/swiftycode/clitheme 或
+#   https://github.com/swiftycode256/clitheme
+# - 使用以下命令行指令读取并设定该文件中的定义（使用该文件的路径以替换<文件名称>）：
+#   clitheme apply-theme <文件名称> 或
+#   python3 -m clitheme apply-theme <文件名称>
+#   （可以把该文件拖动到命令行窗口中以插入文件名称）
+# - 使用`clitheme-exec`执行对应的程序，如：
+#   clitheme-exec fish 或
+#   python3 -m clitheme.exec fish
+
+!require_version 2.0-beta3
+
+{header_section}
+    name 39neko theme
+    # 建议修改文件内容后更新该版本信息
+    version 1.0
+    [description]
+        一个一直说"杂鱼♡～"的主题，能尽可能地满足主人各种的需求
+            - clang主题部分文本来源于kawaii-gcc项目 (https://github.com/Bill-Haku/kawaii-gcc)
+    [/description]
+    supported_apps fish python3 rustc clang java
+{/header_section}
+
+{substrules_section}
+    set_options substvar substesc
+    setvar:locale default
+
+    # 所有的正则表达式和对应的替换表达式使用的是Python的内置re模块语法（详细请见： https://docs.python.org/zh-cn/3/howto/regex.html ）
+    setvar:escseq ({{ESC}}[\[\(\]\)][\d\?;]*?[a-zA-Z]|{{ESC}}.)
+    [filter_commands]
+        fish
+    [/filter_commands] foregroundonly
+        # Reduce accidental matches with escape pattern and only matching start of line
+        setvar:escinner {{escseq}}
+        setvar:escpattern (?P<esc>{{escinner}}*)
+        # For some ambiguous messages, there must be escape patterns before it. 
+        # Require escape patterns to further reduce accidental matches
+        setvar:escpattern_req (?P<esc>{{escinner}}+)
+        [subst_regex] ^{{escpattern}}Welcome to fish, the friendly interactive shell
+            locale:{{locale}} \g<esc>欢迎使用本喵的服务喵！～我是超友好，超有用的{{ESC}}[4;32mfish{{ESC}}[0m喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}Type (?P<esc2>{{escinner}}*)help(?P<esc3>{{escinner}}*) for instructions on how to use fish
+            locale:{{locale}} \g<esc>如果想要了解我，只需要输入\g<esc2>"help"\g<esc3>，我就会随时服务主人喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}fish is running in private mode, history will not be persisted\.
+            locale:{{locale}} \g<esc>本喵已开启私密模式喵～主人的秘密本喵会乖乖保守的喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): Unknown command: (?P<name>[^\r\n]+)
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～主人想找的"\g<name>"不存在呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): \$\? is not the exit status\. In fish, please use \$status\.
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～在本喵这里获取返回值可不是"$?"呢～本喵想看杂鱼乖乖的使用更友善的"$status"喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): \$\$ is not the pid\. In fish, please use \$fish_pid\.
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～在本喵这里获取PID可不是"$$"呢～人家想看杂鱼乖乖的使用更友善的"$fish_pid"喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): (?P<name>.+) is not supported\. In fish, please use [']?(?P<phrase>[^']+)[']?\.
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～本喵这里不支持"\g<name>"呢～人家想看杂鱼乖乖的使用更友善的"\g<phrase>"喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): Expected a variable name after this \$\.
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～在本喵这里，"$"后需要指定变量名称呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<fish>fish): (?P<name>.+) is not a valid variable in fish\.
+            locale:{{locale}} \g<esc>[\g<fish>] 杂鱼♡～在本喵这里，"\g<name>"不是一个有效的变量名称呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}cd: The directory '(?P<name>.+)' does not exist
+            locale:{{locale}} \g<esc>cd: 杂鱼♡～主人想找的"\g<name>"不存在呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}cd: Permission denied: '(?P<name>.+)'
+            locale:{{locale}} \g<esc>cd: 杂鱼♡～主人尝试访问一个没有权限的文件"\g<name>"呢～真是个杂鱼♡～(Permission denied)
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}warning: An error occurred while redirecting file '(?P<name>.+)'
+            locale:{{locale}} \g<esc>糟……糟糕！～本喵在重……重定向文件"\g<name>"时出错了！都……都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<op>.+): (?P<msg>No such file or directory)
+            locale:{{locale}} \g<esc>(\g<op>) 杂鱼♡～主人想找的文件不存在呢～真是个杂鱼♡～(\g<msg>)
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<op>.+): (?P<msg>Permission denied|权限不够)
+            locale:{{locale}} \g<esc>(\g<op>) 杂鱼♡～主人尝试访问一个没有权限的文件呢～真是个杂鱼♡～(\g<msg>)
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<op>.+): (?P<msg>Operation not permitted|不允许的操作)
+            locale:{{locale}} \g<esc>(\g<op>) 杂鱼♡～主人尝试执行一个不允许的操作呢～真是个杂鱼♡～(\g<msg>)
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}(?P<op>.+): (?P<msg>No space left on device|设备上没有空间)
+            locale:{{locale}} \g<esc>(\g<op>) 杂鱼♡～主人的硬盘已经塞不下去了～真是个杂鱼♡～(\g<msg>)
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}There are still jobs active:
+            locale:{{locale}} \g<esc>\n杂鱼♡～主人还有未完成的任务呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}A second attempt to exit will terminate them\.
+            locale:{{locale}} \g<esc>如果主人再次尝试退出，这些进程会被残忍的杀死喵～杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}Use 'disown PID' to remove jobs from the list without terminating them\.
+            locale:{{locale}} \g<esc>但……但是，如果主人真的想要保留这些进程，主人可以使用'disown <PID>'喵！～保护进程，人人有责喵！～
+        [/subst_regex]
+        [subst_regex] (?P<fish>fish): Process (?P<pid>\d+), '(?P<pname>.+)' from job (?P<jnum>\d+), '(?P<name>.+)' terminated by signal (?P<sig>[^\r\n]+)
+            locale:{{locale}} [\g<fish>] 杂鱼♡～"\g<name>"中的"\g<pname>" (\g<jnum>:\g<pid>) 停……停止了喵！～都……都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] (?P<fish>fish): Job (?P<num>.+), '(?P<name>.+)' has stopped
+            locale:{{locale}} [\g<fish>] 杂鱼♡～"\g<name>" (\g<num>) 停……停止了喵！～都……都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] (?P<fish>fish): Job (?P<num>.+), '(?P<name>.+)' terminated by signal (?P<sig>[^\r\n]+)
+            locale:{{locale}} [\g<fish>] 杂鱼♡～"\g<name>" (\g<num>) 寄……寄了喵 [\g<sig>]！～都……都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] ^{{escpattern}}Send job (?P<num>\d+) \((?P<name>.+)\) to foreground
+            locale:{{locale}} \g<esc>主人稍等喵！～"\g<name>" (\g<num>) 正……正在赶往前线喵呜！～
+        [/subst_regex]
+    [filter_commands]
+        python
+        python3
+    [/filter_commands]
+        # set_options subststderronly
+        setvar:ep {{escseq}}*
+        setvar:ep1 (?P<c1>{{ep}})
+        setvar:ep2 (?P<c2>{{ep}})
+        setvar:ep3 (?P<c3>{{ep}})
+        setvar:: {{ep2}}: {{ep3}}
+        setvar:ep4 (?P<c4>{{ep}})
+        setvar:ep5 (?P<c5>{{ep}})
+        setvar:ep6 (?P<c6>{{ep}})
+        setvar:msgclr \g<c2>\g<c3>
+        [subst_regex] ^Type "help", "copyright", "credits" or "license" for more information\.
+            [locale] {{locale}}
+                主人，我是超萌超可爱的Python喵！很高兴为你服务喵！～
+                如果你想了解我，请使用"help"、"copyright"、"credits"、或"license"喵～
+            [/locale]
+        [/subst_regex]
+        [subst_regex] ^(?P<esc>{{ep}})Traceback \(most recent call last\):
+            locale:{{locale}} 杂鱼♡～主人的代码出错了呢～真是个杂鱼♡～：
+        [/subst_regex]
+        # e.g. File "<stdin>", line 1, in <module>
+        [subst_regex] ^(?P<spc>{{ep}}[ ]{2})File {{ep1}}\"(?P<filename>.+)\"{{ep2}}, line {{ep3}}(?P<line>\d+){{ep4}}, in {{ep5}}(?P<func>[^{{ESC}}\r\n]+){{ep6}}
+            locale:{{locale}} \g<spc>在文件\g<c1>"\g<filename>"\g<c2>中第\g<c3>\g<line>\g<c4>行的函数\g<c5>\g<func>\g<c6>中～
+        [/subst_regex]
+        [subst_regex] ^(?P<spc>{{ep}}[ ]{2})File {{ep1}}\"(?P<filename>.+)\"{{ep2}}, line {{ep3}}(?P<line>\d+){{ep4}}
+            locale:{{locale}} \g<spc>在文件\g<c1>"\g<filename>"\g<c2>中的第\g<c3>\g<line>\g<c4>行～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}SyntaxError{{:}}invalid syntax\. Perhaps you forgot a comma\?
+            locale:{{locale}} \g<c1>(SyntaxError){{msgclr}} 主人的代码有语法错误呢～真是个杂鱼♡～（或许主人忘记加逗号了喵？～）
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}SyntaxError{{:}}invalid syntax
+            locale:{{locale}} \g<c1>(SyntaxError){{msgclr}} 主人的代码有语法错误呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}SyntaxError{{:}}Did you mean to use 'from \.\.\. import \.\.\.' instead\?
+            locale:{{locale}} \g<c1>(SyntaxError){{msgclr}} 主人竟然忘记使用'from ... import ...'语法呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}(?P<error>NameError){{:}}name '(?P<name>.+)' is not defined\. Did you mean: '(?P<name2>.+)'\? Or did you forget to import '(?P<name3>.+)'\?
+            locale:{{locale}} \g<c1>(\g<error>){{msgclr}} 主人尝试访问的"\g<name>"不存在呢～真是个杂鱼♡～（或许主人要找的是'\g<name2>'喵？或者主人忘记import '\g<name3>'了喵？～）
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}(?P<error>NameError){{:}}name '(?P<name>.+)' is not defined\. Did you mean: '(?P<name2>.+)'\?
+            locale:{{locale}} \g<c1>(\g<error>){{msgclr}} 主人尝试访问的"\g<name>"不存在呢～真是个杂鱼♡～（或许主人要找的是'\g<name2>'喵？～）
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}(?P<error>NameError){{:}}name '(?P<name>.+)' is not defined\. Did you forget to import '(?P<name2>.+)'\?
+            locale:{{locale}} \g<c1>(\g<error>){{msgclr}} 主人尝试访问的"\g<name>"不存在呢～真是个杂鱼♡～（或许主人忘记import '\g<name2>'了喵？～）
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}(?P<error>KeyError){{:}}(?P<a>')?(?P<name>[^\r\n{{ESC}}]*)(?(a)'|)
+        [subst_regex] ^{{ep1}}(?P<error>NameError){{:}}name '(?P<name>.+)' is not defined
+        [subst_regex] ^{{ep1}}(?P<error>ModuleNotFoundError){{:}}No module named '(?P<name>.+)'; '.+' is not a package
+        [subst_regex] ^{{ep1}}(?P<error>ModuleNotFoundError){{:}}No module named '(?P<name>.+)'
+            locale:{{locale}} \g<c1>(\g<error>){{msgclr}} 主人尝试访问的"\g<name>"不存在呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}AttributeError{{:}}module '(?P<name1>.+)' has no attribute '(?P<name2>.+)'\. Did you mean: '(?P<name3>.+)'\?
+        [subst_regex] ^{{ep1}}AttributeError{{:}}'(?P<name1>.+)' object has no attribute '(?P<name2>.+)'\. Did you mean: '(?P<name3>.+)'\?
+            locale:{{locale}} \g<c1>(AttributeError){{msgclr}} 主人尝试访问"\g<name1>"中的"\g<name2>"不存在呢～真是个杂鱼♡～（或许主人要找的是'\g<name3>'喵？～）
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}AttributeError{{:}}module '(?P<name1>.+)' has no attribute '(?P<name2>.+)'
+        [subst_regex] ^{{ep1}}AttributeError{{:}}'(?P<name1>.+)' object has no attribute '(?P<name2>.+)'
+            locale:{{locale}} \g<c1>(AttributeError){{msgclr}} 主人尝试访问"\g<name1>"中的"\g<name2>"不存在呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}TypeError{{:}}unhashable type: '(?P<name>.+)'
+            locale:{{locale}} \g<c1>(AttributeError){{msgclr}} 主人竟然尝试计算"\g<name>"类型的哈希值～真是个杂鱼♡～(unhashable type)
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}ZeroDivisionError{{:}}division by zero
+            locale:{{locale}} \g<c1>(ZeroDivisionError){{msgclr}} 主人竟然尝试把数字除与0呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}IndexError{{:}}(?P<msg>(?P<name>\w+) index out of range)
+            locale:{{locale}} \g<c1>(IndexError){{msgclr}} 主人竟然尝试偷窥本喵的隐私呢～真是个杂鱼♡～(\g<msg>)
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}IndentationError{{:}}(unexpected indent)
+            locale:{{locale}} \g<c1>(IndentationError){{msgclr}} 主人代码中的缩进太多了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}IndentationError{{:}}expected an indented block after '(?P<name>.+)' statement on line (?P<num>\d+)
+            locale:{{locale}} \g<c1>(IndentationError){{msgclr}} 主人竟然敢在第\g<num>行的'\g<name>'语句后不加缩进～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}IndentationError{{:}}expected an indented block after function definition on line (?P<num>\d+)
+            locale:{{locale}} \g<c1>(IndentationError){{msgclr}} 主人竟然敢在第\g<num>行的函数定义后不加缩进～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}IndentationError{{:}}expected an indented block
+            locale:{{locale}} \g<c1>(IndentationError){{msgclr}} 主人竟然敢在语句后不加缩进～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}TabError{{:}}inconsistent use of tabs and spaces in indentation
+            locale:{{locale}} \g<c1>(TabError){{msgclr}} 主人居然把缩进和空格放在一起用～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] ^During handling of the above exception, another exception occurred:
+            locale:{{locale}} 主人的代码竟然同时出现了多个报错呢～真是个杂鱼♡～：
+        [/subst_regex]
+        [subst_regex] ^{{ep1}}SyntaxError{{:}}leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers
+            locale:{{locale}} \g<c1>(SyntaxError){{msgclr}} 主人竟然往数字前加很多的0呢～真是个杂鱼♡～（如果主人想要输入八进制数字，只需要以"0o"开头就可以了喵！～）
+        [/subst_regex]
+    [filter_commands]
+        clang
+        clang++
+        gcc
+        g++
+        cc
+        c++
+    [/filter_commands]
+        setvar:p_left (?P<prefix>^{{escseq}}*(.+:\d+:\d+:) {{escseq}}*)
+        setvar:p_right (?P<esc>{{escseq}}*)
+        setvar:error_prefix {{p_left}}error: {{p_right}}
+        setvar:warning_prefix {{p_left}}warning: {{p_right}}
+        setvar:note_prefix {{p_left}}note: {{p_right}}
+        setvar:fatal_error_prefix {{p_left}}fatal error: {{p_right}}
+        [subst_regex] (?P<prefix>.+?: {{escseq}}*)error: (?P<esc>{{escseq}}*)no input files
+            locale:{{locale}} \g<prefix>笨蛋！: \g<esc>主人忘记指定输入文件了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})unknown type name '(?P<type>.+)'
+            locale:{{locale}} \g<metaprefix>未知的类型名'\g<type>',是忘了定义了吗喵？
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{warning_prefix}})incompatible pointer types assigning to '(?P<name1>.+)' from '(?P<name2>.+)'
+            locale:{{locale}} \g<metaprefix>主人尝试通过'\g<name1>'从不兼容的指针类型赋值为'\g<name2>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{warning_prefix}})incompatible pointer types returning '(?P<name1>.+)' from a function with result type '(?P<name2>.+)'
+            locale:{{locale}} \g<metaprefix>主人的代码尝试在返回'\g<name1>'的函数中返回'\g<name2>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int
+            locale:{{locale}} \g<metaprefix>你不说咱就当它是'int'了喵～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})address of register variable requested
+            locale:{{locale}} \g<metaprefix>主人的代码尝试引用寄存器变量的地址呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})array type '.+' is not assignable
+            locale:{{locale}} \g<metaprefix>主人竟然尝试进行无效的数组赋值呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})use of '(?P<name>.+)' with tag type that does not match previous declaration
+            locale:{{locale}} \g<metaprefix>主人尝试把'\g<name>'定义为类型错误的标记呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})call to undeclared library function '(?P<name>.+)' with type '.+'; ISO C99 and later do not support implicit function declarations
+            locale:{{locale}} \g<metaprefix>主人刚刚隐式声明了函数'\g<name>'，这个特性早就被弃用了，是学某本C语言教科书的杂鱼呢♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{note_prefix}})include the header (?P<headername>.+) or explicitly provide a declaration for '(?P<name>.+)'
+            locale:{{locale}} \g<metaprefix>主人忘记#include\g<headername>或提供对'\g<name>'的定义呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{warning_prefix}})too many arguments in call to '(?P<name>.+)'
+            locale:{{locale}} \g<metaprefix>函数'\g<name>'的参数太多了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})redefinition of '(?P<name>.+)' with a different type: '.+' vs '.+'
+            locale:{{locale}} \g<metaprefix>'\g<name>'的类型限定冲突了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})cannot combine with previous 'long long' declaration specifier
+            locale:{{locale}} \g<metaprefix>'long long long'对人家来说太长了喵呜～都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})use of undeclared identifier '(?P<name>.+)'
+            locale:{{locale}} \g<metaprefix>主人尝试引用未声明的标识符'\g<name>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{error_prefix}})incompatible pointer to integer conversion initializing '(?P<name1>.+)' with an expression of type '(?P<name2>.+)'
+            locale:{{locale}} \g<metaprefix>主人尝试初始化将指针赋给整数并且没有类型转换呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{fatal_error_prefix}})'(?P<name>.+)' file not found
+            locale:{{locale}} \g<metaprefix>主人在代码中尝试访问一个不存在的文件呢～真是个杂鱼♡～
+        [/subst_regex]
+
+        # general 'previous use/definition' substitutions
+        [subst_regex] (?P<metaprefix>{{note_prefix}})previous definition is here
+            locale:{{locale}} \g<metaprefix>在这里声明的杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<metaprefix>{{note_prefix}})previous use is here
+            locale:{{locale}} \g<metaprefix>在这里调用的杂鱼♡～
+        [/subst_regex]
+        
+        # general error/warning/note substitutions
+        [subst_regex] {{error_prefix}}
+            locale:{{locale}} \g<prefix>笨蛋！: \g<esc>
+        [/subst_regex]
+        [subst_regex] {{warning_prefix}}
+            locale:{{locale}} \g<prefix>杂鱼～: \g<esc>
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}
+            locale:{{locale}} \g<prefix>才...才不会告诉杂鱼♡～: \g<esc>
+        [/subst_regex]
+        [subst_regex] {{fatal_error_prefix}}
+            locale:{{locale}} \g<prefix>寄了: \g<esc>
+        [/subst_regex]
+
+        # Warning/error summary
+        [subst_regex] (?P<prefix>^{{escseq}}*)(?P<warn>\d+) warnings and (?P<err>\d+) errors generated\.
+            locale:{{locale}} \g<prefix>主人的代码竟然能让本喵提出\g<warn>个警告和发现\g<err>个错误呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<prefix>^{{escseq}}*)(?P<warn>\d+) warnings generated\.
+            locale:{{locale}} \g<prefix>主人的代码竟然能让本喵提出\g<warn>个警告呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] (?P<prefix>^{{escseq}}*)(?P<err>\d+) errors generated\.
+            locale:{{locale}} \g<prefix>主人的代码竟然能让本喵发现\g<err>个错误呢～真是个杂鱼♡～
+        [/subst_regex]
+    [filter_commands]
+        java
+        javac
+    [/filter_commands]
+        setvar:innerprefix (?P<innerprefix>.+:\d+: )
+        setvar:err_prefix ^(?P<prefix>{{innerprefix}}error: )
+        setvar:warn_prefix ^(?P<prefix>{{innerprefix}}warning: (?P<prefixtype>\[.+?\] )?)
+        setvar:err_type_prefix ^(?P<prefix>{{innerprefix}}error: incompatible types: )
+        [subst_regex] {{err_prefix}}'(?P<name>.+)' expected
+            locale:{{locale}} \g<prefix>主人忘记在这里添加'\g<name>'了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}not a statement
+            locale:{{locale}} \g<prefix>在本喵这里，这不是一个有效的语句呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}unclosed string literal
+            locale:{{locale}} \g<prefix>主人在代码中忘记结束字符串语句了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}illegal start of expression
+            locale:{{locale}} \g<prefix>在本喵这里，这不是一个有效的语句开头呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}reached end of file while parsing
+            locale:{{locale}} \g<prefix>本喵解析时发现主人竟然没有把代码写完呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_type_prefix}}missing return value
+            locale:{{locale}} \g<prefix>主人竟然忘记指定返回值了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}cannot find symbol
+            locale:{{locale}} \g<prefix>主人竟然尝试使用一个未定义的符号呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}non-static variable (?P<name>.+) cannot be referenced from a static context
+            locale:{{locale}} \g<prefix>主人竟然在static函数中尝试使用非static变量呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_type_prefix}}possible lossy conversion from (?P<name1>.+) to (?P<name2>[^\r\n]+)
+            locale:{{locale}} \g<prefix>主人尝试通过转换\g<name1>为\g<name2>损失精确度呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}unexpected type
+            locale:{{locale}} \g<prefix>主人使用了一个本喵意料之外的类型呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_type_prefix}}(?P<name1>.+) cannot be converted to (?P<name2>[^\r\n]+)
+            locale:{{locale}} \g<prefix>在本喵这里，\g<name1>不能转换成\g<name2>呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}variable (?P<name1>.+) is already defined in method (?P<name2>[^\r\n]+)
+            locale:{{locale}} \g<prefix>主人竟然尝试重复定义一个已经存在于函数'\g<name2>'中的变量'\g<name1>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}missing return statement
+            locale:{{locale}} \g<prefix>主人忘记在函数中使用return返回数值了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}unreachable statement
+            locale:{{locale}} \g<prefix>这里的语句永远不会被执行到呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}variable (?P<name>.+) might not have been initialized
+            locale:{{locale}} \g<prefix>主人忘记初始化变量'\g<name>'了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{warn_prefix}}(?P<function>.+) in (?P<class>.+) has been deprecated and marked for removal
+            locale:{{locale}} \g<prefix>'\g<class>'中的'\g<function>'在本喵这里已经被弃用并且打算移除了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{warn_prefix}}unchecked call to (?P<function>.+) as a member of the raw type (?P<type>[^\r\n]+)
+            locale:{{locale}} \g<prefix>主人在调用raw type '\g<type>'中的'\g<function>'时太不小心了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{warn_prefix}}unchecked cast
+            locale:{{locale}} \g<prefix>主人在转换类型时太不小心了呢～真是个杂鱼♡～
+        [/subst_regex]
+
+        [subst_regex] ^(?P<spc>[ ]{2})symbol:[ ]+(?P<name>[^\r\n]+)
+            locale:{{locale}} \g<spc>杂鱼尝试引用的符号～：\g<name>
+        [/subst_regex]
+        [subst_regex] ^(?P<spc>[ ]{2})location:[ ]+(?P<name>[^\r\n]+)
+            locale:{{locale}} \g<spc>杂鱼所在的位置～：\g<name>
+        [/subst_regex]
+        [subst_regex] ^(?P<spc>[ ]{2})required:[ ]+(?P<name>[^\r\n]+)
+            locale:{{locale}} \g<spc>本喵想让杂鱼用的～：\g<name>
+        [/subst_regex]
+        [subst_regex] ^(?P<spc>[ ]{2})found:[ ]+(?P<name>[^\r\n]+)
+            locale:{{locale}} \g<spc>杂鱼实际上用的～：\g<name>
+        [/subst_regex]
+
+        [subst_regex] {{err_type_prefix}}
+            locale:{{locale}} \g<innerprefix>杂鱼♡～（类型错误）：
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}
+            locale:{{locale}} \g<innerprefix>杂鱼♡～：
+        [/subst_regex]
+        [subst_regex] {{warn_prefix}}
+            locale:{{locale}} \g<innerprefix>喵呜～：\g<prefixtype>
+        [/subst_regex]
+
+        [subst_regex] ^(?P<num>\d+) error(s)?(?P<suffix>\s*$)
+            locale:{{locale}} 本喵发现了\g<num>个错误呢～杂鱼♡～\g<suffix>
+        [/subst_regex]
+        [subst_regex] ^(?P<num>\d+) warning(s)?(?P<suffix>\s*$)
+            locale:{{locale}} 本喵提示了主人\g<num>次呢～杂鱼♡～\g<suffix>
+        [/subst_regex]
+
+        [subst_regex] ^error: compilation failed
+            locale:{{locale}} 杂鱼♡～： 主人的代码竟然没有通过本喵的检查呢～真是个杂鱼♡～
+        [/subst_regex]
+    [filter_commands]
+        rustc
+        cargo
+    [/filter_commands]
+        setvar:err_prefix ^(?P<prefix>(?P<e1>{{escseq}}*)error(?P<errcode>\[E\d+\])?(?P<e2>{{escseq}}*): )
+        setvar:note_prefix ^(?P<prefix>(?P<e1>({{escseq}}|[\s=])*)note(?P<e2>{{escseq}}*): )
+        setvar:help_prefix ^(?P<prefix>(?P<e1>({{escseq}}|[\s=])*)help(?P<e2>{{escseq}}*): )
+        setvar:annotation_prefix ^(?P<prefix>({{escseq}}|[\s^+|-])+)
+        [subst_regex] {{err_prefix}}borrow of moved value: `(?P<name>.+)`
+            locale:{{locale}} \g<prefix>主人竟然尝试借用已经被移动的数值'\g<name>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}format argument must be a string literal
+            locale:{{locale}} \g<prefix>在本喵这里，format的参数必须是一个字符串呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}cannot find type `(?P<type>.+)` in this scope
+            locale:{{locale}} \g<prefix>本喵找不到类型'\g<type>'，怎么找都找不到喵！～都是杂鱼害的喵！～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}mismatched types
+            locale:{{locale}} \g<prefix>主人竟然使用了不兼容的类型呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}`(?P<type>.+)` doesn't implement `(?P<trait>.+)`
+            locale:{{locale}} \g<prefix>主人使用的类型'\g<type>'不兼容'\g<trait>'呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}aborting due to (?P<num>\d+) previous errors
+            locale:{{locale}} \g<prefix>本喵竟然发现了\g<num>个错误，一定会让杂鱼乖乖接受惩罚喵！♡～
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}consider changing this parameter type in function `(?P<name>.+)` to borrow instead if owning the value isn't necessary
+            locale:{{locale}} \g<prefix>如果主人觉得函数'\g<name>'不需要拥有这个数值，可以把参数类型改成【借用】喵！～
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}this error originates in the macro `(?P<macro1>.+)` which comes from the expansion of the macro `(?P<macro2>.+)` \(in Nightly builds, run with -Z macro-backtrace for more info\)
+            locale:{{locale}} \g<prefix>这个错误源自由macro '\g<macro2>'展开成的macro '\g<macro1>'（杂鱼可在nightly版本使用'-Z macro-backtrace'运行编译器以获取更多信息喵～）
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}`(?P<function>.+)` takes ownership of the receiver `(?P<recv>.+)`, which moves `(?P<value>.+)`
+            locale:{{locale}} \g<prefix>函数'\g<function>'对接收方'\g<recv>'爆发占有欲，导致数值'\g<value>'被移动喵～
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}in format strings you may be able to use `\{:\?\}` \(or \{:\#\?\} for pretty\-print\) instead
+            locale:{{locale}} \g<prefix>在format字符串中，主人可以使用'{:?}'或'{:#?}'呢～这个杂鱼竟然忘记了呢♡～
+        [/subst_regex]
+        [subst_regex] {{help_prefix}}consider cloning the value if the performance cost is acceptable
+            locale:{{locale}} \g<prefix>如果主人愿意牺牲性能，可以考虑复制这个数值喵！～
+        [/subst_regex]
+        [subst_regex] {{help_prefix}}consider iterating over a slice of the `(?P<type>.+)`'s content to avoid moving into the `(?P<loop>.+)` loop
+            locale:{{locale}} \g<prefix>主人可以考虑遍历'\g<type>'的slice以防止'\g<loop>'循环对数值爆发占有欲喵～
+        [/subst_regex]
+        [subst_regex] {{help_prefix}}you might be missing a string literal to format with
+            locale:{{locale}} \g<prefix>主人可能忘记添加一个字符串了呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{help_prefix}}the trait `(?P<trait>.+)` is not implemented for `(?P<type>.+)`
+            locale:{{locale}} \g<prefix>类型'\g<type>'不兼容'\g<trait>'呢～这个杂鱼竟然忘记了呢♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}move occurs because `(?P<name>.+)` has type `(?P<type>.+)`, which does not implement the `(?P<trait>.+)` trait
+            locale:{{locale}} \g<prefix>杂鱼♡～数值'\g<name>'因为类型'\g<type>'不支持属性'\g<trait>'而被移动了呢～这个杂鱼竟然忘记了呢♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}value moved here
+            locale:{{locale}} \g<prefix>数值被移动到这里了呢～杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}value borrowed here after move
+            locale:{{locale}} \g<prefix>主人竟然尝试再次借用这个数值！本喵生气了！变态♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}this parameter takes ownership of the value
+            locale:{{locale}} \g<prefix>杂鱼♡～这个参数会把数值占位所有呢～这个杂鱼竟然忘记了呢♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}in this function
+            locale:{{locale}} \g<prefix>在这个函数中～杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}`(?P<name>.+)` moved due to this implicit call to `(?P<function>.+)`
+            locale:{{locale}} \g<prefix>杂鱼♡～数值'\g<name>'因为'\g<function>'的隐式调用而被移动了呢～这个杂鱼竟然忘记了呢♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}help: a builtin type with a similar name exists: `(?P<type>.+)`
+            locale:{{locale}} \g<prefix>才...才不会告诉杂鱼♡～：或许杂鱼想找的是'\g<type>'喵？
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}expected `(?P<type1>.+)`, found `(?P<type2>.+)`
+            locale:{{locale}} \g<prefix>本喵在这里要求'\g<type1>'，但是主人竟然使用'\g<type2>'～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}expected due to this
+            locale:{{locale}} \g<prefix>因为这个本喵才要求的呢～杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{annotation_prefix}}`(?P<type>.+)` cannot be formatted with the default formatter
+            locale:{{locale}} \g<prefix>杂鱼♡～'\g<type>'不能被默认格式器格式化呢～真是个杂鱼♡～
+        [/subst_regex]
+        [subst_regex] {{err_prefix}}
+            locale:{{locale}} \g<e1>杂鱼♡～\g<errcode>\g<e2>：
+        [/subst_regex]
+        [subst_regex] {{note_prefix}}
+            locale:{{locale}} \g<e1>才...才不会告诉杂鱼♡～\g<e2>：
+        [/subst_regex]
+        [subst_regex] {{help_prefix}}
+            locale:{{locale}} \g<e1>给杂鱼一个小妙招♡～\g<e2>：
+        [/subst_regex]
+        [subst_regex] (?P<prefix>{{escseq}}*)Some errors have detailed explanations: (?P<errors>.+)\.
+            locale:{{locale}} 本喵为杂鱼可以提供更多信息呢♡～：\g<errors>
+        [/subst_regex]
+        [subst_regex] (?P<prefix>{{escseq}}*)For more information about (this|an) error, try `rustc --explain (?P<error>.+)`\.
+            locale:{{locale}} \g<prefix>如果杂鱼想从本喵知道更多信息，可以尝试'rustc --explain \g<error>'呢～真是个杂鱼♡～
+        [/subst_regex]
+{/substrules_section}
