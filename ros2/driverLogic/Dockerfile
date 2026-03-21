@@ -115,7 +115,6 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'bass source ~/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo "bass source ~/packages/ws_livox/install/setup.bash" >> /home/${USERNAME}/.config/fish/config.fish
-
 # 9. 设置最终环境变量
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
