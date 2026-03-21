@@ -87,11 +87,7 @@ RUN mkdir -p /home/$USERNAME/packages && \
 
 # 第五阶段：复制配置文件和主题
 COPY packages /temp
-RUN cp /temp/gcc-11.mo /usr/share/locale/zh_CN/LC_MESSAGES/ && \
-    apt-get install -y /temp/clitheme_2.0-beta3-1_all.deb && \
-    sudo -u $USERNAME clitheme apply-theme /temp/39neko.clithemedef.txt --yes && \
-    # 复制fish配置
-    cp -r /temp/fish /home/$USERNAME/.config/ && \
+RUN cp -r /temp/fish /home/$USERNAME/.config/ && \
     chown -R $USERNAME:$GROUP_NAME /home/$USERNAME/.config/fish && \
     # 清理临时文件
     rm -rf /temp
