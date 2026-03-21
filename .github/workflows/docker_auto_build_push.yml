@@ -20,7 +20,7 @@ env:
   #仓库名
   REPO_NAME: elainasuki/ros
   # 是否构建arm64架构的镜像
-  BUILD_ARM64: true  # 你可以在这里设置是否构建 arm64
+  BUILD_ARM64: false  # 你可以在这里设置是否构建 arm64
 
 jobs:
   build-and-push:
@@ -60,40 +60,52 @@ jobs:
             echo "IMAGE_REPO=${{ env.REGISTRY }}/${{ env.REPO_NAME }}" >> "$GITHUB_ENV"
           fi
           echo "BUILD_ARM64=${{ env.BUILD_ARM64 }}" >> "$GITHUB_ENV"  # 设置 BUILD_ARM64 环境变量
-      - name: 检测更改并执行对应 build.bash
+      - name: 检测最后一次提交的改动
         run: |
-          echo "🔍 检测改动的 Dockerfile/.dockerfile/build.bash 文件..."
+          echo "🔍 正在检测最后一次推送（Latest Push）产生的改动..."
 
+          # 获取对比范围
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            RANGE="origin/${{ github.base_ref }}...${{ github.sha }}"
+            # 在 PR 中，event.before 是该 PR 上一次触发时的 HEAD
+            # 如果是 PR 的第一次提交，before 可能是全 0
+            BEFORE_SHA="${{ github.event.before }}"
+            AFTER_SHA="${{ github.event.after }}"
+            
+            if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+              echo "ℹ️ 检测到这是 PR 的首次推送，对比范围设为 HEAD~1..HEAD"
+              RANGE="HEAD~1..HEAD"
+            else
+              RANGE="$BEFORE_SHA..$AFTER_SHA"
+            fi
           else
-            RANGE="${{ github.event.before }} ${{ github.sha }}"
+            # 普通 Push 场景
+            RANGE="${{ github.event.before }}..${{ github.sha }}"
           fi
 
-          echo "🔁 检查范围: $RANGE"
+          echo "🔁 增量检查范围: $RANGE"
 
-          git fetch origin ${{ github.base_ref }}
-
-          CHANGED_FILES=$(git diff --name-only $RANGE | \
-            grep -Ei '(^|/)Dockerfile|(^|/)\.dockerfile|(^|/)build\.bash')
+          # 获取变动文件 (过滤掉已删除文件)
+          # git diff 如果因为 fetch 深度报错，这里会返回空
+          CHANGED_FILES=$(git diff --name-only --diff-filter=d $RANGE | \
+            grep -Ei '(^|/)Dockerfile|(^|/)\.dockerfile|(^|/)build\.bash' || true)
 
           if [[ -z "$CHANGED_FILES" ]]; then
-            echo "✅ 没有相关变更，跳过构建。"
+            echo "✅ 本次提交未涉及相关文件改动，跳过构建。"
             exit 0
           fi
 
-          echo "📄 检测到变更的文件:"
+          echo "📄 本次 Push 新增改动文件:"
           echo "$CHANGED_FILES"
 
-          # 获取每个变动文件所在目录，去重
+          # 提取目录并去重
           CHANGED_DIRS=$(echo "$CHANGED_FILES" | xargs -n1 dirname | sort -u)
 
           for dir in $CHANGED_DIRS; do
             script_path="$dir/build.bash"
             if [[ -f "$script_path" ]]; then
-              echo "🚀 执行 $script_path ..."
+              echo "🚀 仅针对本次增量执行: $script_path ..."
               bash "$script_path" --github-action
             else
-              echo "⚠️ $dir 中找不到 build.bash ，跳过。"
+              echo "⚠️ $dir 目录中未找到 build.bash"
             fi
           done
