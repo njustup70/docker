@@ -18,7 +18,7 @@ IMAGE_REPO="elainasuki/rc2026"
 IMAGE="$IMAGE_REPO:$TAG"
 
 # 获取工作流中的环境变量来决定是否支持 arm64
-PLATFORMS="linux/amd64"  # 默认只支持 amd64 架构
+PLATFORMS="linux/arm64"  # 默认只支持 amd64 架构
 
 if [[ "${BUILD_ARM64}" == "true" ]]; then
     PLATFORMS="$PLATFORMS,linux/arm64"   # 如果环境变量 BUILD_ARM64 为 true，则支持 arm64 架构
