@@ -32,13 +32,13 @@ RUN set -eux; \
 # 将所有apt-get操作合并到单个RUN指令中
 RUN apt-get update && apt-get install -y \
     # 基础工具
-    libc-bin net-tools bash-completion pip \
+    net-tools bash-completion pip \
     software-properties-common dbus-x11 \
     # 开发工具
     gdb gdbserver vim curl wget nano \
     nautilus nautilus-extension-gnome-terminal \
     # 网络和编译工具
-    iputils-ping ninja-build ccache lld \
+    iputils-ping ninja-build  \
     # 语言支持
     language-pack-zh-hans language-pack-zh-hans-base gettext 
 #安装fish
@@ -79,11 +79,11 @@ RUN mkdir -p /home/$USERNAME/packages && \
     && echo "source /home/$USERNAME/packages/ws_livox/install/setup.bash" >> /home/$USERNAME/.bashrc
 
 # 第四阶段：安装LLVM工具链
-RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 && \
-    apt-get update && apt-get install -y clang-14 && \
-    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
-    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && \
-    update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
+# RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 && \
+#     apt-get update && apt-get install -y clang-14 && \
+#     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
+#     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && \
+#     update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
 
 # 第五阶段：复制配置文件和主题
 COPY packages /temp
