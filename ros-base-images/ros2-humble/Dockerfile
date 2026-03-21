@@ -102,11 +102,3 @@ RUN apt-get update && apt-get install -y \
 ENV ROS_DISTRO=$ROS_DISTRO
 
 CMD ["/bin/bash"]
-
-
-
-
-
-
-
-
