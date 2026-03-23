@@ -107,7 +107,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /home/$USERNAME/packages/ros_ws/src
-
+#增加do-mpc依赖
+RUN pip uninstall numpy -y && pip install "numpy<2" && pip3 install --no-cache-dir \
+    do-mpc casadi numpy matplotlib foxglove-sdk
 # 9. 设置 Shell 环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
