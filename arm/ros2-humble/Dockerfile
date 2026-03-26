@@ -1,0 +1,103 @@
+FROM ghcr.io/sloretz/ros:humble-desktop-full
+
+# 定义构建参数
+ARG ROS_DISTRO=humble
+ARG USERNAME=Elaina
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ARG GROUP_NAME=wheel
+
+# 第一阶段：系统设置和用户创建
+RUN set -eux; \
+    # 清理可能的已有用户/组
+    if getent passwd 1000 > /dev/null; then \
+    existing_user=$(getent passwd 1000 | cut -d: -f1); \
+    userdel -r "$existing_user" 2>/dev/null || true; \
+    fi; \
+    if getent group 1000 > /dev/null; then \
+    existing_group=$(getent group 1000 | cut -d: -f1); \
+    if ! getent passwd | awk -F: '{print $1":"$4}' | grep -q ":1000$"; then \
+    groupdel "$existing_group" 2>/dev/null || true; \
+    fi; \
+    fi; \
+    # 创建新用户组和用户
+    groupadd --gid $USER_GID ${GROUP_NAME} && \
+    useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME && \
+    echo "$USERNAME:password" | chpasswd && \
+    usermod -aG ${GROUP_NAME} $USERNAME && \
+    echo "%${GROUP_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    chown $USERNAME:$GROUP_NAME /home/$USERNAME/.bashrc
+
+# 第二阶段：批量安装系统包和ROS包
+# 将所有apt-get操作合并到单个RUN指令中
+RUN apt-get update && apt-get install -y \
+    # 基础工具
+    net-tools bash-completion pip \
+    software-properties-common dbus-x11 \
+    # 开发工具
+    gdb gdbserver vim curl wget nano \
+    nautilus nautilus-extension-gnome-terminal \
+    # 网络和编译工具
+    iputils-ping ninja-build  \
+    # 语言支持
+    language-pack-zh-hans language-pack-zh-hans-base gettext 
+#安装fish
+RUN add-apt-repository ppa:fish-shell/release-3 -y && \
+    apt-get update && apt-get install -y fish fzf && \
+    # 清理apt缓存减少镜像大小
+    rm -rf /var/lib/apt/lists/* && \
+    # 安装oh-my-fish
+    curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/install.fish && \
+    sudo -u $USERNAME fish /tmp/install.fish --noninteractive --yes && \
+    rm /tmp/install.fish && \
+    # 安装fish插件
+    sudo -u $USERNAME fish -c "omf install bass" && \
+    # 设置umask
+    echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc
+
+# 第三阶段：安装雷达驱动和ROS驱动
+RUN mkdir -p /home/$USERNAME/packages && \
+    cd /home/$USERNAME/packages && \
+    # Livox SDK - 只构建和安装库文件
+    git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
+    cd Livox-SDK2 && \
+    mkdir build && cd build && \
+    cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release && \
+    make -j2 && \
+    make install && \
+    # 清理源码
+    cd /home/$USERNAME/packages && \
+    rm -rf Livox-SDK2/ && \
+    # ROS驱动
+    mkdir -p ws_livox/src/ && \
+    cd ws_livox/src/ && \
+    git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
+    . /opt/ros/$ROS_DISTRO/setup.sh && \
+    ./livox_ros_driver2/build.sh $ROS_DISTRO \
+    #删除src目录以节省空间 
+    && rm -rf /home/$USERNAME/packages/ws_livox/src \
+    && echo "source /home/$USERNAME/packages/ws_livox/install/setup.bash" >> /home/$USERNAME/.bashrc
+
+# 第四阶段：安装LLVM工具链
+# RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 19 && \
+#     apt-get update && apt-get install -y clang-14 && \
+#     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100 && \
+#     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100 && \
+#     update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
+
+# 第五阶段：复制配置文件和主题
+COPY packages /temp
+RUN cp -r /temp/fish /home/$USERNAME/.config/ && \
+    chown -R $USERNAME:$GROUP_NAME /home/$USERNAME/.config/fish && \
+    # 清理临时文件
+    rm -rf /temp
+# 第六阶段：安装额外ROS包和其他功能包
+RUN apt-get update && apt-get install -y \
+    libfmt-dev  nlohmann-json3-dev sysstat \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    ros-${ROS_DISTRO}-rqt-tf-tree \
+    ros-${ROS_DISTRO}-rmw-zenoh-cpp
+# 设置环境变量
+ENV ROS_DISTRO=$ROS_DISTRO
+
+CMD ["/bin/bash"]
