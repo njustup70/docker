@@ -37,6 +37,20 @@ COPY ./packages/mcap /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
 
+#  安装必要的工具
+RUN apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-gps-msgs \
+    libpcap-dev \
+    # [新增] 视觉与编译依赖
+    build-essential \
+    cmake \
+    pkg-config \
+    libopencv-dev \
+    libopencv-contrib-dev \
+    python3-opencv \
+    python3-numpy 
+
+
 # 6. 统一构建所有 ROS2 包
 USER root
 WORKDIR /home/$USERNAME/packages
@@ -90,7 +104,7 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
     && echo "bass source ~/packages/ws_livox/install/setup.bash" >> /home/${USERNAME}/.config/fish/config.fish
 # 9. 设置最终环境变量
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-ENV PYTHONPATH=/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
+ENV PYTHONPATH=/home/$USERNAME/ros2_ws/src:/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 CMD ["/bin/bash"]
