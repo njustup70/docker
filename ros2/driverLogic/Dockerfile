@@ -14,11 +14,6 @@ RUN mkdir -p \
     ros_ws/src \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
-#2.确保安装git，拉取海康驱动sdk并放置特定目录下
-RUN apt-get update && apt-get install -y git && \
-    if [ "$TARGETARCH" = "amd64" ]; then \
-    git clone https://github.com/hjw132/hik_mvs_sdk.git /opt/MVS; \
-    fi
 
 # 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
@@ -26,44 +21,21 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/nagisa_imu ./ros_ws/src/nagisa_i
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
-COPY --chown=${USERNAME}:${USER_GID} ./packages/hik_camera_ros2 ./ros_ws/src/hik_camera_ros2gi
-
-RUN if [ "$TARGETARCH" != "amd64" ]; then \
-    rm -rf ./ros_ws/src/hik_camera_ros2gi; \
-    fi
 
 # 4. RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
 RUN git clone --recurse-submodules https://github.com/RoboSense-LiDAR/rslidar_sdk.git \
-    && git clone  https://github.com/RoboSense-LiDAR/rslidar_msg.git
+    && git clone  https://github.com/RoboSense-LiDAR/rslidar_msg.git \
+    && git clone    https://github.com/SMBU-PolarBear-Robotics-Team/hik_camera_ros2_driver.git
 
 # 复制自定义 CMakeLists.txt
 COPY --chown=${USERNAME}:${USER_GID} ./packages/rslidar_airy/CMakeLists.txt ./rslidar_sdk/
-
-#  安装必要的工具
-RUN apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-gps-msgs \
-    libpcap-dev \
-    # [新增] 视觉与编译依赖
-    build-essential \
-    cmake \
-    pkg-config \
-    libopencv-dev \
-    libopencv-contrib-dev \
-    python3-opencv \
-    python3-numpy 
-
 
 # 5. MCAP 工具
 USER root
 COPY ./packages/mcap /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
-# 10. 设置最终环境变量 (合并 MVS SDK 配置)
-ENV MVCAM_SDK_PATH=/opt/MVS
-ENV MVCAM_COMMON_RUNENV=/opt/MVS/lib
-ENV LD_LIBRARY_PATH=/opt/MVS/lib/64:/opt/MVS/lib/CLProtocol:/usr/local/lib:$LD_LIBRARY_PATH
-ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 # 6. 统一构建所有 ROS2 包
 USER root
@@ -103,10 +75,8 @@ RUN apt-get update && apt-get install -y \
     # 其他工具
     docker \
     docker-compose \
-    # 清理apt缓存减少镜像大小
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /home/$USERNAME/packages/ros_ws/src
+    # 清理build文件以节省空间
+    && rm -rf /home/$USERNAME/packages/ros_ws/build
 RUN pip install  \
     do-mpc casadi matplotlib foxglove-sdk \
     viztracer py-spy \
