@@ -26,8 +26,8 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ro
 WORKDIR /home/$USERNAME/packages/ros_ws/src
 RUN git clone --recurse-submodules https://github.com/RoboSense-LiDAR/rslidar_sdk.git \
     && git clone  https://github.com/RoboSense-LiDAR/rslidar_msg.git \
-    && git clone    https://github.com/SMBU-PolarBear-Robotics-Team/hik_camera_ros2_driver.git
-
+    && git clone    https://github.com/SMBU-PolarBear-Robotics-Team/hik_camera_ros2_driver.git \
+    && git clone --recurse-submodules https://github.com/manifoldsdk/odin_ros_driver.git
 # 复制自定义 CMakeLists.txt
 COPY --chown=${USERNAME}:${USER_GID} ./packages/rslidar_airy/CMakeLists.txt ./rslidar_sdk/
 
@@ -95,6 +95,19 @@ RUN pip install  \
     do-mpc casadi matplotlib foxglove-sdk \
     viztracer py-spy \
     && pip uninstall numpy -y && pip install "numpy<2"
+    
+# 添加odin1的依赖包
+RUN apt-get update && apt-get install -y \
+    libgtk2.0-dev \
+    pkg-config \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libyaml-cpp-dev \
+    libusb-1.0-0-dev \
+    usbutils && \
+    rm -rf /var/lib/apt/lists/*
+
 # 9. 设置 Shell 环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
