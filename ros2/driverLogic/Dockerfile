@@ -26,8 +26,7 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ro
 WORKDIR /home/$USERNAME/packages/ros_ws/src
 RUN git clone --recurse-submodules https://github.com/RoboSense-LiDAR/rslidar_sdk.git \
     && git clone  https://github.com/RoboSense-LiDAR/rslidar_msg.git \
-    && git clone    https://github.com/SMBU-PolarBear-Robotics-Team/hik_camera_ros2_driver.git \
-    && git clone --recurse-submodules https://github.com/manifoldsdk/odin_ros_driver.git
+    && git clone    https://github.com/SMBU-PolarBear-Robotics-Team/hik_camera_ros2_driver.git 
 # 复制自定义 CMakeLists.txt
 COPY --chown=${USERNAME}:${USER_GID} ./packages/rslidar_airy/CMakeLists.txt ./rslidar_sdk/
 
