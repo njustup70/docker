@@ -74,8 +74,8 @@ RUN mkdir -p /home/$USERNAME/packages && \
     git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
     . /opt/ros/$ROS_DISTRO/setup.sh && \
     ./livox_ros_driver2/build.sh $ROS_DISTRO \
-    #删除src目录以节省空间 
-    && rm -rf /home/$USERNAME/packages/ws_livox/src \
+    #删除build目录以节省空间 
+    && rm -rf /home/$USERNAME/packages/ws_livox/build \
     && echo "source /home/$USERNAME/packages/ws_livox/install/setup.bash" >> /home/$USERNAME/.bashrc
 
 # 第四阶段：安装LLVM工具链
@@ -98,7 +98,9 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     ros-${ROS_DISTRO}-rqt-tf-tree \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
-# 设置环境变量
+# 安装python调试工具
+RUN pip install viztracer py-spy
+ENV PATH=/home/$USERNAME/.local/bin:$PATH
 ENV ROS_DISTRO=$ROS_DISTRO
 
 CMD ["/bin/bash"]
