@@ -1,4 +1,4 @@
-FROM elainasuki/ros:ros2-humble-full-1209
+FROM elainasuki/ros:ros2-humble-full-0404
 
 # 定义用户和用户组
 ARG USERNAME=Elaina
@@ -80,7 +80,7 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-rosbag2 \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
-    # ros-${ROS_DISTRO}-orbbec-camera \
+    ros-${ROS_DISTRO}-orbbec-camera \
     # [新增] 视觉 ROS 运行时依赖
     ros-${ROS_DISTRO}-cv-bridge \
     ros-${ROS_DISTRO}-image-transport \
@@ -94,7 +94,7 @@ RUN pip install  \
     do-mpc casadi matplotlib foxglove-sdk \
     viztracer py-spy \
     && pip uninstall numpy -y && pip install "numpy<2"
-    
+
 # 添加odin1的依赖包
 RUN apt-get update && apt-get install -y \
     libgtk2.0-dev \
