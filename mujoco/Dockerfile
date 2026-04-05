@@ -38,7 +38,9 @@ RUN git clone https://github.com/acados/acados.git /opt/acados \
     && rm -rf /opt/acados/build
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
-RUN pip install  /opt/acados/interfaces/acados_template
+RUN pip install  /opt/acados/interfaces/acados_template\
+    && curl -L https://github.com/acados/tera_renderer/releases/download/v0.0.34/t_renderer-v0.0.34-linux -o /opt/acados/bin/t_renderer \
+    && chmod +x /opt/acados/bin/t_renderer
 
 # 3. 设置环境变量 (这是最关键的一步，必须在 ENV 中设置，否则仅在 RUN 时有效)
 ENV ACADOS_SOURCE_DIR="/opt/acados"
