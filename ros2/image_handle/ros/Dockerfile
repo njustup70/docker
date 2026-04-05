@@ -1,5 +1,5 @@
 #FROM elainasuki/ros:ros2-humble-full-v3
-FROM elainasuki/ros:ros2-humble-full-1209
+FROM elainasuki/ros:ros2-humble-full-0404
 
 ARG USERNAME=Elaina
 ARG USER_UID=1000
@@ -19,7 +19,7 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 # 安装yolo ROS通信库 实验跟踪库 点云处理库 线程栈追踪库
 RUN pip install imutils ultralytics openvino roslibpy pyzmq comet_ml open3d py-spy pyzbar
 #安装其他依赖
-RUN pip install zmq "numpy<2.0"
+RUN pip install zmq "numpy<2.0" pyserial pyserial-asyncio
 
 USER root
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc \
