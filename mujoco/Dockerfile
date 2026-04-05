@@ -23,6 +23,26 @@ RUN  mkdir -p /etc/apt/keyrings \
     | sudo tee /etc/apt/sources.list.d/robotpkg.list \
     && apt-get update \
     && apt install -qqy robotpkg-py3*-pinocchio
+WORKDIR  /home/${USERNAME}/packages
+RUN git clone https://github.com/acados/acados.git /opt/acados \
+    && cd /opt/acados \
+    && git submodule update --recursive --init \
+    && mkdir build && cd build \
+    && cmake -DACADOS_WITH_QPOASES=ON \
+    -DACADOS_WITH_HPIPM=ON \
+    -DBUILD_SHARED_LIBS=ON \
+    -DACADOS_UNIT_TESTS=OFF \
+    -DACADOS_EXAMPLES=OFF \
+    -DCMAKE_BUILD_TYPE=Release .. \
+    && make install -j$(nproc) \
+    && rm -rf /opt/acados/build
+# 2. 安装 Python 接口
+# 注意：在 Docker 中建议直接使用完整路径
+RUN pip install -e /opt/acados/interfaces/acados_template
+
+# 3. 设置环境变量 (这是最关键的一步，必须在 ENV 中设置，否则仅在 RUN 时有效)
+ENV ACADOS_SOURCE_DIR="/opt/acados"
+ENV LD_LIBRARY_PATH="${ACADOS_SOURCE_DIR}/lib:${LD_LIBRARY_PATH}"
 RUN pip uninstall numpy -y && pip install "numpy<2"
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
