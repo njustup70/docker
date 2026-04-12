@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
     git-lfs \
     python3-pip \
     libgl1-mesa-glx \
+    ros-humble-rmw-zenoh-cpp \
+    ros-humble-rmw-cyclonedds-cpp \
+    ros-humble-cv-bridge \
     libzbar0 \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
@@ -28,6 +31,7 @@ RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https:/
 
 RUN pip3 install --no-cache-dir \
     imutils \
+    qrcode \
     ultralytics \
     openvino \
     roslibpy \
