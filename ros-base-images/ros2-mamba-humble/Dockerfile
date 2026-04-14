@@ -35,7 +35,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     && micromamba clean --all --yes
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # # 6. 使用 UV 安装 Python 分析工具
-RUN uv pip --system install viztracer py-spy
+RUN uv pip  install --system viztracer py-spy
 #增加其他ROS包 
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
