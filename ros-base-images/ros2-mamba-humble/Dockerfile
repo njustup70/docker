@@ -25,6 +25,11 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
+    ros-humble-geometry-msgs \
+    ros-humble-nav-msgs \
+    ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
+    colcon-common-extensions \
+    colcon-mixin \
     ninja ccache mold fish uv gdb \
     && micromamba clean --all --yes
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
