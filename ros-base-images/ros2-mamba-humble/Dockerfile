@@ -27,14 +27,13 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-sensor-msgs \
     cmake git ninja ccache mold fish uv c-compiler cxx-compiler gdb\
     && micromamba clean --all --yes
-
+SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # 4. 编译 Livox SDK2
 WORKDIR /tmp/build_sdk
 RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
     cd Livox-SDK2 && \
     mkdir build && cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && \
-    -DCMAKE_CXX_FLAGS="-include cstdint" && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_CXX_FLAGS="-include cstdint"  && \
     make -j$(nproc) && make install && \
     rm -rf /tmp/build_sdk
 
@@ -43,8 +42,6 @@ WORKDIR /home/$USERNAME/ws_livox/src
 RUN git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
     cd livox_ros_driver2 && \
     # 在 micromamba 环境下运行编译脚本
-    eval "$(micromamba shell hook --shell bash)" && \
-    micromamba activate base && \
     ./build.sh ROS2 && \
     rm -rf /home/$USERNAME/ws_livox/build &&\
     # 修改工作空间权限归属新用户
