@@ -25,7 +25,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
-    cmake git ninja ccache mold fish uv \
+    cmake git ninja ccache mold fish uv gcc g++ \
     && micromamba clean --all --yes
 
 # 4. 编译 Livox SDK2
@@ -34,6 +34,7 @@ RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
     cd Livox-SDK2 && \
     mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && \
+    -DCMAKE_CXX_FLAGS="-include cstdint" && \
     make -j$(nproc) && make install && \
     rm -rf /tmp/build_sdk
 
