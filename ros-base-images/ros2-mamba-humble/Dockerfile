@@ -9,7 +9,8 @@ ARG USER_GID=1000
 ENV MAMBA_ROOT_PREFIX=/opt/conda
 ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 ENV ROS_DISTRO=humble
-
+ENV CPLUS_INCLUDE_PATH=$MAMBA_ROOT_PREFIX/include
+ENV LIBRARY_PATH=$MAMBA_ROOT_PREFIX/lib
 # 1. 安装系统工具与编译依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo build-essential cmake git \ 
@@ -33,42 +34,18 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ninja ccache mold fish uv gdb \
     && micromamba clean --all --yes
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
-# 4. 编译 Livox SDK2
-WORKDIR /tmp/build_sdk
-RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
-    cd Livox-SDK2 && \
-    mkdir build && cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_CXX_FLAGS="-include cstdint"  && \
-    make -j$(nproc) && make install && \
-    rm -rf /tmp/build_sdk
-
-# 5. 编译 livox_ros_driver2
-WORKDIR /home/$USERNAME/ws_livox/src
-RUN git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
-    cd livox_ros_driver2 && \
-    # 在 micromamba 环境下运行编译脚本
-    ./build.sh ROS2 && \
-    rm -rf /home/$USERNAME/ws_livox/build &&\
-    # 修改工作空间权限归属新用户
-    chown -R $USER_UID:$USER_GID /home/$USERNAME/ws_livox
-
 # # 6. 使用 UV 安装 Python 分析工具
-# RUN eval "$(micromamba shell hook --shell bash)" && \
-#     micromamba activate base && \
-#     uv pip install viztracer py-spy
-
-# # --- 运行时配置 ---
-# USER $USERNAME
-# WORKDIR /home/$USERNAME
-
-# # 7. 配置 Fish Shell 交互环境
-# RUN mkdir -p ~/.config/fish && \
-#     { \
-#     echo 'eval "$(micromamba shell hook --shell fish)"'; \
-#     echo 'micromamba activate base'; \
-#     echo 'if test -f /home/'$USERNAME'/ws_livox/install/setup.fish'; \
-#     echo '    source /home/'$USERNAME'/ws_livox/install/setup.fish'; \
-#     echo 'end'; \
-#     } >> ~/.config/fish/config.fish
-
-# CMD ["/usr/bin/fish"]
+RUN eval "$(micromamba shell hook --shell bash)" && \
+    micromamba activate base && \
+    uv pip install viztracer py-spy
+#增加其他ROS包 
+RUN micromamba install -y -n base \
+    ros-${ROS_DISTRO}-foxglove-bridge \
+    ros-${ROS_DISTRO}-rmw-zenoh-cpp
+# --- 运行时配置 ---
+USER $USERNAME
+WORKDIR /home/$USERNAME
+RUN mkdir -p ~/.config/fish && \
+    echo 'eval "$(micromamba shell hook --shell fish)"' > ~/.config/fish/config.fish && \
+    echo 'micromamba activate base' >> ~/.config/fish/config.fish && 
+CMD ["/usr/bin/fish"]
