@@ -29,25 +29,25 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     && micromamba clean --all --yes
 
 # 4. 编译 Livox SDK2
-# WORKDIR /tmp/build_sdk
-# RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
-#     cd Livox-SDK2 && \
-#     mkdir build && cd build && \
-#     cmake .. -DCMAKE_BUILD_TYPE=Release && \
-#     make -j$(nproc) && make install && \
-#     rm -rf /tmp/build_sdk
+WORKDIR /tmp/build_sdk
+RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
+    cd Livox-SDK2 && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && make install && \
+    rm -rf /tmp/build_sdk
 
-# # 5. 编译 livox_ros_driver2
-# WORKDIR /home/$USERNAME/ws_livox/src
-# RUN git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
-#     cd livox_ros_driver2 && \
-#     # 在 micromamba 环境下运行编译脚本
-#     eval "$(micromamba shell hook --shell bash)" && \
-#     micromamba activate base && \
-#     ./build.sh ROS2 && \
-#     rm -rf /home/$USERNAME/ws_livox/build &&\
-#     # 修改工作空间权限归属新用户
-#     chown -R $USER_UID:$USER_GID /home/$USERNAME/ws_livox
+# 5. 编译 livox_ros_driver2
+WORKDIR /home/$USERNAME/ws_livox/src
+RUN git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
+    cd livox_ros_driver2 && \
+    # 在 micromamba 环境下运行编译脚本
+    eval "$(micromamba shell hook --shell bash)" && \
+    micromamba activate base && \
+    ./build.sh ROS2 && \
+    rm -rf /home/$USERNAME/ws_livox/build &&\
+    # 修改工作空间权限归属新用户
+    chown -R $USER_UID:$USER_GID /home/$USERNAME/ws_livox
 
 # # 6. 使用 UV 安装 Python 分析工具
 # RUN eval "$(micromamba shell hook --shell bash)" && \
