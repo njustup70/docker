@@ -12,20 +12,20 @@ ENV ROS_DISTRO=humble
 
 # 1. 安装系统工具与编译依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo \
+    sudo build-essential cmake git \ 
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
-
 # 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m -s /usr/bin/fish $USERNAME && \
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# 3. 配置并安装 Micromamba 环境 (ROS2 + 开发工具)
+# 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
+# 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
 RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
-    cmake git ninja ccache mold fish uv c-compiler cxx-compiler gdb\
+    ninja ccache mold fish uv gdb \
     && micromamba clean --all --yes
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # 4. 编译 Livox SDK2
