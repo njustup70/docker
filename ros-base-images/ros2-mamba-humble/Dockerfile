@@ -2,39 +2,41 @@
 FROM mambaorg/micromamba:latest AS builder
 USER root
 
-ARG USERNAME=Elaina
-ARG USER_UID=1000
-ARG USER_GID=1000
+# 环境变量配置
+ENV MAMBA_ROOT_PREFIX=/opt/conda
+ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
 
-# 1. 基础环境配置
-RUN groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME
+# 1. 安装基础工具 (包含 Git 和编译工具)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git build-essential cmake make \
+    && rm -rf /var/lib/apt/lists/*
 
-# 2. 配置 Micromamba 频道
-RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc
-
-# 3. 第一阶段只装最基本的编译依赖 (ros-core + colcon + 消息类型)
-RUN micromamba install -y -n base \
+# 2. 配置并安装 Micromamba 环境 (包含所有 ROS 依赖)
+RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
+    micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
-    cmake  git \
+    cmake git ninja ccache mold uv \
     && micromamba clean --all --yes
 
-# 4. 编译 Livox SDK2 (系统库)
+# 3. 编译 Livox SDK2 (系统级库)
 WORKDIR /home/build
 RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
-    mkdir -p Livox-SDK2/build && cd Livox-SDK2/build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(nproc) && make install
+    cd Livox-SDK2 && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && make install
 
-# 5. 编译 livox_ros_driver2 (ROS 功能包)
-WORKDIR /home/$USERNAME/ws_livox/src
+# 4. 编译 livox_ros_driver2 (使用官方脚本)
+WORKDIR /home/build/ws_livox/src
 RUN git clone --depth 1 https://github.com/Livox-SDK/livox_ros_driver2.git && \
-    cd .. && \
+    cd livox_ros_driver2 && \
+    # 必须在 micromamba 环境下运行脚本
     eval "$(micromamba shell hook --shell bash)" && \
     micromamba activate base && \
-    colcon build --rosdistro humble --cmake-args -DROS_EDITION=ROS2 --build-base /tmp/build --install-base /opt/ros_install
+    ./build.sh ROS2
 
-# --- 第二阶段：最终运行环境 ---
+# --- 第二阶段：最终开发与运行环境 ---
 FROM mambaorg/micromamba:latest
 USER root
 
@@ -42,44 +44,43 @@ ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-# 1. 基础系统工具 (Runtime)
+# 1. 基础系统运行时工具
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo  fish vim curl git \
+    sudo git \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. 创建用户
+# 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m -s /usr/bin/fish $USERNAME && \
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# 3. 环境变量先行 (直接将路径指向之后要拷贝的位置)
-ENV MAMBA_ROOT_PREFIX=/opt/conda
-ENV PATH=/home/$USERNAME/ws_livox/install/bin:/opt/conda/bin:$PATH
-ENV ROS_DISTRO=humble
-ENV PYTHONPATH=/opt/conda/lib/python3.10/site-packages:$PYTHONPATH
-ENV PATH=/opt/conda/lib/ccache:$PATH
-# 4. 从第一阶段拷贝：1.SDK库, 2.编译好的ROS驱动
+# 3. 核心资产拷贝：从 builder 拷贝整个 Conda 环境和 SDK 库
+COPY --from=builder /opt/conda /opt/conda
 COPY --from=builder /usr/local /usr/local
-COPY --from=builder --chown=$USER_UID:$USER_GID /opt/ros_install /home/$USERNAME/ws_livox/install
+# 拷贝编译好的 ROS 工作空间
+COPY --from=builder --chown=$USER_UID:$USER_GID /home/build/ws_livox /home/$USERNAME/ws_livox
 
-# 5. 在第二阶段安装 ROS 核心、UV 以及你需要的开发工具
-RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /opt/conda/.mambarc && \
-    micromamba install -y -n base \
-    ros-humble-ros-core \
-    ros-humble-sensor-msgs \
-    cmake ninja ccache mold uv \
-    && micromamba clean --all --yes
+# 4. 环境路径配置
+ENV MAMBA_ROOT_PREFIX=/opt/conda
+ENV PATH=/opt/conda/bin:$PATH
+ENV ROS_DISTRO=humble
 
-# 6. 使用 UV 安装 Python 调试工具
-RUN uv pip install viztracer py-spy
+# 5. 使用 UV 安装 Python 工具 (在已拷贝的 base 环境中)
+RUN eval "$(micromamba shell hook --shell bash)" && \
+    micromamba activate base && \
+    uv pip install viztracer py-spy
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-# 7. 配置 Fish Shell 自动加载
+# 6. 配置 Fish Shell 交互环境
 RUN mkdir -p ~/.config/fish && \
-    echo 'eval "$(micromamba shell hook --shell fish)"' >> ~/.config/fish/config.fish && \
-    echo 'micromamba activate base' >> ~/.config/fish/config.fish && \
-    echo 'test -f /home/'$USERNAME'/ws_livox/install/setup.fish; and source /home/'$USERNAME'/ws_livox/install/setup.fish' >> ~/.config/fish/config.fish
+    { \
+    echo 'eval "$(micromamba shell hook --shell fish)"'; \
+    echo 'micromamba activate base'; \
+    echo 'if test -f /home/'$USERNAME'/ws_livox/install/setup.fish'; \
+    echo '    source /home/'$USERNAME'/ws_livox/install/setup.fish'; \
+    echo 'end'; \
+    } >> ~/.config/fish/config.fish
 
 CMD ["/usr/bin/fish"]
