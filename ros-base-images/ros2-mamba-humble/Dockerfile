@@ -12,7 +12,7 @@ ENV ROS_DISTRO=humble
 
 # 1. 安装系统工具与编译依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential cmake sudo \
+    build-essential sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. 创建用户并配置权限
@@ -25,7 +25,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
-    cmake git ninja ccache mold uv \
+    cmake git ninja ccache mold fish uv \
     && micromamba clean --all --yes
 
 # 4. 编译 Livox SDK2
