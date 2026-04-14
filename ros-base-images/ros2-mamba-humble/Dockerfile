@@ -17,8 +17,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
 RUN micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
-    ros-humble-colcon-common-extensions \
-    cmake build-essential git \
+    cmake  git \
     && micromamba clean --all --yes
 
 # 4. 编译 Livox SDK2 (系统库)
