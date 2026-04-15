@@ -44,8 +44,6 @@ RUN uv pip  install  viztracer py-spy
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
-
-COPY --chown=$USER_UID:$USER_GID packages/fish /home/$USERNAME/.config/fish
 # --- 运行时配置 ---
 USER $USERNAME
 #安装fish
@@ -54,7 +52,8 @@ RUN curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/i
     rm /tmp/install.fish && \
     # 安装fish插件
     fish -c "omf install bass" 
+COPY --chown=$USER_UID:$USER_GID packages/fish /home/$USERNAME/.config/fish
 WORKDIR /home/$USERNAME
 RUN echo 'eval "$(micromamba shell hook --shell fish)"' > ~/.config/fish/config.fish && \
     echo 'micromamba activate base' >> ~/.config/fish/config.fish 
-CMD ["/usr/bin/fish"]
+CMD ["/bin/bash"]

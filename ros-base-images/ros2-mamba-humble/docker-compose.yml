@@ -1,7 +1,7 @@
 version: '3'
 services:
   ros2driver-service:
-    image: elainasuki/ros:ros2-humble-core-0414
+    image: elainasuki/ros:ros2-humble-core-0415
     container_name: ros2-mamba-humble
     environment:
       - DISPLAY=${DISPLAY}
