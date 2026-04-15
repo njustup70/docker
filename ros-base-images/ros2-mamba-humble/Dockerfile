@@ -25,11 +25,15 @@ RUN groupadd --gid $USER_GID $USERNAME  \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
+    && echo 'Defaults env_keep += "PATH"' >> /etc/sudoers \
+    && echo 'Defaults secure_path="/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"' >> /etc/sudoers \
     && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc \
-    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX
+    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX\
+    && chmod -R 775 $MAMBA_ROOT_PREFIX 
 # 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
+USER $USERNAME
 # 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
-RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
+RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /opt/conda/.mambarc && \
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
@@ -52,27 +56,47 @@ RUN uv pip  install  viztracer py-spy
 RUN micromamba install -y -n base \
     libgl-devel \
     mesalib \
-    libglvnd
-#增加其他ROS包 
+    libglvnd \
+    && micromamba clean -afy
+#增加其他ROS包 与python补全
 RUN micromamba install -y -n base \
+    argcomplete \   
     ros-${ROS_DISTRO}-foxglove-bridge \
-    ros-${ROS_DISTRO}-rmw-zenoh-cpp
+    ros-${ROS_DISTRO}-rmw-zenoh-cpp \
+    ros-${ROS_DISTRO}-demo-nodes-cpp \
+    ros-${ROS_DISTRO}-demo-nodes-py \
+    && micromamba clean --all --yes
 # --- 运行时配置 ---
-USER $USERNAME
+
 # 安装 Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
-    && sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc \
+    && git clone https://github.com/esc/conda-zsh-completion ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/conda-zsh-completion \
+    && sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting conda-zsh-completion)/' ~/.zshrc \
     && curl -sS https://starship.rs/install.sh | sh -s -- -y \
     && echo 'eval "$(starship init zsh)"' >> ~/.zshrc \
     && mkdir -p ~/.config \
-    && echo '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
+    && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 WORKDIR /home/$USERNAME
-RUN micromamba shell hook --shell bash >> ~/.bashrc \
-    && echo "micromamba activate base" >> ~/.bashrc \
-    && micromamba shell hook --shell zsh >> ~/.zshrc \
-    && echo "micromamba activate base" >> ~/.zshrc \
-    && echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
-    && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc
+#直接将micromamba的环境变量添加到系统环境变量中，确保在任何 shell 中都能正确使用 micromamba 环境
+ENV LD_LIBRARY_PATH=$MAMBA_ROOT_PREFIX/lib:$LD_LIBRARY_PATH
+ENV CONDA_PREFIX=$MAMBA_ROOT_PREFIX
+ENV CONDA_DEFAULT_ENV=base
+RUN echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
+    && cat <<-'EOF' >> ~/.zshrc
+# 劫持 source 函数以修复 ROS2 补全覆盖问题
+source() {
+    builtin source "$@"
+    if [[ "$*" == *"setup.zsh"* ]]; then
+        if command -v register-python-argcomplete > /dev/null; then
+            eval "$(register-python-argcomplete ros2)"
+            eval "$(register-python-argcomplete colcon)"
+        fi
+    fi
+}
+# 加载 Mamba 环境
+source "${MAMBA_ROOT_PREFIX}/setup.zsh"
+EOF
+#解决zsh中补全问题
 CMD ["/bin/bash"]
