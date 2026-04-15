@@ -20,7 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME  \
     && useradd --uid $USER_UID --gid $USER_GID -m -s /usr/bin/fish $USERNAME\
-    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && usermod -aG root $USERNAME \
+    && echo 'Defaults !env_reset' >> /etc/sudoers \
+    && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc
 # 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
 # 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
 RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
@@ -41,19 +44,17 @@ RUN uv pip  install  viztracer py-spy
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
-#安装fish
-RUN curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/install.fish && \
-    sudo -u $USERNAME fish /tmp/install.fish --noninteractive --yes && \
-    rm /tmp/install.fish && \
-    # 安装fish插件
-    sudo -u $USERNAME fish -c "omf install bass" && \
-    # 设置umask
-    echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc
+
 COPY --chown=$USER_UID:$USER_GID packages/fish /home/$USERNAME/.config/fish
 # --- 运行时配置 ---
 USER $USERNAME
+#安装fish
+RUN curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/install.fish && \
+    fish /tmp/install.fish --noninteractive --yes && \
+    rm /tmp/install.fish && \
+    # 安装fish插件
+    fish -c "omf install bass" 
 WORKDIR /home/$USERNAME
-RUN mkdir -p ~/.config/fish && \
-    echo 'eval "$(micromamba shell hook --shell fish)"' > ~/.config/fish/config.fish && \
+RUN echo 'eval "$(micromamba shell hook --shell fish)"' > ~/.config/fish/config.fish && \
     echo 'micromamba activate base' >> ~/.config/fish/config.fish 
 CMD ["/usr/bin/fish"]
