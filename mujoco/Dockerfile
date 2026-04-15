@@ -34,6 +34,7 @@ RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source 
     -DCMAKE_INSTALL_PREFIX=/opt/acados .. \
     && make install -j$(nproc) \
     # 有些 acados 接口需要这个路径下有特定的元数据
+    && mkdir -p /opt/acados/interfaces \
     && cp -rf /tmp/acados_source/interfaces/acados_template /opt/acados/interfaces/ \
     && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
