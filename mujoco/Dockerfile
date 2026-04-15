@@ -17,8 +17,7 @@ RUN uv pip install --no-cache \
     do-mpc \
     matplotlib \
     foxglove-sdk \
-    "numpy<2" \
-    /opt/acados/interfaces/acados_template
+    "numpy<2" 
 WORKDIR  /home/${USERNAME}/packages
 RUN git clone https://github.com/acados/acados.git /opt/acados \
     && cd /opt/acados \
