@@ -84,9 +84,19 @@ ENV LD_LIBRARY_PATH=$MAMBA_ROOT_PREFIX/lib:$LD_LIBRARY_PATH
 ENV CONDA_PREFIX=$MAMBA_ROOT_PREFIX
 ENV CONDA_DEFAULT_ENV=base
 RUN echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
-    && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc \
-    # && echo "micromamba activate base" >> ~/.zshrc \
-    #解决zsh中补全问题
-    && echo 'eval "$(register-python-argcomplete ros2)"' >> ~/.zshrc \
-    && echo 'eval "$(register-python-argcomplete colcon)"' >> ~/.zshrc 
+    && cat <<-'EOF' >> ~/.zshrc
+# 劫持 source 函数以修复 ROS2 补全覆盖问题
+source() {
+    builtin source "$@"
+    if [[ "$*" == *"setup.zsh"* ]]; then
+        if command -v register-python-argcomplete > /dev/null; then
+            eval "$(register-python-argcomplete ros2)"
+            eval "$(register-python-argcomplete colcon)"
+        fi
+    fi
+}
+# 加载 Mamba 环境
+source "${MAMBA_ROOT_PREFIX}/setup.zsh"
+EOF
+#解决zsh中补全问题
 CMD ["/bin/bash"]
