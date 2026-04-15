@@ -36,6 +36,7 @@ RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source 
     # 有些 acados 接口需要这个路径下有特定的元数据
     && mkdir -p /opt/acados/interfaces \
     && cp -rf /tmp/acados_source/interfaces/acados_template /opt/acados/interfaces/ \
+    && cp /tmp/acados_source/lib/link_libs.json /opt/acados/lib/ \
     && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
