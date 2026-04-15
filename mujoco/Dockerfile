@@ -39,7 +39,7 @@ RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source 
     && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
-RUN uv pip install  /opt/acados/interfaces/acados_template\
+RUN uv pip install --no-cache  /opt/acados/interfaces/acados_template\
     && mkdir -p /opt/acados/bin \
     && curl -L https://github.com/acados/tera_renderer/releases/download/v0.0.34/t_renderer-v0.0.34-linux -o /opt/acados/bin/t_renderer \
     && chmod +x /opt/acados/bin/t_renderer
@@ -51,7 +51,7 @@ ENV PATH="/opt/acados/bin:${PATH}"
 
 RUN uv pip install "numpy<2"
 RUN echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
-    && echo 'source ~/ros2_ws/install/setup.zsh' >> /home/${USERNAME}/.config/fish/config.fish
+    && echo 'source ~/ros2_ws/install/setup.zsh' >> /home/${USERNAME}/.zshrc
 
 WORKDIR /home/${USERNAME}
 CMD ["/bin/bash"]
