@@ -28,6 +28,7 @@ RUN git clone https://github.com/acados/acados.git /opt/acados \
     -DBUILD_SHARED_LIBS=ON \
     -DACADOS_UNIT_TESTS=OFF \
     -DACADOS_EXAMPLES=OFF \
+    -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types" \
     -DCMAKE_BUILD_TYPE=Release .. \
     && make install -j$(nproc) \
     && rm -rf /opt/acados/build
