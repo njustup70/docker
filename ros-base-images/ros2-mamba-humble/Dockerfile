@@ -25,11 +25,13 @@ RUN groupadd --gid $USER_GID $USERNAME  \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
+    && echo 'Defaults env_keep += "PATH"' >> /etc/sudoers \
     && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc \
     && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX
 # 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
+USER $USERNAME
 # 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
-RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
+RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /opt/conda/.mambarc && \
     micromamba install -y -n base \
     ros-humble-ros-core \
     ros-humble-sensor-msgs \
@@ -58,9 +60,11 @@ RUN micromamba install -y -n base \
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp \
-    && micromamba clean -afy
+    ros-${ROS_DISTRO}-demo-nodes-cpp \
+    ros-${ROS_DISTRO}-demo-nodes-py \
+    && micromamba clean --all --yes
 # --- 运行时配置 ---
-USER $USERNAME
+
 # 安装 Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
