@@ -6,11 +6,13 @@ ARG USERNAME=Elaina
 ARG USER_UID=1000
 ARG USER_GID=1000
 
+# 基础定义
 ENV MAMBA_ROOT_PREFIX=/opt/conda
 ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
+
+# 针对 ROS 2 的必须变量
 ENV ROS_DISTRO=humble
-ENV CPLUS_INCLUDE_PATH=$MAMBA_ROOT_PREFIX/include
-ENV LIBRARY_PATH=$MAMBA_ROOT_PREFIX/lib
+
 ENV UV_SYSTEM_PYTHON=1
 # 1. 安装系统工具与编译依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,11 +21,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME  \
-    && useradd --uid $USER_UID --gid $USER_GID -m -s /usr/bin/fish $USERNAME\
+    && useradd --uid $USER_UID --gid $USER_GID -m \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
-    && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc
+    && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc \
+    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX
 # 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
 # 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
 RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nchannel_priority: strict\n" > /root/.mambarc && \
@@ -35,25 +38,36 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
     colcon-common-extensions \
     colcon-mixin \
-    ninja ccache mold fish uv gdb curl\
+    ninja ccache mold zsh uv gdb curl\
     && micromamba clean --all --yes
+#指定使用 micromamba 运行后续命令
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # # 6. 使用 UV 安装 Python 分析工具
 RUN uv pip  install  viztracer py-spy
+# 安装可视化工具所需的 OpenGL 库
+RUN micromamba install -y -n base \
+    libgl-devel \
+    mesalib \
+    libglvnd
 #增加其他ROS包 
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
 # --- 运行时配置 ---
 USER $USERNAME
-#安装fish
-RUN curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/install.fish && \
-    fish /tmp/install.fish --noninteractive --yes && \
-    rm /tmp/install.fish && \
-    # 安装fish插件
-    fish -c "omf install bass" 
-COPY --chown=$USER_UID:$USER_GID packages/fish /home/$USERNAME/.config/fish
+# 安装 Oh My Zsh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended && \
+    # 克隆 自动建议 插件
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
+    # 克隆 语法高亮 插件
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
+    # 在 .zshrc 中启用插件
+    sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
 WORKDIR /home/$USERNAME
-RUN echo 'eval "$(micromamba shell hook --shell fish)"' > ~/.config/fish/config.fish && \
-    echo 'micromamba activate base' >> ~/.config/fish/config.fish 
+RUN micromamba shell hook --shell bash >> ~/.bashrc \
+    && echo "micromamba activate base" >> ~/.bashrc \
+    && micromamba shell hook --shell zsh >> ~/.zshrc \
+    && echo "micromamba activate base" >> ~/.zshrc \
+    && echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
+    && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc
 CMD ["/bin/bash"]
