@@ -9,7 +9,8 @@ USER root
 #用micromamba安装mujoco casadi和pinocchio
 RUN micromamba install -y \
     pinocchio \
-    casadi 
+    casadi \
+    && micromamba clean -afy
 # 安装 MuJoCo 及相关 Python 包
 RUN uv pip install --no-cache \
     mujoco \
@@ -19,9 +20,9 @@ RUN uv pip install --no-cache \
     foxglove-sdk \
     "numpy<2" 
 WORKDIR  /home/${USERNAME}/packages
-RUN git clone https://github.com/acados/acados.git /opt/acados \
-    && cd /opt/acados \
-    && git submodule update --recursive --init \
+RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source \
+    && cd /tmp/acados_source \
+    && git submodule update --recursive --init --depth 1 \
     && mkdir build && cd build \
     && cmake -DACADOS_WITH_QPOASES=ON \
     -DACADOS_WITH_HPIPM=ON \
@@ -29,9 +30,13 @@ RUN git clone https://github.com/acados/acados.git /opt/acados \
     -DACADOS_UNIT_TESTS=OFF \
     -DACADOS_EXAMPLES=OFF \
     -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types" \
-    -DCMAKE_BUILD_TYPE=Release .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/acados .. \
     && make install -j$(nproc) \
-    && rm -rf /opt/acados/build
+    # && # --- 关键的一步：把必要的源码信息拷回去（acados 特色需求） ---
+    # 有些 acados 接口需要这个路径下有特定的元数据，但不需要 .git 和 build
+    cp -r /tmp/acados_source/interfaces /opt/acados/ 2>/dev/null || true \
+    && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
 RUN uv pip install  /opt/acados/interfaces/acados_template\
