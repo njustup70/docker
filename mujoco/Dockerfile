@@ -5,6 +5,7 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
 ENV HOME=/home/${USERNAME}
+USER root
 #用micromamba安装mujoco casadi和pinocchio
 RUN micromamba install -y \
     pinocchio \
