@@ -58,10 +58,9 @@ RUN micromamba install -y -n base \
     mesalib \
     libglvnd \
     && micromamba clean -afy
-#增加其他ROS包 
+#增加其他ROS包 与python补全
 RUN micromamba install -y -n base \
-    #python补全
-    python3-argcomplete \   
+    argcomplete \   
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp \
     ros-${ROS_DISTRO}-demo-nodes-cpp \
