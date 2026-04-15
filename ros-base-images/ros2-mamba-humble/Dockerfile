@@ -60,6 +60,8 @@ RUN micromamba install -y -n base \
     && micromamba clean -afy
 #增加其他ROS包 
 RUN micromamba install -y -n base \
+    #python补全
+    python3-argcomplete \   
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp \
     ros-${ROS_DISTRO}-demo-nodes-cpp \
@@ -78,13 +80,13 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && mkdir -p ~/.config \
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 WORKDIR /home/$USERNAME
-RUN micromamba shell hook --shell bash >> ~/.bashrc \
-    && micromamba shell hook --shell zsh >> ~/.zshrc \
-    # source和activate顺序有区别，不能颠倒
-    && echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
-    && echo "micromamba activate base" >> ~/.bashrc \
+#直接将micromamba的环境变量添加到系统环境变量中，确保在任何 shell 中都能正确使用 micromamba 环境
+ENV LD_LIBRARY_PATH=$MAMBA_ROOT_PREFIX/lib:$LD_LIBRARY_PATH
+ENV CONDA_PREFIX=$MAMBA_ROOT_PREFIX
+ENV CONDA_DEFAULT_ENV=base
+RUN echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
     && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc \
-    && echo "micromamba activate base" >> ~/.zshrc \
+    # && echo "micromamba activate base" >> ~/.zshrc \
     #解决zsh中补全问题
     && echo 'eval "$(register-python-argcomplete3 ros2)"' >> ~/.zshrc \
     && echo 'eval "$(register-python-argcomplete3 colcon)"' >> ~/.zshrc 
