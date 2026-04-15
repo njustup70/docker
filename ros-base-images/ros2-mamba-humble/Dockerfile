@@ -67,7 +67,7 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && curl -sS https://starship.rs/install.sh | sh -s -- -y \
     && echo 'eval "$(starship init zsh)"' >> ~/.zshrc \
     && mkdir -p ~/.config \
-    && echo '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
+    && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 WORKDIR /home/$USERNAME
 RUN micromamba shell hook --shell bash >> ~/.bashrc \
     && echo "micromamba activate base" >> ~/.bashrc \
