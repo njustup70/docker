@@ -42,15 +42,11 @@ RUN uv pip install  /opt/acados/interfaces/acados_template\
 # 3. 设置环境变量 (这是最关键的一步，必须在 ENV 中设置，否则仅在 RUN 时有效)
 ENV ACADOS_SOURCE_DIR="/opt/acados"
 ENV LD_LIBRARY_PATH="${ACADOS_SOURCE_DIR}/lib:${LD_LIBRARY_PATH}"
-ENV PYTHONPATH=/opt/openrobots/lib/python3.10/site-packages:$PYTHONPATH
-ENV PATH=/opt/openrobots/bin:$PATH
-ENV PKG_CONFIG_PATH=/opt/openrobots/lib/pkgconfig:$PKG_CONFIG_PATH
-ENV LD_LIBRARY_PATH=/opt/openrobots/lib:$LD_LIBRARY_PATH
-ENV CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
+ENV PATH="/opt/acados/bin:${PATH}"
 
 RUN uv pip install "numpy<2"
 RUN echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
-    && echo 'bass source ~/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish
+    && echo 'source ~/ros2_ws/install/setup.zsh' >> /home/${USERNAME}/.config/fish/config.fish
 
 WORKDIR /home/${USERNAME}
 CMD ["/bin/bash"]
