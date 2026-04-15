@@ -87,6 +87,6 @@ RUN echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
     && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc \
     # && echo "micromamba activate base" >> ~/.zshrc \
     #解决zsh中补全问题
-    && echo 'eval "$(register-python-argcomplete3 ros2)"' >> ~/.zshrc \
-    && echo 'eval "$(register-python-argcomplete3 colcon)"' >> ~/.zshrc 
+    && echo 'eval "$(register-python-argcomplete ros2)"' >> ~/.zshrc \
+    && echo 'eval "$(register-python-argcomplete colcon)"' >> ~/.zshrc 
 CMD ["/bin/bash"]
