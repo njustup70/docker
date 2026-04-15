@@ -32,7 +32,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
     colcon-common-extensions \
     colcon-mixin \
-    ninja ccache mold fish uv gdb \
+    ninja ccache mold fish uv gdb curl\
     && micromamba clean --all --yes
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # # 6. 使用 UV 安装 Python 分析工具
@@ -41,6 +41,15 @@ RUN uv pip  install  viztracer py-spy
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
     ros-${ROS_DISTRO}-rmw-zenoh-cpp
+#安装fish
+RUN curl -s https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/install.fish && \
+    sudo -u $USERNAME fish /tmp/install.fish --noninteractive --yes && \
+    rm /tmp/install.fish && \
+    # 安装fish插件
+    sudo -u $USERNAME fish -c "omf install bass" && \
+    # 设置umask
+    echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc
+COPY --chown=$USER_UID:$USER_GID packages/fish /home/$USERNAME/.config/fish
 # --- 运行时配置 ---
 USER $USERNAME
 WORKDIR /home/$USERNAME
