@@ -52,11 +52,13 @@ RUN uv pip  install  viztracer py-spy
 RUN micromamba install -y -n base \
     libgl-devel \
     mesalib \
-    libglvnd
+    libglvnd \
+    && micromamba clean -afy
 #增加其他ROS包 
 RUN micromamba install -y -n base \
     ros-${ROS_DISTRO}-foxglove-bridge \
-    ros-${ROS_DISTRO}-rmw-zenoh-cpp
+    ros-${ROS_DISTRO}-rmw-zenoh-cpp \
+    && micromamba clean -afy
 # --- 运行时配置 ---
 USER $USERNAME
 # 安装 Oh My Zsh
