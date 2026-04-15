@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME  \
-    && useradd --uid $USER_UID --gid $USER_GID -m \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME\
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
@@ -38,8 +38,12 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
     colcon-common-extensions \
     colcon-mixin \
-    ninja ccache mold zsh uv gdb curl\
     && micromamba clean --all --yes
+#安装其他开发工具
+RUN micromamba install -y \
+    ninja ccache mold zsh uv gdb curl\
+    vim \
+    && micromamba clean --all --yes 
 #指定使用 micromamba 运行后续命令
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
 # # 6. 使用 UV 安装 Python 分析工具
