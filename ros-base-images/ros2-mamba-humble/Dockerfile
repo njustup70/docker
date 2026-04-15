@@ -26,8 +26,10 @@ RUN groupadd --gid $USER_GID $USERNAME  \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
     && echo 'Defaults env_keep += "PATH"' >> /etc/sudoers \
+    && echo 'Defaults secure_path="/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"' >> /etc/sudoers \
     && echo "umask 002" | tee -a /etc/profile /etc/bash.bashrc \
-    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX
+    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX\
+    && chmod -R 775 $MAMBA_ROOT_PREFIX 
 # 3. 配置并安装 Micromamba 环境 (仅保留 ROS 相关和辅助工具)
 USER $USERNAME
 # 删除了 c-compiler, cxx-compiler, cmake, git，改用系统级的
@@ -69,16 +71,21 @@ RUN micromamba install -y -n base \
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
-    && sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc \
+    && git clone https://github.com/esc/conda-zsh-completion ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/conda-zsh-completion \
+    && sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting conda-zsh-completion)/' ~/.zshrc \
     && curl -sS https://starship.rs/install.sh | sh -s -- -y \
     && echo 'eval "$(starship init zsh)"' >> ~/.zshrc \
     && mkdir -p ~/.config \
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 WORKDIR /home/$USERNAME
 RUN micromamba shell hook --shell bash >> ~/.bashrc \
-    && echo "micromamba activate base" >> ~/.bashrc \
     && micromamba shell hook --shell zsh >> ~/.zshrc \
-    && echo "micromamba activate base" >> ~/.zshrc \
+    # source和activate顺序有区别，不能颠倒
     && echo "source ${MAMBA_ROOT_PREFIX}/setup.bash" >> ~/.bashrc \
-    && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc
+    && echo "micromamba activate base" >> ~/.bashrc \
+    && echo "source ${MAMBA_ROOT_PREFIX}/setup.zsh" >> ~/.zshrc \
+    && echo "micromamba activate base" >> ~/.zshrc \
+    #解决zsh中补全问题
+    && echo 'eval "$(register-python-argcomplete3 ros2)"' >> ~/.zshrc \
+    && echo 'eval "$(register-python-argcomplete3 colcon)"' >> ~/.zshrc 
 CMD ["/bin/bash"]
