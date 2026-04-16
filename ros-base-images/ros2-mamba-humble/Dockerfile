@@ -16,12 +16,11 @@ ENV ROS_DISTRO=humble
 ENV UV_SYSTEM_PYTHON=1
 # 1. 安装系统工具与编译依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo build-essential cmake git \ 
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    sudo build-essential cmake git clangd openssh-client pkg-config curl\
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
 # 2. 创建用户并配置权限
 RUN groupadd --gid $USER_GID $USERNAME  \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME\
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /usr/bin/bash\
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && usermod -aG root $USERNAME \
     && echo 'Defaults !env_reset' >> /etc/sudoers \
@@ -42,11 +41,11 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
     colcon-common-extensions \
     colcon-mixin \
+    && sudo ln -s /opt/conda/bin/python /usr/bin/python  \
     && micromamba clean --all --yes
 #安装其他开发工具
 RUN micromamba install -y \
-    ninja ccache mold zsh uv gdb curl\
-    vim \
+    ninja ccache mold zsh uv gdb  vim \
     && micromamba clean --all --yes 
 #指定使用 micromamba 运行后续命令
 SHELL ["micromamba", "run", "-n", "base", "/bin/bash", "-c"]
