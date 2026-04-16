@@ -41,7 +41,7 @@ RUN printf "channels:\n  - robostack-humble\n  - conda-forge\n  - nodefaults\nch
     ros-humble-tf2-ros ros-humble-tf2-eigen ros-humble-tf2-geometry-msgs\
     colcon-common-extensions \
     colcon-mixin \
-    && ln -s /usr/bin/python /opt/conda/bin/python \
+    && sudo ln -s /opt/conda/bin/python /usr/bin/python  \
     && micromamba clean --all --yes
 #安装其他开发工具
 RUN micromamba install -y \
