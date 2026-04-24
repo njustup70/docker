@@ -10,17 +10,19 @@ ENV MAMBA_ROOT_PREFIX=/opt/conda \
     PATH=/opt/conda/bin:$PATH \
     UV_SYSTEM_PYTHON=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    zsh sudo ca-certificates bzip2 \
+    zsh sudo ca-certificates bzip2 ninja-build openssh-client cmake git \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh \
     && rm -rf /var/lib/apt/lists/*
-RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 micromamba
-
+ADD https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-linux-64 /usr/bin/micromamba
+RUN chmod +x /usr/bin/micromamba
 #增加用户
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /usr/bin/zsh \
-    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && mkdir -p $MAMBA_ROOT_PREFIX \
-    && chown -R $USERNAME:$USER_GID $MAMBA_ROOT_PREFIX $ISAAC_SIM_PATH
-
+RUN usermod -l ${USERNAME} ubuntu \
+    &&  groupmod -n ${USERNAME} ubuntu  \
+    && usermod -d /home/${USERNAME} -m ${USERNAME}  \
+    && chsh -s /usr/bin/zsh ${USERNAME}  \
+    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && mkdir -p ${MAMBA_ROOT_PREFIX}  \
+    && chown -R ${USERNAME}:${USER_GID} ${MAMBA_ROOT_PREFIX}
 # 6. 安装 Oh My Zsh & Starship (提升开发体验)
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
