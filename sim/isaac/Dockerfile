@@ -10,11 +10,11 @@ ENV MAMBA_ROOT_PREFIX=/opt/conda \
     PATH=/opt/conda/bin:$PATH \
     UV_SYSTEM_PYTHON=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    zsh sudo ca-certificates bzip2 ninja-build openssh-client cmake git \
+    zsh sudo ca-certificates bzip2 ninja-build openssh-client cmake git wget\
     && curl -LsSf https://astral.sh/uv/install.sh | sh \
     && rm -rf /var/lib/apt/lists/*
-ADD https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-linux-64 /usr/bin/micromamba
-RUN chmod +x /usr/bin/micromamba
+RUN wget -qO /usr/bin/micromamba https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-linux-64  \
+    && chmod +x /usr/bin/micromamba
 #增加用户
 RUN usermod -l ${USERNAME} ubuntu \
     &&  groupmod -n ${USERNAME} ubuntu  \
@@ -24,14 +24,20 @@ RUN usermod -l ${USERNAME} ubuntu \
     && mkdir -p ${MAMBA_ROOT_PREFIX}  \
     && chown -R ${USERNAME}:${USER_GID} ${MAMBA_ROOT_PREFIX}
 # 6. 安装 Oh My Zsh & Starship (提升开发体验)
+USER ${USERNAME}
+WORKDIR /home/$USERNAME
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
     && git clone https://github.com/esc/conda-zsh-completion ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/conda-zsh-completion \
     && sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting conda-zsh-completion)/' ~/.zshrc \
-    && curl -sS https://starship.rs/install.sh | sh -s -- -y \
+    && curl -sS https://starship.rs/install.sh | sudo sh -s -- -y \
     && echo 'eval "$(starship init zsh)"' >> ~/.zshrc \
     && mkdir -p ~/.config \
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 # 安装issac lab
+USER root
+#把/isaac-sim目录权限改为当前用户,给可执行权限
+RUN chown -R ${USERNAME}:${USER_GID} /isaac-sim\
+    && chmod -R 775 /isaac-sim
 CMD ["/usr/bin/zsh"]
