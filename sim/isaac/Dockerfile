@@ -38,6 +38,6 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 # 安装issac lab
 USER root
 #把/isaac-sim目录权限改为当前用户,给可执行权限
-RUN chown -R ${USERNAME}:${USER_GID} /isaac-sim\
-    && chmod -R 775 /isaac-sim
+# RUN chown -R ${USERNAME}:${USER_GID} /isaac-sim\
+#     && chmod -R 775 /isaac-sim
 CMD ["/usr/bin/zsh"]
