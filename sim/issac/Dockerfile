@@ -1,16 +1,19 @@
 FROM nvcr.io/nvidia/isaac-sim:5.1.0
 USER root
 # --- 参数与环境变量配置 ---
-ARG USERNAME=Elaina
-ARG USER_UID=1000
-ARG USER_GID=1000
-# 基础定义
-ENV MAMBA_ROOT_PREFIX=/opt/conda
-ENV PATH=$MAMBA_ROOT_PREFIX/bin:$PATH
-ENV UV_SYSTEM_PYTHON=1
-RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 micromamba
+# 1. 合并所有构建参数 (ARG)
+ARG USERNAME=Elaina \
+    USER_UID=1000 \
+    USER_GID=1000
+# 2. 合并所有环境变量 (ENV)
+ENV MAMBA_ROOT_PREFIX=/opt/conda \
+    PATH=/opt/conda/bin:$PATH \
+    UV_SYSTEM_PYTHON=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    zsh sudo 
+    zsh sudo ca-certificates bzip2 \
+    && rm -rf /var/lib/apt/lists/*
+RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 micromamba
+
 #增加用户
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /usr/bin/zsh \
