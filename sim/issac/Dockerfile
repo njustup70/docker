@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/issac-sim:5.1.0
+FROM nvcr.io/nvidia/isaac-sim:5.1.0
 USER root
 # --- 参数与环境变量配置 ---
 ARG USERNAME=Elaina
