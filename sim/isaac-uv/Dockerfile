@@ -6,11 +6,12 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 RUN groupadd --gid ${USER_GID} ${USERNAME} \
-    && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} \
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -G root -m -s /usr/bin/zsh ${USERNAME} \
     && apt-get update && apt-get install -y sudo \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && chmod 777 /usr/local \
     && rm -rf /var/lib/apt/lists/*
-
+SHELL ["/bin/bash", "-c", "umask 000 && $0 $@"]
 # --- 2. 环境变量配置 ---
 ENV MAMBA_ROOT_PREFIX=/usr/local \
     UV_SYSTEM_PYTHON=1 \
@@ -36,12 +37,13 @@ RUN micromamba install -y  -c conda-forge \
 # --- 5. 使用 UV 安装 Isaac Sim (前置安装) ---
 # 接受 EULA 环境变量 (根据 NVIDIA 要求)
 ENV ACCEPT_EULA=Y
+USER ${USERNAME}
 RUN uv pip install --system \
     --extra-index-url https://pypi.nvidia.com \
     "isaacsim[all,extscache]==5.1.0"
 
 # --- 6. 开发环境配置 (Oh My Zsh & Starship) ---
-USER ${USERNAME}
+
 WORKDIR /home/${USERNAME}
 
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
