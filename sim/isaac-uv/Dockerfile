@@ -38,10 +38,7 @@ RUN micromamba install -y --prefix /usr -c conda-forge \
 ENV ACCEPT_EULA=Y
 RUN uv pip install --system \
     --extra-index-url https://pypi.nvidia.com \
-    isaac-sim==5.1.0 \
-    isaac-sim-gui==5.1.0 \
-    isaac-sim-extscache-physics==5.1.0 \
-    isaac-sim-extscache-kit-sdk==5.1.0
+    "isaacsim[all,extscache]==5.1.0"
 
 # --- 6. 开发环境配置 (Oh My Zsh & Starship) ---
 USER ${USERNAME}
