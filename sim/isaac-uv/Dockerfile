@@ -12,7 +12,7 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
     && rm -rf /var/lib/apt/lists/*
 
 # --- 2. 环境变量配置 ---
-ENV MAMBA_ROOT_PREFIX=/usr \
+ENV MAMBA_ROOT_PREFIX=/usr/local \
     UV_SYSTEM_PYTHON=1 \
     ISAACSIM_PATH=/isaac-sim 
 
@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # --- 4. Micromamba 强制安装系统级工具 (禁止环境隔离) ---
 # 安装 Python 3.11 (Isaac Sim 5.1 必需) 及开发工具到 /usr
-RUN micromamba install -y --prefix /usr -c conda-forge \
+RUN micromamba install -y  -c conda-forge \
     python=3.11 zsh git wget cmake ninja openssh \
     && micromamba clean --all --yes
 
