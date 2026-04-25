@@ -9,7 +9,6 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
     && useradd --uid ${USER_UID} --gid ${USER_GID} -G root -m -s /usr/bin/zsh ${USERNAME} \
     && apt-get update && apt-get install -y sudo \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && chmod 777 /usr/local \
     && rm -rf /var/lib/apt/lists/*
 SHELL ["/bin/bash", "-c"]
 
@@ -26,7 +25,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvulkan1 vulkan-tools libx11-6 libxau6 libxcb1 libxdmcp6 libxext6 \
     libwayland-client0 libwayland-cursor0 libwayland-egl1 \
     && curl -LsSf https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 bin/micromamba \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    #给权限!重要
+    && chown -R ${USERNAME}:${USER_GID} /usr/local
 USER ${USERNAME}
 # --- 4. Micromamba 强制安装系统级工具 (禁止环境隔离) ---
 # 安装 Python 3.11 (Isaac Sim 5.1 必需) 及开发工具到 /usr
