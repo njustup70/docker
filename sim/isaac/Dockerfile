@@ -37,7 +37,8 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 # 安装issac lab
 ENV ISAACSIM_PATH=/isaac-sim \
-    ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh
+    ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh\
+    TERM=xterm
 WORKDIR /home/${USERNAME}
 RUN git clone --depth 1 https://github.com/isaac-sim/IsaacLab.git \
     && cd IsaacLab \
