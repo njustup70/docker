@@ -12,7 +12,7 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
     && chmod 777 /usr/local \
     && rm -rf /var/lib/apt/lists/*
 SHELL ["/bin/bash", "-c"]
-USER ${USERNAME}
+
 # --- 2. 环境变量配置 ---
 ENV MAMBA_ROOT_PREFIX=/usr/local \
     UV_SYSTEM_PYTHON=1 \
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libwayland-client0 libwayland-cursor0 libwayland-egl1 \
     && curl -LsSf https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 bin/micromamba \
     && rm -rf /var/lib/apt/lists/*
-
+USER ${USERNAME}
 # --- 4. Micromamba 强制安装系统级工具 (禁止环境隔离) ---
 # 安装 Python 3.11 (Isaac Sim 5.1 必需) 及开发工具到 /usr
 RUN micromamba install -y  -c conda-forge \
