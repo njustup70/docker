@@ -36,7 +36,14 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && mkdir -p ~/.config \
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 # 安装issac lab
-USER root
+ENV ISAACSIM_PATH=/isaac-sim \
+    ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh
+WORKDIR /home/${USERNAME}
+RUN git clone --depth 1 https://github.com/isaac-sim/IsaacLab.git \
+    && cd IsaacLab \
+    && ln -s ${ISAACSIM_PATH} _isaac_sim \
+    && ./isaaclab.sh --install rsl_rl sb3
+
 #把/isaac-sim目录权限改为当前用户,给可执行权限
 # RUN chown -R ${USERNAME}:${USER_GID} /isaac-sim\
 #     && chmod -R 775 /isaac-sim
