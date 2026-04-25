@@ -23,14 +23,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config libglvnd0 libgl1 libglx0 libegl1 libgles2 \
     libvulkan1 vulkan-tools libx11-6 libxau6 libxcb1 libxdmcp6 libxext6 \
     libwayland-client0 libwayland-cursor0 libwayland-egl1 \
-    && curl -LsSf https://astral.sh/uv/install.sh | sh \
     && curl -LsSf https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C /usr/bin/ --strip-components=1 bin/micromamba \
     && rm -rf /var/lib/apt/lists/*
 
 # --- 4. Micromamba 强制安装系统级工具 (禁止环境隔离) ---
 # 安装 Python 3.11 (Isaac Sim 5.1 必需) 及开发工具到 /usr
 RUN micromamba install -y  -c conda-forge \
-    python=3.11 zsh git wget cmake ninja openssh \
+    python=3.11 uv\ 
+    zsh git wget cmake ninja openssh \
     && micromamba clean --all --yes
 
 # --- 5. 使用 UV 安装 Isaac Sim (前置安装) ---
