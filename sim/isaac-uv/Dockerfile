@@ -10,10 +10,9 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
     && apt-get update && apt-get install -y sudo \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && chmod 777 /usr/local \
-    && echo "umask 000" >> /etc/bash.bashrc \
-    && echo "umask 000" >> /etc/profile \
     && rm -rf /var/lib/apt/lists/*
 SHELL ["/bin/bash", "-c"]
+USER ${USERNAME}
 # --- 2. 环境变量配置 ---
 ENV MAMBA_ROOT_PREFIX=/usr/local \
     UV_SYSTEM_PYTHON=1 \
