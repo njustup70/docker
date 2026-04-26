@@ -6,7 +6,7 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 RUN groupadd --gid ${USER_GID} ${USERNAME} \
-    && useradd --uid ${USER_UID} --gid ${USER_GID} -G root -m -s /usr/bin/zsh ${USERNAME} \
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -G root -m -s /usr/local/bin/zsh ${USERNAME} \
     && apt-get update && apt-get install -y sudo \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && rm -rf /var/lib/apt/lists/*
