@@ -40,6 +40,7 @@ RUN chmod +x /usr/local/bin/*
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-gps-msgs \
     libpcap-dev \
+    usbutils \
     # [新增] 视觉与编译依赖
     build-essential \
     cmake \
