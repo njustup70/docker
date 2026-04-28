@@ -43,7 +43,7 @@ WORKDIR /home/${USERNAME}
 RUN git clone --depth 1 https://github.com/isaac-sim/IsaacLab.git \
     && cd IsaacLab \
     && ln -s /isaac-sim _isaac_sim \
-    && printf"yes\n" |  ./isaaclab.sh --install rsl_rl sb3 
+    && printf "yes\n" |  ./isaaclab.sh --install rsl_rl sb3 
 
 
 #把/isaac-sim目录权限改为当前用户,给可执行权限
