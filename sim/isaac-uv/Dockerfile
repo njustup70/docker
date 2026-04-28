@@ -73,6 +73,6 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 
 # --- 7. 延迟加载 micromamba 索引 (仅保留命令补全，不涉及环境激活) --
 RUN git clone https://github.com/isaac-sim/IsaacLab.git \
-    && cd IsaacLab && ./isaaclab.sh --install sb3 rsl_rl
+    && cd IsaacLab && ./isaaclab.sh --install sb3 rsl_rl || true
 
 CMD ["/usr/bin/zsh"]
