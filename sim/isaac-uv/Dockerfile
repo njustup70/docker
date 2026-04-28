@@ -61,6 +61,20 @@ RUN uv pip install --system --no-cache\
 
 WORKDIR /home/${USERNAME}
 
+#先安装isaac lab
+ENV ISAACLAB_PATH=/home/${USERNAME}/IsaacLab
+
+RUN git clone --depth 1 https://github.com/isaac-sim/IsaacLab.git ${ISAACLAB_PATH} \
+    && cd ${ISAACLAB_PATH} \
+    # 1. 安装核心构建依赖 (注意去掉了多余的 install)
+    && uv pip install --system --no-cache "setuptools<82.0.0" \
+    # 2. 安装内部扩展模块
+    # 注意：在 Docker 生产/运行镜像中，通常去掉 -e 会更稳定，这里保留以符合你脚本逻辑
+    && find "${ISAACLAB_PATH}/source" -mindepth 1 -maxdepth 1 -type d -exec uv pip install --system --no-cache -e "{}" \; \
+    # 3. 安装 RL 框架支持
+    && uv pip install --system --no-cache -e "${ISAACLAB_PATH}/source/isaaclab_rl[sb3,rsl_rl]" 
+
+
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
@@ -71,8 +85,5 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && mkdir -p ~/.config \
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 
-# --- 7. 延迟加载 micromamba 索引 (仅保留命令补全，不涉及环境激活) --
-RUN git clone https://github.com/isaac-sim/IsaacLab.git \
-    && cd IsaacLab && ./isaaclab.sh --install sb3 rsl_rl || true
 
 CMD ["/usr/bin/zsh"]
