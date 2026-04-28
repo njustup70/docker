@@ -72,7 +72,7 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     && printf '[username]\nshow_always = true\nstyle_user = "bold #af87ff"\nformat = "[$user]($style) "' > ~/.config/starship.toml
 
 # --- 7. 延迟加载 micromamba 索引 (仅保留命令补全，不涉及环境激活) --
-RUN git clone git@github.com:isaac-sim/IsaacLab.git \
+RUN git clone https://github.com/isaac-sim/IsaacLab.git \
     && cd IsaacLab && ./isaaclab.sh --install sb3 rsl_rl
 
 CMD ["/usr/bin/zsh"]
