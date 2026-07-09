@@ -22,6 +22,7 @@ RUN pip install imutils ultralytics openvino roslibpy pyzmq comet_ml open3d py-s
 RUN pip install zmq "numpy<2.0" pyserial pyserial-asyncio
 
 USER root
+RUN apt-get update && apt-get install -y ros-humble-rmw-zenoh-cpp
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "export PATH=\$HOME/.local/bin:\$PATH" >> /home/$USERNAME/.bashrc \
     && echo "set -gx PATH \$HOME/.local/bin \$PATH" >> /home/$USERNAME/.config/fish/config.fish
