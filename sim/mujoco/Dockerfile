@@ -19,6 +19,10 @@ RUN micromamba install -y \
     pinocchio \
     casadi \
     && micromamba clean -afy
+
+# 补充缺失的 uv 工具
+RUN pip install uv
+
 # 安装 MuJoCo 及相关 Python 包
 RUN uv pip install --no-cache \
     mujoco \
