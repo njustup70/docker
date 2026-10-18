@@ -6,7 +6,15 @@ ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
 ENV HOME=/home/${USERNAME}
 USER root
-#用micromamba安装mujoco casadi和pinocchio
+
+# 补充基础镜像缺少的 micromamba
+RUN apt-get update && apt-get install -y curl bzip2 \
+    && curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba \
+    && mv bin/micromamba /usr/local/bin/micromamba \
+    && micromamba --version \
+    && rm -rf /var/lib/apt/lists/*
+
+# 用micromamba安装mujoco casadi和pinocchio
 RUN micromamba install -y \
     pinocchio \
     casadi \
