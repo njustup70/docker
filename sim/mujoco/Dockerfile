@@ -24,13 +24,14 @@ RUN micromamba install -y \
 RUN pip install uv
 
 # 安装 MuJoCo 及相关 Python 包
-RUN uv pip install --no-cache \
+RUN uv pip install --system --no-cache \
     mujoco \
     mujoco-python-viewer \
     do-mpc \
     matplotlib \
     foxglove-sdk \
     "numpy<2" 
+    
 WORKDIR  /home/${USERNAME}/packages
 RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source \
     && cd /tmp/acados_source \
