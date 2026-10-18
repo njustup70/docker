@@ -1,4 +1,4 @@
-FROM elainasuki/ros:ros2-humble-core-0416
+FROM up70docker/ros:ros2-humble-full-1017
 
 ARG USERNAME=Elaina
 ARG USER_UID=1000
