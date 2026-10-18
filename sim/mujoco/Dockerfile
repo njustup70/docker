@@ -31,7 +31,7 @@ RUN uv pip install --system --no-cache \
     matplotlib \
     foxglove-sdk \
     "numpy<2" 
-    
+
 WORKDIR  /home/${USERNAME}/packages
 RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source \
     && cd /tmp/acados_source \
@@ -53,7 +53,7 @@ RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source 
     && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
-RUN uv pip install --no-cache  /opt/acados/interfaces/acados_template\
+RUN uv pip install --system --no-cache  /opt/acados/interfaces/acados_template\
     && mkdir -p /opt/acados/bin \
     && curl -L https://github.com/acados/tera_renderer/releases/download/v0.0.34/t_renderer-v0.0.34-linux -o /opt/acados/bin/t_renderer \
     && chmod +x /opt/acados/bin/t_renderer
@@ -63,7 +63,7 @@ ENV ACADOS_SOURCE_DIR="/opt/acados"
 ENV LD_LIBRARY_PATH="${ACADOS_SOURCE_DIR}/lib:${LD_LIBRARY_PATH}"
 ENV PATH="/opt/acados/bin:${PATH}"
 
-RUN uv pip install "numpy<2"
+RUN uv pip install --system  "numpy<2"
 RUN echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'source ~/ros2_ws/install/setup.zsh' >> /home/${USERNAME}/.zshrc
 
