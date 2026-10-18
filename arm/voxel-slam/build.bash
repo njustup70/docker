@@ -9,16 +9,16 @@ echo "脚本目录: $SCRIPT_DIR"
 echo "父目录: $PARENT_DIR"
 
 # 设置默认 tag
-TAG="voxel-slam-arm"
+TAG="voxel_slam_ros2_arm"
 
 # 从外部传入的 IMAGE_REPO（格式：ghcr.io/user/repo 或 docker.io/user/repo）
 # IMAGE_REPO=${IMAGE_REPO:-elainasuki/rc2026}
-IMAGE_REPO="up70docker/rc2027"
+IMAGE_REPO="elainasuki/rc2026"
 # 组合完整镜像名
 IMAGE="$IMAGE_REPO:$TAG"
 
 # 获取工作流中的环境变量来决定是否支持 arm64
-PLATFORMS="linux/amd64"  # 默认只支持 amd64 架构
+PLATFORMS="linux/arm64"  # 默认只支持 amd64 架构
 
 if [[ "${BUILD_ARM64}" == "true" ]]; then
     PLATFORMS="$PLATFORMS,linux/arm64"   # 如果环境变量 BUILD_ARM64 为 true，则支持 arm64 架构

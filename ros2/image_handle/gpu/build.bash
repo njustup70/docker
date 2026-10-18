@@ -28,11 +28,11 @@ if [[ "$1" == "--github-action" ]]; then
     --platform $PLATFORMS \
     -t "$IMAGE" \
     -f "$SCRIPT_DIR/Dockerfile" \
-    "$PARENT_DIR" \
+    "$SCRIPT_DIR" \
     --cache-from "type=registry,ref=$IMAGE" \
     --cache-to type=inline \
     --push
 else
     echo "本地构建 $IMAGE"
-    docker build -t "$IMAGE" "$PARENT_DIR"
+    docker build -t "$IMAGE" -f "$SCRIPT_DIR/Dockerfile" "$SCRIPT_DIR"
 fi
