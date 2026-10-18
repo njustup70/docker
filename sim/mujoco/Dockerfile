@@ -1,4 +1,4 @@
-FROM elainasuki/ros:ros2-humble-core-0416
+FROM up70docker/ros:ros2-humble-full-1017
 
 ARG USERNAME=Elaina
 ARG USER_UID=1000
@@ -6,19 +6,32 @@ ARG USER_GID=$USER_UID
 ARG ROS_DISTRO=humble
 ENV HOME=/home/${USERNAME}
 USER root
-#用micromamba安装mujoco casadi和pinocchio
+
+# 补充基础镜像缺少的 micromamba
+RUN apt-get update && apt-get install -y curl bzip2 \
+    && curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba \
+    && mv bin/micromamba /usr/local/bin/micromamba \
+    && micromamba --version \
+    && rm -rf /var/lib/apt/lists/*
+
+# 用micromamba安装mujoco casadi和pinocchio
 RUN micromamba install -y \
     pinocchio \
     casadi \
     && micromamba clean -afy
+
+# 补充缺失的 uv 工具
+RUN pip install uv
+
 # 安装 MuJoCo 及相关 Python 包
-RUN uv pip install --no-cache \
+RUN uv pip install --system --no-cache \
     mujoco \
     mujoco-python-viewer \
     do-mpc \
     matplotlib \
     foxglove-sdk \
     "numpy<2" 
+
 WORKDIR  /home/${USERNAME}/packages
 RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source \
     && cd /tmp/acados_source \
@@ -40,7 +53,7 @@ RUN git clone --depth 1 https://github.com/acados/acados.git /tmp/acados_source 
     && rm -rf /tmp/acados_source
 # 2. 安装 Python 接口
 # 注意：在 Docker 中建议直接使用完整路径
-RUN uv pip install --no-cache  /opt/acados/interfaces/acados_template\
+RUN uv pip install --system --no-cache  /opt/acados/interfaces/acados_template\
     && mkdir -p /opt/acados/bin \
     && curl -L https://github.com/acados/tera_renderer/releases/download/v0.0.34/t_renderer-v0.0.34-linux -o /opt/acados/bin/t_renderer \
     && chmod +x /opt/acados/bin/t_renderer
@@ -50,7 +63,7 @@ ENV ACADOS_SOURCE_DIR="/opt/acados"
 ENV LD_LIBRARY_PATH="${ACADOS_SOURCE_DIR}/lib:${LD_LIBRARY_PATH}"
 ENV PATH="/opt/acados/bin:${PATH}"
 
-RUN uv pip install "numpy<2"
+RUN uv pip install --system  "numpy<2"
 RUN echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'source ~/ros2_ws/install/setup.zsh' >> /home/${USERNAME}/.zshrc
 
