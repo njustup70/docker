@@ -9,20 +9,20 @@ ARG TARGETARCH
 # 设置工作目录
 WORKDIR /home/$USERNAME/packages
 
-# 1. 创建标准工作空间目录结构
+# 创建标准工作空间目录结构
 RUN mkdir -p \
     ros_ws/src \
     && chown -R ${USERNAME}:${USER_GID} /home/${USERNAME}/packages
 
 
-# 3. 复制所有源码包（放在 apt 安装之前，利用缓存）
+# 复制所有源码包（放在 apt 安装之前，利用缓存）
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ms200_ros/oradar_ros ./ros_ws/src/oradar_ros
 COPY --chown=${USERNAME}:${USER_GID} ./packages/nagisa_imu ./ros_ws/src/nagisa_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
 
-# 4. RoboSense LiDAR
+# RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
 RUN git clone --recurse-submodules https://github.com/RoboSense-LiDAR/rslidar_sdk.git \
     && git clone  https://github.com/RoboSense-LiDAR/rslidar_msg.git \
@@ -30,7 +30,7 @@ RUN git clone --recurse-submodules https://github.com/RoboSense-LiDAR/rslidar_sd
 # 复制自定义 CMakeLists.txt
 COPY --chown=${USERNAME}:${USER_GID} ./packages/rslidar_airy/CMakeLists.txt ./rslidar_sdk/
 
-# 5. MCAP 工具
+# MCAP 工具
 USER root
 COPY ./packages/mcap /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y \
     python3-numpy 
 
 
-# 6. 统一构建所有 ROS2 包
+# 统一构建所有 ROS2 包
 USER root
 WORKDIR /home/$USERNAME/packages
 # 构建过程：先 setup -> build 依赖包 -> source install -> build 所有包
@@ -65,7 +65,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && colcon build --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
 
-# 7. Python 依赖
+# Python 依赖
 USER $USERNAME
 RUN pip install \
     pyserial \
@@ -73,7 +73,7 @@ RUN pip install \
     crcmod \
     pyserial-asyncio 
 
-# 8. 安装运行时 apt 包
+# 安装运行时 apt 包
 USER root
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-backward-ros \
@@ -96,6 +96,31 @@ RUN pip install  \
     viztracer py-spy \
     && pip uninstall numpy -y && pip install "numpy<2"
 
+# acados + Python 接口（MPC 求解器）
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git libblas-dev liblapack-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG ACADOS_VERSION=v0.3.5
+RUN git clone --depth 1 --branch ${ACADOS_VERSION} \
+        https://github.com/acados/acados.git /opt/acados \
+    && cd /opt/acados \
+    && git submodule update --recursive --init \
+    && mkdir -p build && cd build \
+    && cmake -DCMAKE_INSTALL_PREFIX=/opt/acados \
+             -DACADOS_WITH_QPOASES=ON .. \
+    && make -j"$(nproc)" install
+
+# 版本必须与上面的 C 库 tag 一致
+RUN python3 -m pip install --no-cache-dir "acados_template==0.3.5"
+
+ENV ACADOS_SOURCE_DIR=/opt/acados
+ENV LD_LIBRARY_PATH=/opt/acados/lib:$LD_LIBRARY_PATH
+
+# 构建期自检，装失败直接让 build 失败
+RUN python3 -c "import acados_template; print('acados_template OK')"
+
 # 添加odin1的依赖包
 RUN apt-get update && apt-get install -y \
     libgtk2.0-dev \
@@ -108,14 +133,14 @@ RUN apt-get update && apt-get install -y \
     usbutils && \
     rm -rf /var/lib/apt/lists/*
 
-# 9. 设置 Shell 环境配置
+# 设置 Shell 环境配置
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/packages/ros_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo "source ~/ros2_ws/install/setup.bash" >> /home/${USERNAME}/.bashrc \
     && echo 'bass source ~/packages/ros_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'bass source ~/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo "bass source ~/packages/ws_livox/install/setup.bash" >> /home/${USERNAME}/.config/fish/config.fish
-# 9. 设置最终环境变量
+# 设置最终环境变量
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/home/$USERNAME/ros2_ws/src:/home/$USERNAME/ros2_ws/packages:$PYTHONPATH
 ENV PATH=/home/$USERNAME/.local/bin:$PATH
