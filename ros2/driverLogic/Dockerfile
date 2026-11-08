@@ -112,8 +112,7 @@ RUN git clone --depth 1 --branch ${ACADOS_VERSION} \
              -DACADOS_WITH_QPOASES=ON .. \
     && make -j"$(nproc)" install
 
-# 版本必须与上面的 C 库 tag 一致
-RUN python3 -m pip install --no-cache-dir jinja2 \
+RUN python3 -m pip install --no-cache-dir future-fstrings cython \
     && test -d /opt/acados/interfaces/acados_template \
     && python3 -m pip install --no-cache-dir --no-deps \
            -e /opt/acados/interfaces/acados_template
