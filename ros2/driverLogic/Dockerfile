@@ -99,7 +99,7 @@ RUN pip install  \
 # acados + Python 接口（MPC 求解器）
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git libblas-dev liblapack-dev \
+        git curl libblas-dev liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ARG ACADOS_VERSION=v0.4.5
@@ -111,6 +111,10 @@ RUN git clone --depth 1 --branch ${ACADOS_VERSION} \
     && cmake -DCMAKE_INSTALL_PREFIX=/opt/acados \
              -DACADOS_WITH_QPOASES=OFF .. \
     && make -j"$(nproc)" install
+
+RUN python3 -m pip install --no-cache-dir future-fstrings cython setuptools_scm \
+    && python3 -m pip install --no-cache-dir --no-deps \
+           -e /opt/acados/interfaces/acados_template
 
 RUN mkdir -p /opt/acados/bin \
     && ARCH=$(dpkg --print-architecture) \
