@@ -113,10 +113,13 @@ RUN git clone --depth 1 --branch ${ACADOS_VERSION} \
     && make -j"$(nproc)" install
 
 # 版本必须与上面的 C 库 tag 一致
-RUN python3 -m pip install --no-cache-dir "acados_template==0.3.5"
+RUN python3 -m pip install --no-cache-dir jinja2 \
+    && test -d /opt/acados/interfaces/acados_template \
+    && python3 -m pip install --no-cache-dir --no-deps \
+           -e /opt/acados/interfaces/acados_template
 
 ENV ACADOS_SOURCE_DIR=/opt/acados
-ENV LD_LIBRARY_PATH=/opt/acados/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/opt/acados/lib
 
 # 构建期自检，装失败直接让 build 失败
 RUN python3 -c "import acados_template; print('acados_template OK')"
