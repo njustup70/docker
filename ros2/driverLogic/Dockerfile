@@ -99,23 +99,34 @@ RUN pip install  \
 # acados + Python 接口（MPC 求解器）
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git libblas-dev liblapack-dev \
+        git curl libblas-dev liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ARG ACADOS_VERSION=v0.3.5
+ARG ACADOS_VERSION=v0.4.5
 RUN git clone --depth 1 --branch ${ACADOS_VERSION} \
         https://github.com/acados/acados.git /opt/acados \
     && cd /opt/acados \
     && git submodule update --recursive --init \
     && mkdir -p build && cd build \
     && cmake -DCMAKE_INSTALL_PREFIX=/opt/acados \
-             -DACADOS_WITH_QPOASES=ON .. \
+             -DACADOS_WITH_QPOASES=OFF .. \
     && make -j"$(nproc)" install
 
-RUN python3 -m pip install --no-cache-dir future-fstrings cython \
-    && test -d /opt/acados/interfaces/acados_template \
+RUN python3 -m pip install --no-cache-dir future-fstrings cython setuptools_scm \
     && python3 -m pip install --no-cache-dir --no-deps \
            -e /opt/acados/interfaces/acados_template
+
+RUN mkdir -p /opt/acados/bin \
+    && ARCH=$(dpkg --print-architecture) \
+    && case "$ARCH" in \
+         amd64) TERA=t_renderer-v0.2.1-linux-amd64 ;; \
+         arm64) TERA=t_renderer-v0.2.1-linux-arm64 ;; \
+         *) echo "unsupported arch: $ARCH"; exit 1 ;; \
+       esac \
+    && curl -fsSL -o /opt/acados/bin/t_renderer \
+       "https://github.com/acados/tera_renderer/releases/download/v0.2.1/$TERA" \
+    && chmod +x /opt/acados/bin/t_renderer \
+    && /opt/acados/bin/t_renderer --help > /dev/null
 
 ENV ACADOS_SOURCE_DIR=/opt/acados
 ENV LD_LIBRARY_PATH=/opt/acados/lib
