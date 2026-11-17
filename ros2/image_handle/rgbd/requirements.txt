@@ -1,0 +1,10 @@
+# 与 RGB-D 最小交接包配套；Humble Python 扩展使用 NumPy 1.x。
+numpy==1.26.4
+opencv-python==4.11.0.86
+PyYAML==6.0.3
+# 基础镜像的 SciPy 1.8 不支持 NumPy 1.26；主逻辑也会导入 SciPy。
+scipy==1.14.1
+# 基础镜像的 pip/setuptools 会把 PEP 621 项目误装成 UNKNOWN 空包。
+pip==24.0
+setuptools==70.3.0
+wheel==0.45.1
