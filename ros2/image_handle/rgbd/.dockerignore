@@ -1,5 +1,0 @@
-*
-!Dockerfile
-!requirements.txt
-!verify_env.py
-!99-obsensor-libusb.rules
