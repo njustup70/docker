@@ -1,4 +1,6 @@
-FROM ros:humble-ros-base
+FROM up70docker/ros:ros2-humble-full-1017
+
+USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -10,12 +12,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-cv-bridge ros-humble-image-transport ros-humble-camera-info-manager \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /bin/bash Elaina \
-    && mkdir -p /home/Elaina/ros2_ws \
-    && chown Elaina:Elaina /home/Elaina/ros2_ws
+RUN mkdir -p /home/Elaina/ros2_ws \
+    && chown Elaina:"$(id -gn Elaina)" /home/Elaina/ros2_ws
 
 USER Elaina
-ENV PATH="/home/Elaina/.local/bin:${PATH}"
+ENV RMW_IMPLEMENTATION=rmw_zenoh_cpp \
+    ZENOH_CONFIG_OVERRIDE=transport/shared_memory/enabled=false
 RUN python3 -m pip install --user --no-cache-dir \
     numpy==1.26.4 opencv-python==4.11.0.86 PyYAML==6.0.3 \
     scipy==1.14.1 pip==24.0 setuptools==70.3.0 wheel==0.45.1 \
