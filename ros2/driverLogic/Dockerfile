@@ -21,6 +21,7 @@ COPY --chown=${USERNAME}:${USER_GID} ./packages/nagisa_imu ./ros_ws/src/nagisa_i
 COPY --chown=${USERNAME}:${USER_GID} ./packages/wheel_imu ./ros_ws/src/wheel_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/hipnuc_imu ./ros_ws/src/hipnuc_imu
 COPY --chown=${USERNAME}:${USER_GID} ./packages/ROS-TCP-Endpoint-ROS2v0.7.0 ./ros_ws/src/ROS-TCP-Endpoint
+COPY --chown=${USERNAME}:${USER_GID} ./packages/vision_interfaces ./ros_ws/src/vision_interfaces
 
 # RoboSense LiDAR
 WORKDIR /home/$USERNAME/packages/ros_ws/src
@@ -39,6 +40,10 @@ RUN chmod +x /usr/local/bin/*
 #  安装必要的工具
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-gps-msgs \
+    # [新增] 视觉消息包构建/运行依赖（vision_interfaces）
+    ros-${ROS_DISTRO}-vision-msgs \
+    ros-${ROS_DISTRO}-rosidl-default-generators \
+    ros-${ROS_DISTRO}-rosidl-default-runtime \
     libpcap-dev \
     usbutils \
     # [新增] 视觉与编译依赖
@@ -64,6 +69,11 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && export MAKEFLAGS="-j1" \
     && colcon build --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
+
+# 构建期自检：vision_interfaces 必须已生成并可被 Python 导入
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && . /home/$USERNAME/packages/ros_ws/install/setup.sh \
+    && python3 -c "from vision_interfaces.msg import RgbdCandidateArray; print('vision_interfaces OK')"
 
 # Python 依赖
 USER $USERNAME
